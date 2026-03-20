@@ -1,0 +1,444 @@
+---
+title: "baseline"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(usmap)
+library(gganimate)
+library(gifski)
+library(data.table)
+
+options(scipen=999)
+```
+
+```{r}
+NIH_grants <- read.csv("data/NIH_grants.csv", check.names = FALSE) %>%
+  mutate(across(ends_with("Date"), ~ as_date(.x)))
+```
+
+```{r}
+get_fisc <- function(date) {
+  if_else(month(date) >= 10, year(date) + 1L, year(date))
+}
+
+fy_start <- function(fy) {
+  as_date(paste0(fy - 1, "-10-01"))
+}
+
+ic_list <- c("NIAID", "NICHD", "NHLBI", "NCI", "OD", "NIDCR", "NINDS", "NIBIB", "NIGMS", 
+             "NEI", "NIDA", "NIDDK", "NHGRI", "NIAAA", "NCATS", "NIEHS", "NIA", "NIMH",
+             "NIAMS", "NLM", "NIMHD", "NIDCD", "NINR", "NCCIH", "FIC")
+
+inf_adj <- c(1.77, 1.35, 1.33, 1.32, 1.31, 1.28, 1.25, 1.23, 1.21, 1.16, 1.07, 1.03, 1, 0.96)
+
+inf_by_year <- tibble(inf = inf_adj, fisc_year = c(2001, 2013:2024, 2026))
+
+budg_by_year <- NIH_grants %>%
+  filter(`Funding IC(s)` %in% ic_list) %>%
+  mutate(fisc_year = get_fisc(`Budget Start Date`)) %>%
+  left_join(inf_by_year) %>%
+  mutate(`Total Cost IC` = `Total Cost IC` * inf) %>%
+  rename(award_id = `Application ID`,
+         tot_cost = `Total Cost IC`,
+         cost_idc = `Indirect Cost IC`,
+         proj_num = `Project Number`,
+         funding_ics = `Funding IC(s)`,
+         budg_start = `Budget Start Date`,
+         budg_end = `Budget End Date`,
+         lat = Latitude,
+         lon = Longitude,
+         org_name = `Organization Name`) %>%
+  filter(!is.na(budg_start) & !is.na(budg_end)) %>%
+  select(org_name, lat, lon, proj_num, award_id, fisc_year, tot_cost, cost_idc, funding_ics, budg_start, budg_end) %>%
+  filter(org_name != "IT BIO, LLC") %>%
+  distinct() %>%
+  arrange(budg_start) %>%
+  filter(fisc_year >= 2020 & fisc_year <= 2024)
+```
+
+```{r geo data}
+state_mult_2026 <- read.csv("data/state_mult_2026.csv") %>% 
+                rename(tot_fund = 2, 
+                       econ_act = 8,
+                       state_name= 1,
+                       jobs_per_m = 3) %>%
+                mutate(econ_act = as.numeric(gsub(",", "", econ_act)),
+                       tot_fund = as.numeric(gsub(",", "", tot_fund)),
+                       job_val = as.numeric(gsub(",", "", jobs_per_m))/1000000,
+                       state_name = str_replace_all(state_name, "\\u00A0", " ")) %>%
+                mutate(econ_mult = econ_act/tot_fund) %>%
+                select(state_name, econ_mult, job_val) %>%
+                left_join(data.frame(state_name = c(state.name, "District of Columbia"),
+                                     state = c(state.abb, "DC"))) %>%
+                select(-state_name) %>%
+                filter(!is.na(state))
+
+NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
+  mutate(tractid = str_pad(tractid, 11, pad = "0"),
+         FIPS = substr(tractid, 0, 5),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(FIPS)) %>%
+  select(org_name, tractid, FIPS, lat, lon) %>%
+  distinct()
+
+NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0"),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(GEOID))
+
+NIH_state_fips <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(fips = str_pad(fips, 5, pad = "0")) %>%
+  filter(!endsWith(fips, "000")) %>%
+  rename(FIPS = fips) %>%
+  left_join(state_mult)
+
+states <- tibble(
+  state_name = c(state.name, "District of Columbia"),
+  state = c(state.abb, "DC")) %>%
+  left_join(
+    NIH_state_fips %>%
+      select(FIPS, state) %>%
+      mutate(FIPS = str_sub(FIPS, 1, 2)) %>%
+      distinct()) %>%
+  arrange(state) %>%
+  left_join(state_mult_2026)
+
+write_csv(states, "data/states.csv")
+```
+
+```{r}
+budg_by_year <- budg_by_year %>%
+  mutate(lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  left_join(NIH_tract_fips) %>%
+  mutate(tractid = ifelse(tractid == "00NOT_FOUND", NA, tractid)) %>%
+  filter(!is.na(tractid))
+
+start_date <- as_date("2023-10-01")
+end_date <- as_date("2024-09-30")
+
+dates <- data.frame(
+  date = seq(start_date, end_date, by = "days"),
+  day_fisc = seq(1, 366, by = 1)
+) %>%
+  mutate(calendar_day = format(date, "%m-%d"),
+         week = ceiling(day_fisc/7)) %>%
+  group_by(week) %>%
+  mutate(week_start = calendar_day[which.min(day_fisc)],
+         week_end = calendar_day[which.max(day_fisc)]) %>%
+  select(-date)
+
+# find cumulative sum
+budg_by_year_sum <- budg_by_year %>%
+  mutate(fisc_start = fy_start(fisc_year),
+         day_fisc = time_length(budg_start - fisc_start, unit = "days") + 1,
+         week = ceiling(day_fisc/7)) %>%
+  group_by(tractid, fisc_year, week, funding_ics) %>%
+  summarise(week_sum = sum(tot_cost)) %>%
+  ungroup() %>%
+  complete(tractid, funding_ics, fisc_year, week = seq(1, 53, by = 1),
+           fill = list(week_sum = 0)) %>%
+  group_by(tractid, fisc_year, funding_ics) %>%
+  mutate(ytd = cumsum(week_sum)) %>%
+  group_by(tractid, week, funding_ics) %>%
+  summarise(avg_ytd = mean(ytd)) %>%
+  left_join(dates %>% select(-c(day_fisc, calendar_day)) %>% distinct())
+```
+
+```{r commuter data}
+county_commute <- read.csv("data/county_commute_NIH.csv") %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
+  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+
+cong_commute <- fread("https://osf.io/m5kb6/download") %>%
+  mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
+         Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
+  rename(commuters = commutes) %>%
+  filter(!is.na(Cong_ORIGIN))
+
+cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
+  select(GEOID, STATE_NAME, NAME, PARTY) %>%
+  rename(state = STATE_NAME,
+         pol_party = PARTY,
+         rep_name = NAME)
+
+#get total workers per cong district
+cong_commute_sum <- cong_commute %>%
+  group_by(Cong_DESTINATION) %>%
+  summarise(total_workers = sum(commuters, na.rm=TRUE))
+
+#merge in total workers
+cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
+  select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
+  rename(DESTINATION = Cong_DESTINATION,
+         ORIGIN = Cong_ORIGIN)
+
+#calculate proportion of workers who work in district X who live in district Y
+cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+```
+
+```{r}
+# tract to county commutes
+# this crashes if I don't break things up week by week
+commuter_dist <- function(week_num){
+  data <- budg_by_year_sum %>% filter(week == week_num)
+  
+  baseline <- county_commute %>%
+  rename(tractid = DESTINATION) %>%
+  right_join(data) %>%
+  mutate(avg_ytd = avg_ytd * proportion) %>%
+  group_by(ORIGIN, week, funding_ics, week_start, week_end) %>%
+  summarize(avg_ytd = sum(avg_ytd)) %>%
+  rename(FIPS = ORIGIN) %>%
+  filter(!endsWith(FIPS, "000"))
+  
+  baseline
+}
+
+budg_by_year_sum_comm <- lapply(1:53, commuter_dist)
+budg_by_year_sum_comm <- do.call(rbind, budg_by_year_sum_comm)
+
+# add in state multipliers
+budg_by_year_sum_comm <- budg_by_year_sum_comm %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  left_join(NIH_state_fips %>% select(FIPS, name)) %>%
+  mutate(econ_ytd = avg_ytd * econ_mult,
+         jobs = avg_ytd * job_val) %>%
+  select(-c(econ_mult, job_val, state_FIPS, state_name))
+
+budg_by_year_sum_comm_tot <- budg_by_year_sum_comm %>%
+  group_by(FIPS, name, state, week, week_start, week_end) %>%
+  summarize(avg_ytd = sum(avg_ytd),
+            econ_ytd = sum(econ_ytd, na.rm = TRUE),
+            jobs = sum(jobs, na.rm = TRUE)) %>%
+  mutate(funding_ics = "NIH_tot")
+
+budg_by_year_sum_comm <- rbind(budg_by_year_sum_comm, budg_by_year_sum_comm_tot)
+
+# baseline funding data over time
+baseline_timevar <- budg_by_year_sum_comm %>%
+  select(FIPS, name, state, funding_ics, week, week_start, week_end, avg_ytd, econ_ytd, jobs)
+
+write_csv(baseline_timevar, "output/baseline_timevar.csv")
+
+county_pop <- read.csv("data/county_pop.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0"))
+
+state_pop <- read.csv("data/state_pop.csv") %>%
+  mutate(across(c(pop_2024, pop_2025), ~ as.numeric(str_remove_all(.x, ",")))) %>%
+  mutate(state_name = str_remove_all(State, "\\.")) %>%
+  left_join(states) %>%
+  select(state, pop_2024)
+
+city_pop <- read.csv("data/city_pop_2024.csv", skip = 1) %>%
+  mutate(area_type = str_extract(MSA, "\\b\\w+\\s+\\w+$"),
+         MSA = str_remove(MSA, "\\s*\\b\\w+\\s+\\w+$"),
+         MSA = str_remove_all(MSA, "^\\.+"),
+         pop_2024 = as.numeric(str_remove_all(pop_2024, ","))) %>%
+  rename(CBSA_NAME = MSA)
+
+msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
+  select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
+  rename(FIPS = CountyFIPS) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
+         CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
+
+baseline_tot <- baseline_timevar %>%
+  filter(week == 53) %>%
+  ungroup() %>%
+  select(-c(week, week_start, week_end)) %>%
+  rename(raw_funding = avg_ytd,
+         econ_impact = econ_ytd) %>%
+  left_join(county_pop %>% select(FIPS, pop_2024))
+
+write_csv(baseline_tot, "output/baseline_county.csv")
+
+baseline_tot %>%
+  group_by(state, funding_ics) %>%
+  summarize(
+    raw_funding = sum(raw_funding),
+    econ_impact = sum(econ_impact),
+    jobs = sum(jobs)) %>%
+  left_join(state_pop) %>%
+  filter(!is.na(state)) %>%
+  write_csv("output/baseline_state.csv")
+
+baseline_tot %>%
+    select(-pop_2024) %>%
+    right_join(msa) %>%
+    group_by(CBSA_FIPS, CBSA_NAME, funding_ics) %>%
+    summarize(
+        raw_funding = sum(raw_funding),
+        econ_impact = sum(econ_impact),
+        jobs = sum(jobs)) %>%
+  left_join(city_pop) %>% 
+  select(-area_type) %>%
+  write_csv("output/baseline_city.csv")
+
+# testing values
+budg_by_year_sum_comm %>%
+  filter(FIPS == "27053" & funding_ics != "NIH_tot") %>%
+  ggplot() +
+  geom_line(aes(x = week, y = avg_ytd, color = funding_ics)) +
+  ylim(0, NA)
+
+library(scales)
+plot_usmap(
+  data = baseline_tot %>% rename(fips = FIPS) %>% filter(funding_ics == "NIH_tot"),
+  values = "raw_funding",
+  regions = "counties",
+  color = "white",
+  linewidth = 0.0
+) +
+  scale_fill_viridis_c(trans = "log10",
+                       labels = label_dollar(scale_cut = cut_short_scale()))
+
+```
+
+```{r tract to congressional district}
+budg_by_year_geoid <- budg_by_year_sum %>% 
+  filter(week == 53) %>% 
+  select(-c(week, week_start, week_end)) %>%
+  distinct()
+
+baseline_geoid <- cong_commute %>%
+  rename(tractid = DESTINATION) %>%
+  right_join(budg_by_year_geoid) %>%
+  mutate(avg_ytd = avg_ytd * proportion) %>%
+  group_by(ORIGIN, funding_ics) %>%
+  summarize(raw_funding = sum(avg_ytd)) %>%
+  rename(GEOID = ORIGIN)
+
+baseline_geoid <- baseline_geoid %>%
+  left_join(cong_info %>% select(GEOID, state) %>% rename(state_name = state)) %>%
+  left_join(states) %>%
+  mutate(econ_impact = raw_funding * econ_mult,
+         jobs = raw_funding * job_val) %>%
+  select(-c(state_name, FIPS, econ_mult, job_val)) %>%
+  distinct()
+
+geoid_pop <- read.csv("data/CD_pop2024.csv") %>%
+  mutate(state = sub(" [^ ]+$", "", District),
+         dist_num = as.numeric(sub(".*\\s+", "", District)),
+         pop_2024 = as.numeric(gsub(",", "", Population))) %>%
+  mutate(dist_num = ifelse(is.na(dist_num), 0, dist_num)) %>%
+  # manually set DC
+  mutate(dist_num = ifelse(state == "District of Columbia", 98, dist_num)) %>%
+  # append state FIPS
+  right_join(cong_info %>% 
+               mutate(state_FIPS = substr(GEOID, 1, 2)) %>% 
+               select(state_FIPS, state) %>% 
+               distinct()) %>%
+  mutate(dist_num = str_pad(dist_num, 2, pad = "0")) %>%
+  mutate(GEOID = paste0(state_FIPS, dist_num)) %>%
+  select(GEOID, pop_2024) %>%
+  distinct()
+
+baseline_geoid_tot <- baseline_geoid %>%
+  group_by(GEOID, state) %>%
+  summarize(raw_funding = sum(raw_funding),
+            econ_impact = sum(econ_impact),
+            jobs = sum(jobs)) %>%
+  mutate(funding_ics = "NIH_tot")
+  
+baseline_geoid <- rbind(baseline_geoid, baseline_geoid_tot)
+
+baseline_geoid %>%
+  select(GEOID, state, funding_ics, raw_funding, econ_impact, jobs) %>%
+  left_join(geoid_pop) %>%
+  write_csv("output/baseline_district.csv")
+```
+
+```{r gifs}
+# budg_by_year_sum_comm_gif <- budg_by_year_sum_comm %>%
+#   group_by(FIPS) %>%
+#   mutate(avg_ytd_no_oct1 = avg_ytd - avg_ytd[day_fisc == 1]) %>% 
+#   filter(day_fisc != 1) %>% 
+#   mutate(avg_ytd_no_oct1 = ifelse(avg_ytd_no_oct1 == 0, 0, log(avg_ytd_no_oct1))) %>% 
+#   rename(fips = FIPS)
+# 
+# gif_map_no_oct <- plot_usmap(
+#   data = budg_by_year_sum_comm_gif,
+#   values = "avg_ytd_no_oct1",
+#   regions = "counties",
+#   color = "white",
+#   linewidth = 0.0
+# ) +
+#   scale_fill_viridis_c() +
+#   labs(title = 'Day: {round(frame_time)}',
+#        fill = "Log funding") +
+#   theme(legend.position = "right")+
+#   transition_time(day_fisc) +
+#   ease_aes("linear")
+# 
+# anim_save("output/baseline_timevar_no_oct.gif", animate(gif_map_no_oct, nframes = 73, renderer = gifski_renderer()))
+# 
+# gif_map <- plot_usmap(
+#   data = budg_by_year_sum_comm %>% rename(fips = FIPS),
+#   values = "avg_ytd",
+#   regions = "counties",
+#   color = "white",
+#   linewidth = 0.0
+# ) +
+#   scale_fill_viridis_c() +
+#   labs(title = 'Day: {frame_time}',
+#        fill = "Log funding") +
+#   theme(legend.position = "right") +
+#   transition_time(day_fisc) +
+#   ease_aes("linear")
+# 
+# anim_save("output/baseline_time_var.gif", animate(gif_map, renderer = gifski_renderer()))
+# 
+# # weekly version
+# gif_map_week <- plot_usmap(
+#   data = budg_by_year_sum_week %>% rename(fips = FIPS),
+#   values = "avg_ytd",
+#   regions = "counties",
+#   color = "white",
+#   linewidth = 0.0
+# ) +
+#   scale_fill_viridis_c() +
+#   labs(title = 'Week: {frame_time}',
+#        fill = "Cumulative funding") +
+#   theme(legend.position = "right")+
+#   transition_time(week) +
+#   ease_aes("linear")
+# 
+# anim_save("output/baseline_timevar_weekly.gif", animate(gif_map_week, nframes = 53, fps = 2, renderer = gifski_renderer()))
+```
+
+```{r test values}
+budg_by_year_sum_comm %>%
+  filter(week == 53 & funding_ics != "NIH_tot") %>%
+  ungroup() %>%
+  summarize(total_funding = sum(avg_ytd))
+
+baseline_tot %>%
+  filter(funding_ics != "NIH_tot") %>%
+  ungroup() %>%
+  summarize(total_funding = sum(raw_funding))
+
+budg_by_year %>%
+  group_by(fisc_year) %>%
+  summarise(total_funding = sum(tot_cost, na.rm = TRUE))
+
+sum(budg_by_year$tot_cost, na.rm = TRUE)/5
+
+budg_by_year_sum %>%
+  filter(week == 53 & funding_ics != "NIH_tot") %>%
+  ungroup() %>%
+  summarize(total_funding = sum(avg_ytd))
+
+baseline_geoid %>%
+  filter(funding_ics != "NIH_tot") %>%
+  ungroup() %>%
+  summarize(total_funding = sum(raw_funding))
+```
+
