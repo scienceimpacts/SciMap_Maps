@@ -1,0 +1,229 @@
+---
+title: "IDC_map"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+#2024 NIH data
+NIH <- read_csv("https://osf.io/4trj7/download")
+
+#format column names to match
+names(NIH) <- make.names(names(NIH))
+
+#select relevant variables
+NIH_clean <- select(NIH, "Application.ID", "Organization.Name", "Project.Title", "Total.Cost", "Direct.Cost.IC", "Indirect.Cost.IC", "Organization.State", "Organization.City", "Latitude", "Longitude", "CFDA.Code", "Project.Number")
+
+#rename columns
+colnames(NIH_clean) <- c("ID", "org_name", "title", "total", "direct", "indirect", 
+                         "state", "city", "lat", "lon", "CFDA","proj.num")
+
+#exclude rows with NA for CFDA (these indicate sub-grants like "cores" within a center grant)
+NIH_clean <- filter(NIH_clean, !is.na(NIH_clean$CFDA))
+
+#replace NA values with zeros and sum directs and indirects
+NIH_clean$direct[is.na(NIH_clean$direct)] <- 0
+NIH_clean$indirect[is.na(NIH_clean$indirect)] <- 0
+NIH_clean$grant_funds <- NIH_clean$direct + NIH_clean$indirect
+
+#fix an issue in the raw data where some grants have total values (direct) but no breakdown by direct/indirect
+for (i in 1:nrow(NIH_clean)){
+  if (NIH_clean$grant_funds[i] == 0){
+    NIH_clean$grant_funds[i] <- NIH_clean$total[i]
+    NIH_clean$direct[i] <- NIH_clean$total[i]
+  }
+}
+
+#deletes first character of project number
+NIH_clean$proj.num <- str_sub(NIH_clean$proj.num, 2)
+
+NIH_clean <- NIH_clean %>% select(-CFDA)
+```
+
+```{r}
+ic_list <- c("NIAID", "NICHD", "NHLBI", "NCI", "OD", "NIDCR", "NINDS", "NIBIB", "NIGMS", 
+             "NEI", "NIDA", "NIDDK", "NHGRI", "NIAAA", "NCATS", "NIEHS", "NIA", "NIMH",
+             "NIAMS", "NLM", "NIMHD", "NIDCD", "NINR", "NCCIH", "FIC")
+
+inf_adj <- c(1.77, 1.35, 1.33, 1.32, 1.31, 1.28, 1.25, 1.23, 1.21, 1.16, 1.07, 1.03, 1, 0.96)
+
+inf_by_year <- tibble(inf = inf_adj, fisc_year = c(2001, 2013:2024, 2026))
+
+NIH_idc <- NIH_clean %>%
+  mutate(IDC_loss = indirect - 0.15 * direct,
+         IDC_loss = ifelse(IDC_loss < 0, 0, IDC_loss))
+```
+
+```{r geo data}
+# old state multipliers since we're trying to match with the paper
+state_mult <- read.csv("data/state-multiplier-urm.csv") %>% 
+                rename(tot_fund = 2, 
+                       econ_act = 9,
+                       state.name= 1,
+                       jobs_per_m = 3) %>%
+                mutate(econ_act = as.numeric(gsub(",", "", econ_act)),
+                       tot_fund = as.numeric(gsub(",", "", tot_fund)),
+                       job_val = as.numeric(gsub(",", "", jobs_per_m))/1000000) %>%
+                mutate(econ_mult = econ_act/tot_fund) %>%
+                select(state.name, econ_mult, job_val) %>%
+                left_join(data.frame(state.name=state.name,
+                                     state=state.abb)) %>%
+                select(-state.name) %>%
+                filter(!is.na(state))
+
+NIH_state_fips <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(fips = str_pad(fips, 5, pad = "0")) %>%
+  filter(!endsWith(fips, "000")) %>%
+  rename(FIPS = fips) %>%
+  left_join(state_mult)
+
+states <- tibble(
+  state_name = c(state.name, "District of Columbia"),
+  state = c(state.abb, "DC")) %>%
+  left_join(
+    NIH_state_fips %>%
+      select(FIPS, state) %>%
+      mutate(FIPS = str_sub(FIPS, 1, 2)) %>%
+      distinct())
+
+NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
+  mutate(tractid = str_pad(tractid, 11, pad = "0"),
+         FIPS = substr(tractid, 0, 5),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(FIPS)) %>%
+  select(org_name, tractid, FIPS, lat, lon) %>%
+  distinct()
+
+NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0"),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(GEOID))
+
+geoid_fips <- NIH_tract_fips %>%
+  left_join(NIH_geoid) %>%
+  left_join(NIH_state_fips) %>%
+  select(tractid, GEOID, name_geoid, state, FIPS)
+```
+	
+```{r}
+NIH_idc <- NIH_idc %>%
+  mutate(lat = round(lat, 5),
+        lon = round(lon, 5)) %>%
+  left_join(NIH_tract_fips) %>%
+  left_join(NIH_geoid) %>%
+  filter(!is.na(tractid))
+
+county_commute <- read.csv("data/county_commute_NIH.csv") %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
+  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+
+cong_commute <- fread("https://osf.io/m5kb6/download") %>%
+  mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
+         Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
+  rename(commuters = commutes) %>%
+  filter(!is.na(Cong_ORIGIN))
+
+#get total workers per cong district
+cong_commute_sum <- cong_commute %>%
+  group_by(Cong_DESTINATION) %>%
+  summarise(total_workers = sum(commuters, na.rm=TRUE))
+
+#merge in total workers
+cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
+  select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
+  rename(DESTINATION = Cong_DESTINATION,
+         ORIGIN = Cong_ORIGIN)
+
+#calculate proportion of workers who work in district X who live in district Y
+cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+```
+
+```{r}
+NIH_idc_comm <- NIH_idc %>%
+  filter(str_sub(FIPS, 1, 2) %in% states$FIPS) %>%
+  group_by(tractid) %>%
+  summarize(IDC_loss = sum(IDC_loss)) %>%
+  mutate(state_FIPS = str_sub(tractid, 1, 2)) %>%
+  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  left_join(NIH_state_fips %>% select(-c(FIPS, name)) %>% distinct(), by = "state") %>%
+  mutate(IDC_econ_loss = IDC_loss * econ_mult,
+         IDC_job_loss = IDC_loss * job_val)
+
+idc_commute <- county_commute %>%
+  rename(tractid = DESTINATION) %>%
+  right_join(NIH_idc_comm) %>%
+  mutate(across(starts_with("IDC"), ~ .x * proportion)) %>%
+  group_by(ORIGIN) %>%
+  summarize(IDC_loss = sum(IDC_loss),
+            IDC_econ_loss = sum(IDC_econ_loss, na.rm = T),
+            IDC_job_loss = sum(IDC_job_loss, na.rm = T)) %>%
+  rename(FIPS = ORIGIN) %>%
+  filter(!endsWith(FIPS, "000"))
+
+# idc_orig <- read.csv("~/Desktop/Weitz_Group/SciMap-Methods/output/static_vs_commuter_IDC_FIPS.csv") %>%
+#   mutate(FIPS = str_pad(FIPS, 5, pad = "0"))
+# idc_commute %>% 
+#   right_join(idc_orig, by = "FIPS")
+
+idc_commute %>% 
+  left_join(NIH_state_fips %>% select(FIPS, name)) %>%
+  select(FIPS, name, IDC_loss, IDC_econ_loss, IDC_job_loss) %>%
+  write_csv("output/IDC_county.csv")
+
+idc_commute %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  group_by(state) %>%
+  summarise(IDC_loss = sum(IDC_loss),
+            IDC_econ_loss = sum(IDC_econ_loss),
+            IDC_job_loss = sum(IDC_job_loss)) %>%
+  write_csv("output/IDC_state.csv")
+
+msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
+  select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
+  rename(FIPS = CountyFIPS) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
+         CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
+
+idc_commute %>%
+  left_join(msa) %>%
+  group_by(CBSA_FIPS, CBSA_NAME) %>%
+  summarize(IDC_loss = sum(IDC_loss),
+            IDC_econ_loss = sum(IDC_econ_loss),
+            IDC_job_loss = sum(IDC_job_loss)) %>%
+  write_csv("output/IDC_city.csv")
+  
+library(usmap)
+library(scales)
+plot_usmap(
+  data = idc_commute %>% rename(fips = FIPS),
+  values = "IDC_econ_loss",
+  regions = "counties",
+  color = "white",
+  linewidth = 0.0
+) +
+  scale_fill_viridis_c(trans = "log10",
+                       labels = label_dollar(scale_cut = cut_short_scale()))
+```
+
+```{r}
+idc_commute_cong <- cong_commute %>%
+  rename(tractid = DESTINATION) %>%
+  right_join(NIH_idc_comm) %>%
+  mutate(across(starts_with("IDC"), ~ .x * proportion)) %>%
+  group_by(ORIGIN) %>%
+  summarize(IDC_loss = sum(IDC_loss),
+            IDC_econ_loss = sum(IDC_econ_loss, na.rm = T),
+            IDC_job_loss = sum(IDC_job_loss, na.rm = T)) %>%
+  rename(FIPS = ORIGIN) %>%
+  filter(!endsWith(FIPS, "000"))
+
+idc_commute_cong %>% write_csv("output/IDC_district.csv")
+```
+
