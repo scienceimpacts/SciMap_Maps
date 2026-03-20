@@ -115,15 +115,15 @@ terminations_org <- terminations %>%
 
 write_csv(terminations_org, "output/terminations_org.csv")
 
-terminations_sum2 <- terminations %>%
+terminations_sum <- terminations %>%
   group_by(tractid, week) %>%
   summarise(week_loss = sum(total_loss),
             week_impacted = sum(total_impacted))
 
 # add in commutes
-terminations_sum_comm2 <- county_commute %>%
+terminations_sum_comm <- county_commute %>%
   rename(tractid = DESTINATION) %>%
-  right_join(terminations_sum2) %>%
+  right_join(terminations_sum) %>%
   mutate(week_loss = week_loss * proportion,
          week_impacted = week_impacted * proportion) %>%
   group_by(ORIGIN, week) %>%
@@ -140,7 +140,7 @@ terminations_sum_comm2 <- county_commute %>%
          overall_loss = cumsum(week_impacted))
 
 # add in state multipliers
-terminations_sum_comm2 <- terminations_sum_comm2 %>%
+terminations_sum_comm <- terminations_sum_comm %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
   left_join(states %>% rename(state_FIPS = FIPS)) %>%
   mutate(current_econ_loss = current_loss * econ_mult,
@@ -150,9 +150,9 @@ terminations_sum_comm2 <- terminations_sum_comm2 %>%
   left_join(dates_04_25 %>% select(-c(day_fisc)) %>% distinct()) %>%
   select(FIPS, week, week_start, week_end, starts_with(c("current", "overall")))
 
-write_csv(terminations_sum_comm2, "output/terminations_county.csv")
+write_csv(terminations_sum_comm, "output/terminations_county.csv")
 
-terminations_sum_comm2 %>%
+terminations_sum_comm %>%
   group_by(state, week, week_start, week_end) %>%
   summarise(across(ends_with("loss"), ~ sum(.x))) %>%
   write_csv("output/terminations_state.csv")
@@ -163,16 +163,16 @@ msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
          CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
 
-terminations_sum_comm2 %>%
+terminations_sum_comm %>%
   left_join(msa) %>%
   group_by(CBSA_FIPS, CBSA_NAME, week, week_start, week_end) %>%
   summarise(across(ends_with("loss"), ~ sum(.x))) %>%
   write_csv("output/terminations_city.csv")
 
 # congressional district
-terminations_sum_cong2 <- cong_commute %>%
+terminations_sum_cong <- cong_commute %>%
   rename(tractid = DESTINATION) %>%
-  right_join(terminations_sum2) %>%
+  right_join(terminations_sum) %>%
   mutate(week_loss = week_loss * proportion,
          week_impacted = week_impacted * proportion) %>%
   group_by(ORIGIN, week) %>%
@@ -188,7 +188,7 @@ terminations_sum_cong2 <- cong_commute %>%
   mutate(current_loss = cumsum(week_loss),
          overall_loss = cumsum(week_impacted))
 
-terminations_sum_cong2 <- terminations_sum_cong2 %>%
+terminations_sum_cong <- terminations_sum_cong %>%
   mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
   left_join(states %>% rename(state_FIPS = FIPS)) %>%
   mutate(current_econ_loss = current_loss * econ_mult,
@@ -198,10 +198,10 @@ terminations_sum_cong2 <- terminations_sum_cong2 %>%
   left_join(dates_04_25 %>% select(-c(day_fisc)) %>% distinct()) %>%
   select(GEOID, week, week_start, week_end, starts_with(c("current", "overall")))
 
-write_csv(terminations_sum_cong2, "output/terminations_district.csv")
+write_csv(terminations_sum_cong, "output/terminations_district.csv")
 
 # all US terminations
-terminations_sum_comm2 %>%
+terminations_sum_comm %>%
   group_by(week_start) %>%
   summarise(current_loss = sum(current_loss),
             overall_loss = sum(overall_loss)) %>%
