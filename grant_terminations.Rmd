@@ -1,0 +1,213 @@
+---
+title: "grant_terminations"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(data.table)
+```
+
+```{r}
+terminations_raw <- read_csv("https://files.grant-witness.us/nih_terminations.csv") %>%
+  mutate(across(ends_with("date"), ~ as_date(.x)))
+
+county_commute <- read.csv("data/county_commute_NIH.csv") %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
+  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+
+cong_commute <- fread("https://osf.io/m5kb6/download") %>%
+  mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
+         Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
+  rename(commuters = commutes) %>%
+  filter(!is.na(Cong_ORIGIN))
+
+cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
+  select(GEOID, STATE_NAME, NAME, PARTY) %>%
+  rename(state = STATE_NAME,
+         pol_party = PARTY,
+         rep_name = NAME)
+
+# get total workers per cong district
+cong_commute_sum <- cong_commute %>%
+  group_by(Cong_DESTINATION) %>%
+  summarise(total_workers = sum(commuters, na.rm=TRUE))
+
+# merge in total workers
+cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
+  select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
+  rename(DESTINATION = Cong_DESTINATION,
+         ORIGIN = Cong_ORIGIN)
+
+# calculate proportion of workers who work in district X who live in district Y
+cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+```
+
+```{r}
+NIH_tracts <- read.csv("data/tract_dictionary.csv")
+states <- read.csv("data/states.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 2, pad = "0"))
+
+fy_start <- function(fy) {
+  as_date(paste0(fy - 1, "-10-01"))
+}
+
+start_date <- as_date("2025-04-01")
+
+dates_04_25 <- data.frame(
+  date = seq(start_date, today(), by = "days"),
+  day_fisc = seq(1, ceiling(time_length(today() - start_date, unit = "days")) + 1, by = 1)) %>%
+  mutate(week = ceiling(day_fisc/7)) %>%
+  group_by(week) %>%
+  mutate(week_start = date[which.min(day_fisc)],
+         week_end = date[which.max(day_fisc)]) %>%
+  select(-date)
+
+terminations <- terminations_raw %>%
+  filter(org_state %in% states$state) %>%
+  left_join(states %>% rename(org_state = state)) %>%
+  rename(state_FIPS = FIPS) %>%
+  left_join(NIH_tracts) %>%
+  mutate(total_loss = total_award - total_estimated_outlays,
+         total_loss = ifelse(total_loss < 0, 0, total_loss),
+         across(ends_with("loss"), ~ ifelse(is.na(.x), 0, .x)),
+         date_impacted = pmin(frozen_date, termination_date, na.rm = T),
+         date_reinstated = pmax(unfrozen_date, reinstated_est_date, na.rm = T),
+         tractid = ifelse(tractid == "00NOT_FOUND", NA, tractid)) %>%
+  filter(!is.na(tractid)) %>%
+  filter(date_impacted >= start_date) %>%
+  # track reinstated grants as negative loss
+  pivot_longer(c(date_impacted, date_reinstated), names_to = "date_status", values_to = "date") %>% 
+  filter(!is.na(date)) %>%
+  mutate(total_loss = if_else(date_status == "date_reinstated", -total_loss, total_loss), # total amount lost at the moment
+         total_impacted = if_else(total_loss < 0, 0, total_loss), # total amount ever impacted
+         day_fisc = time_length(date - start_date, unit = "days") + 1,
+         week = ceiling(day_fisc/7))
+
+# these grants have very little information about them and aren't included
+missing_org_name <- terminations %>% 
+  filter(is.na(org_name))
+
+current_week <- ceiling(time_length(today() - start_date, unit = "weeks"))
+
+# organization level
+terminations_org <- terminations %>%
+  complete(org_name, week = seq(1, current_week, by = 1),
+           fill = list(total_loss = 0, total_impacted = 0)) %>%
+  left_join(dates_04_25 %>% select(-c(day_fisc)) %>% distinct()) %>%
+  select(-c(org_city, org_state)) %>%
+  left_join(terminations %>% select(org_name, org_city, org_state) %>% distinct()) %>%
+  group_by(org_name, org_city, org_state, week, week_start, week_end) %>%
+  summarize(across(c("total_loss", "total_impacted"), ~ sum(.x))) %>%
+  group_by(org_name, org_city, org_state) %>%
+  arrange(week) %>%
+  mutate(across(c("total_loss", "total_impacted"), ~ cumsum(.x))) %>%
+  rename(current_loss = total_loss,
+         overall_loss = total_impacted) %>%
+  left_join(states %>% rename(org_state = state)) %>%
+  mutate(current_econ_loss = current_loss * econ_mult,
+         current_job_loss = current_loss * job_val,
+         overall_econ_loss = overall_loss * econ_mult,
+         overall_job_loss = overall_loss * job_val) %>%
+  select(org_name, org_city, org_state, starts_with(c("week", "current", "overall")))
+
+write_csv(terminations_org, "output/terminations_org.csv")
+
+terminations_sum2 <- terminations %>%
+  group_by(tractid, week) %>%
+  summarise(week_loss = sum(total_loss),
+            week_impacted = sum(total_impacted))
+
+# add in commutes
+terminations_sum_comm2 <- county_commute %>%
+  rename(tractid = DESTINATION) %>%
+  right_join(terminations_sum2) %>%
+  mutate(week_loss = week_loss * proportion,
+         week_impacted = week_impacted * proportion) %>%
+  group_by(ORIGIN, week) %>%
+  summarize(week_loss = sum(week_loss),
+            week_impacted = sum(week_impacted)) %>%
+  rename(FIPS = ORIGIN) %>%
+  filter(!endsWith(FIPS, "000")) %>%
+  ungroup() %>%
+  complete(FIPS, week = seq(1, current_week, by = 1),
+           fill = list(week_loss = 0, week_impacted = 0)) %>%
+  group_by(FIPS) %>%
+  arrange(week) %>%
+  mutate(current_loss = cumsum(week_loss),
+         overall_loss = cumsum(week_impacted))
+
+# add in state multipliers
+terminations_sum_comm2 <- terminations_sum_comm2 %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  mutate(current_econ_loss = current_loss * econ_mult,
+         current_job_loss = current_loss * job_val,
+         overall_econ_loss = overall_loss * econ_mult,
+         overall_job_loss = overall_loss * job_val) %>%
+  left_join(dates_04_25 %>% select(-c(day_fisc)) %>% distinct()) %>%
+  select(FIPS, week, week_start, week_end, starts_with(c("current", "overall")))
+
+write_csv(terminations_sum_comm2, "output/terminations_county.csv")
+
+terminations_sum_comm2 %>%
+  group_by(state, week, week_start, week_end) %>%
+  summarise(across(ends_with("loss"), ~ sum(.x))) %>%
+  write_csv("output/terminations_state.csv")
+
+msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
+  select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
+  rename(FIPS = CountyFIPS) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
+         CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
+
+terminations_sum_comm2 %>%
+  left_join(msa) %>%
+  group_by(CBSA_FIPS, CBSA_NAME, week, week_start, week_end) %>%
+  summarise(across(ends_with("loss"), ~ sum(.x))) %>%
+  write_csv("output/terminations_city.csv")
+
+# congressional district
+terminations_sum_cong2 <- cong_commute %>%
+  rename(tractid = DESTINATION) %>%
+  right_join(terminations_sum2) %>%
+  mutate(week_loss = week_loss * proportion,
+         week_impacted = week_impacted * proportion) %>%
+  group_by(ORIGIN, week) %>%
+  summarize(week_loss = sum(week_loss),
+            week_impacted = sum(week_impacted)) %>%
+  rename(GEOID = ORIGIN) %>%
+  filter(!endsWith(GEOID, "000")) %>%
+  ungroup() %>%
+  complete(GEOID, week = seq(1, current_week, by = 1),
+           fill = list(week_loss = 0, week_impacted = 0)) %>%
+  group_by(GEOID) %>%
+  arrange(week) %>%
+  mutate(current_loss = cumsum(week_loss),
+         overall_loss = cumsum(week_impacted))
+
+terminations_sum_cong2 <- terminations_sum_cong2 %>%
+  mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
+  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  mutate(current_econ_loss = current_loss * econ_mult,
+         current_job_loss = current_loss * job_val,
+         overall_econ_loss = overall_loss * econ_mult,
+         overall_job_loss = overall_loss * job_val) %>%
+  left_join(dates_04_25 %>% select(-c(day_fisc)) %>% distinct()) %>%
+  select(GEOID, week, week_start, week_end, starts_with(c("current", "overall")))
+
+write_csv(terminations_sum_cong2, "output/terminations_district.csv")
+
+# all US terminations
+terminations_sum_comm2 %>%
+  group_by(week_start) %>%
+  summarise(current_loss = sum(current_loss),
+            overall_loss = sum(overall_loss)) %>%
+  ggplot() +
+  geom_line(aes(x = week_start, y = current_loss)) +
+  geom_line(aes(x = week_start, y = overall_loss))
+
+```
+
