@@ -90,11 +90,19 @@ NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
          lon = round(lon, 5)) %>%
   filter(lat!=0 & !is.na(GEOID))
 
+ct_planning_regions <- read_tsv("data/ct_planning_regions.tsv", col_names = FALSE) %>%
+  rename(name = 1,
+         state = 2,
+         FIPS = 3) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0"),
+         state = "CT")
+
 NIH_state_fips <- read.csv("data/state_and_county_fips_master.csv") %>%
   mutate(fips = str_pad(fips, 5, pad = "0")) %>%
   filter(!endsWith(fips, "000")) %>%
   rename(FIPS = fips) %>%
-  left_join(state_mult)
+  rbind(ct_planning_regions) %>%
+  left_join(state_mult_2026)
 
 states <- tibble(
   state_name = c(state.name, "District of Columbia"),
@@ -270,7 +278,7 @@ baseline_tot %>%
   filter(!is.na(state)) %>%
   write_csv("output/baseline_state.csv")
 
-baseline_tot %>%
+baseline_city <- baseline_tot %>%
     select(-pop_2024) %>%
     right_join(msa) %>%
     group_by(CBSA_FIPS, CBSA_NAME, funding_ics) %>%
@@ -279,8 +287,19 @@ baseline_tot %>%
         econ_impact = sum(econ_impact),
         jobs = sum(jobs)) %>%
   left_join(city_pop) %>% 
-  select(-area_type) %>%
-  write_csv("output/baseline_city.csv")
+  select(-area_type)
+
+baseline_rural <- baseline_tot %>%
+  left_join(msa) %>%
+  filter(is.na(CBSA_FIPS)) %>%
+  mutate(name = paste(name, state, sep = ", "),
+         CBSA_FIPS = FIPS,
+         CBSA_NAME = name) %>%
+  select(-c(FIPS, name, state))
+
+baseline_city <- rbind(baseline_city, baseline_rural)
+  
+write_csv(baseline_city, "output/baseline_city.csv")
 
 # testing values
 budg_by_year_sum_comm %>%
