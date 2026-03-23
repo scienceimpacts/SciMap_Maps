@@ -279,27 +279,32 @@ baseline_tot %>%
   write_csv("output/baseline_state.csv")
 
 baseline_city <- baseline_tot %>%
-    select(-pop_2024) %>%
     right_join(msa) %>%
     group_by(CBSA_FIPS, CBSA_NAME, funding_ics) %>%
     summarize(
         raw_funding = sum(raw_funding),
         econ_impact = sum(econ_impact),
-        jobs = sum(jobs)) %>%
+        jobs = sum(jobs),
+        pop_2024 = sum(pop_2024)) %>%
   left_join(city_pop) %>% 
-  select(-area_type)
+  mutate(area_type = "urban")
 
 baseline_rural <- baseline_tot %>%
   left_join(msa) %>%
   filter(is.na(CBSA_FIPS)) %>%
   mutate(name = paste(name, state, sep = ", "),
          CBSA_FIPS = FIPS,
-         CBSA_NAME = name) %>%
+         CBSA_NAME = name,
+         area_type = "rural") %>%
   select(-c(FIPS, name, state))
 
-baseline_city <- rbind(baseline_city, baseline_rural)
+baseline_cities_counties <- rbind(baseline_city, baseline_rural) %>%
+  rename(FIPS_ALL = CBSA_FIPS,
+         name = CBSA_NAME)
   
-write_csv(baseline_city, "output/baseline_city.csv")
+write_csv(baseline_city %>% select(-area_type), "output/baseline_city.csv")
+
+write_csv(baseline_cities_counties, "output/baseline_cities_counties.csv")
 
 # testing values
 budg_by_year_sum_comm %>%
