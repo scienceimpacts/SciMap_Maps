@@ -5,6 +5,7 @@ output: html_document
 
 ```{r}
 library(tidyverse)
+options(datatable.use.logical64 = TRUE)
 ```
 
 ```{r}
@@ -41,16 +42,6 @@ for (i in 1:nrow(NIH_clean)){
 NIH_clean$proj.num <- str_sub(NIH_clean$proj.num, 2)
 
 NIH_clean <- NIH_clean %>% select(-CFDA)
-```
-
-```{r}
-ic_list <- c("NIAID", "NICHD", "NHLBI", "NCI", "OD", "NIDCR", "NINDS", "NIBIB", "NIGMS", 
-             "NEI", "NIDA", "NIDDK", "NHGRI", "NIAAA", "NCATS", "NIEHS", "NIA", "NIMH",
-             "NIAMS", "NLM", "NIMHD", "NIDCD", "NINR", "NCCIH", "FIC")
-
-inf_adj <- c(1.77, 1.35, 1.33, 1.32, 1.31, 1.28, 1.25, 1.23, 1.21, 1.16, 1.07, 1.03, 1, 0.96)
-
-inf_by_year <- tibble(inf = inf_adj, fisc_year = c(2001, 2013:2024, 2026))
 
 NIH_idc <- NIH_clean %>%
   mutate(IDC_loss = indirect - 0.15 * direct,
@@ -102,7 +93,8 @@ NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
   mutate(GEOID = str_pad(GEOID, 4, pad = "0"),
          lat = round(lat, 5),
          lon = round(lon, 5)) %>%
-  filter(lat!=0 & !is.na(GEOID))
+  filter(lat!=0 & !is.na(GEOID)) %>%
+  distinct()
 
 geoid_fips <- NIH_tract_fips %>%
   left_join(NIH_geoid) %>%
