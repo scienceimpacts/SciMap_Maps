@@ -45,6 +45,47 @@ cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
 cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
 ```
 
+```{r fix org names}
+# some blanket fixes on org name
+org_names_corrected <- read.csv("data/org_names_corrected.csv") %>%
+  filter(!is.na(corrected_name) & corrected_name != "")
+
+replacements <- c(" Of " = " of ", "At" = "at", " And " = " and ",
+                  "Univ " = "University ", "Ctr" = "Center", 
+                  "Col " = "College ", "Hlth" = "Health", "Scis" = "Sciences",
+                  "Sci " = "Science ", "Llc" = "LLC",
+                  " The " = " the ", "For" = " for ", "Res " = "Research ", 
+                  "Hosp " = "Hospital ", "Med " = "Medical ",
+                  "Harvard University D/B/A Harvard School of Public Health" = "Harvard School of Public Health",
+                  "Families Against Narcotics, Inc. D/B/A Face Addiction Now" = "Families Against Narcotics, Inc.",
+                  "New York University D/B/A Nyu Long Island School of Medicine" = "New York University Long Island School of Medicine")
+
+terminations_clean <- terminations_raw %>%
+  mutate(org_name = str_to_title(org_name),
+         org_city = str_to_title(org_city),
+         org_name = str_replace_all(org_name, replacements),
+         org_name = if_else(org_name == "University of Colorado", 
+                            paste(org_name, org_city, sep = "-"),
+                            org_name)) %>%
+  left_join(org_names_corrected) %>%
+  mutate(org_name = if_else(!is.na(corrected_name), corrected_name, org_name),
+         org_name = if_else(str_detect(org_name, "Harvard"), "Harvard University", org_name),
+         org_name = if_else(str_detect(org_name, "New York University"), "New York University", org_name),
+         org_name = if_else(str_detect(org_name, "Columbia University"), "Columbia University", org_name),
+         org_name = if_else(str_detect(org_name, "University of New Mexico"), "University of New Mexico", org_name),
+         org_name = if_else(str_detect(org_name, "University of Maryland Baltimore"), "University of Maryland Baltimore", org_name),
+         org_name = if_else(str_detect(org_name, "Tufts University"), "Tufts University", org_name),
+         org_name = if_else(str_detect(org_name, "Northwestern University"), "Northwestern University", org_name),
+         org_name = if_else(str_detect(org_name, "Texas A&M University"), "Texas A&M University", org_name),
+         org_name = if_else(str_detect(org_name, "University of Miami"), "University of Miami", org_name),
+         org_name = if_else(str_detect(org_name, "Michigan State University"), "Michigan State University", org_name),
+         org_name = if_else(str_detect(org_name, "St. Jude Children's Research Hospital"), "St. Jude Children's Research Hospital", org_name),
+         org_name = if_else(str_detect(org_name, "Vanderbilt University"), "Vanderbilt University", org_name),
+         org_name = if_else(str_detect(org_name, "University of Texas Health Science Center"), "University of Texas San Antonio", org_name)) %>%
+  select(-corrected_name)
+
+```
+
 ```{r}
 NIH_tracts <- read.csv("data/tract_dictionary.csv")
 states <- read.csv("data/states.csv") %>%
@@ -70,6 +111,18 @@ terminations <- terminations_raw %>%
   left_join(states %>% rename(org_state = state)) %>%
   rename(state_FIPS = FIPS) %>%
   left_join(NIH_tracts) %>%
+  mutate(org_name = str_to_title(org_name),
+         org_city = str_to_title(org_city),
+         org_name = str_replace_all(org_name, replacements),
+         org_name = if_else(org_name == "University of Colorado", 
+                            paste(org_name, org_city, sep = "-"),
+                            org_name)) %>%
+  left_join(org_names_corrected) %>%
+  mutate(org_name = if_else(!is.na(corrected_name), corrected_name, org_name),
+         org_name = if_else(str_detect(org_name, "Harvard"), "Harvard University", org_name),
+         org_name = if_else(str_detect(org_name, "New York University"), "New York University", org_name),
+         org_name = if_else(str_detect(org_name, "Columbia University"), "Columbia University", org_name)) %>%
+  select(-corrected_name) %>%
   mutate(total_loss = total_award - total_estimated_outlays,
          total_loss = ifelse(total_loss < 0, 0, total_loss),
          across(ends_with("loss"), ~ ifelse(is.na(.x), 0, .x)),
@@ -163,8 +216,15 @@ msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
          CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
 
+fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(FIPS = str_pad(fips, 5, pad ="0")) %>%
+  select(FIPS, name)
+
 terminations_sum_comm %>%
   left_join(msa) %>%
+  left_join(fips_names) %>%
+  mutate(CBSA_FIPS = ifelse(is.na(CBSA_FIPS), FIPS, CBSA_FIPS)) %>%
+  mutate(CBSA_NAME = ifelse(is.na(CBSA_NAME), name, CBSA_NAME)) %>%
   group_by(CBSA_FIPS, CBSA_NAME, week, week_start, week_end) %>%
   summarise(across(ends_with("loss"), ~ sum(.x))) %>%
   write_csv("output/terminations_city.csv")
@@ -210,4 +270,5 @@ terminations_sum_comm %>%
   geom_line(aes(x = week_start, y = overall_loss))
 
 ```
+
 
