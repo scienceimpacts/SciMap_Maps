@@ -1,0 +1,70 @@
+---
+title: "terminations_plots"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(data.table)
+library(ggExtra)
+library(slider)
+```
+
+```{r}
+terminations_clean <- read.csv("data/terminations_clean.csv") %>%
+  mutate(across(ends_with("date"), ~ as_date(.x)))
+states <- read.csv("data/states.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 2, pad = "0"))
+```
+
+```{r}
+terminations_hist <- terminations_clean %>%
+  filter(org_state %in% states$state) %>%
+  mutate(total_loss = total_award - total_estimated_outlays,
+         total_loss = ifelse(total_loss < 0, 0, total_loss),
+         across(ends_with("loss"), ~ ifelse(is.na(.x), 0, .x)),
+         date_impacted = pmin(frozen_date, termination_date, na.rm = T),
+         date_reinstated = pmax(unfrozen_date, reinstated_est_date, na.rm = T),
+         duration = as.numeric(difftime(date_reinstated, date_impacted, units = "days"))) %>%
+  filter(duration >= 0  | is.na(date_reinstated))
+
+p <- terminations_hist %>%
+         mutate(duration = if_else(is.na(duration), 400, duration)) %>%
+  ggplot() +
+  geom_point(aes(x = duration, y = total_award)) +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     transform = "log10") +
+  scale_x_continuous(breaks = c(0, 100, 200, 300, 400),
+                     labels = c("0", "100", "200", "300", "Not restored")) +
+  theme_minimal() +
+  labs(y = "Total amount awarded", x = "Duration (days)")
+
+ggMarginal(p, type = "histogram")
+
+terminations_hist %>%
+  mutate(week_impacted = floor_date(date_impacted, unit = "weeks")) %>%
+  group_by(week_impacted) %>%
+  summarise(n = n()) %>%
+  ggplot() +
+  geom_line(aes(x = week_impacted, y = n)) +
+  theme_minimal() +
+  labs(y = "Awards cancelled (by week)", x = "Date")
+
+terminations_hist %>%
+  group_by(date_impacted) %>%
+  summarise(n = n()) %>%
+  ggplot() +
+  geom_line(aes(x = date_impacted, y = n)) +
+  theme_minimal() +
+  labs(y = "Awards cancelled (by day)", x = "Date")
+
+terminations_hist %>%
+  filter(!is.na(date_impacted)) %>%
+  group_by(date_impacted) %>%
+  summarise(n = n()) %>%
+  mutate(n_avg = slide_index_dbl(n, date_impacted, .before = days(13), .f = mean)) %>%
+  ggplot() +
+  geom_line(aes(x = date_impacted, y = n_avg)) +
+  theme_minimal() +
+  labs(y = "Awards cancelled (2 week average)", x = "Date")
+```
