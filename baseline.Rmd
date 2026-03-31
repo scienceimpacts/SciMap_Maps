@@ -15,7 +15,8 @@ options(scipen=999)
 
 ```{r}
 NIH_grants <- read.csv("data/NIH_grants.csv", check.names = FALSE) %>%
-  mutate(across(ends_with("Date"), ~ as_date(.x)))
+  mutate(across(ends_with("Date"), ~ as_date(.x))) %>%
+  filter(Type %in% c(1, 2, 4:9))
 ```
 
 ```{r}
@@ -322,7 +323,8 @@ plot_usmap(
   linewidth = 0.0
 ) +
   scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale()))
+                       labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(fill = "Raw funding")
 
 ```
 
