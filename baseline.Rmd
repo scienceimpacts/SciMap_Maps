@@ -78,11 +78,15 @@ budg_by_year <- NIH_grants %>%
     num_weeks = length(week_start)) %>%
   unnest(week_start) %>%
   select(-c(fy_seq, fisc_end)) %>%
-  mutate(budg_length = time_length(difftime(budg_end, budg_start, units = "days"), "years"),
-         year_length = time_length(difftime(year_end, year_start, units = "days"), "years"),
-         prop_award = year_length/budg_length,
-         budg_per_year = prop_award * tot_cost,
-         budg_per_week = budg_per_year/num_weeks)
+  mutate(week_end = week_start + days(6),
+         budg_length = time_length(difftime(budg_end, budg_start, units = "days"), "weeks") + 1/7,
+         # calculate proportion of week
+         week_length = case_when(
+           week_end - year_start <= days(6) ~ as.numeric((pmin(year_end, week_end) - year_start + 1)/7),
+           year_end - week_start <= days(6) ~ as.numeric((year_end - pmax(year_start, week_start) + 1)/7),
+           .default = 1),
+         prop_award = week_length/budg_length,
+         budg_per_week = prop_award * tot_cost)
 ```
 
 ```{r geo data}
@@ -125,6 +129,9 @@ NIH_state_fips <- read.csv("data/state_and_county_fips_master.csv") %>%
   rename(FIPS = fips) %>%
   left_join(state_mult_2026)
 
+NIH_state_fips <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0"))
+
 states <- tibble(
   state_name = c(state.name, "District of Columbia"),
   state = c(state.abb, "DC")) %>%
@@ -157,15 +164,10 @@ start_date <- as_date("2023-10-01")
 end_date <- as_date("2024-09-30")
 
 dates <- data.frame(
-  date = seq(start_date, end_date, by = "days"),
-  day_fisc = seq(1, 366, by = 1)
+  week_start = seq(start_date, end_date, by = "weeks"),
+  week = seq(1, 53, by = 1)
 ) %>%
-  mutate(calendar_day = format(date, "%m-%d"),
-         week = ceiling(day_fisc/7)) %>%
-  group_by(week) %>%
-  mutate(week_start = calendar_day[which.min(day_fisc)],
-         week_end = calendar_day[which.max(day_fisc)]) %>%
-  select(-date)
+  mutate(week_start = format(week_start, "%m-%d"))
 
 budg_by_year <- budg_by_year %>%
   mutate(week_start = 
@@ -174,41 +176,61 @@ budg_by_year <- budg_by_year %>%
                            week_start - days(1), 
                            week_start), 
                    week_start),
-         week = format(week_start, "%m-%d"))
+         week_start = format(week_start, "%m-%d")) %>%
+  left_join(dates)
 
 # adding in IC filtering
 budg_by_year_sum_fips <- budg_by_year %>%
+  group_by(tractid, fisc_year, week_start, week, funding_ics) %>%
+  summarise(week_sum = sum(budg_per_week)) %>%
+  ungroup() %>%
+  complete(tractid, fisc_year, funding_ics, week = seq(1, 53, by = 1),
+           fill = list(week_sum = 0)) %>%
+  select(-week_start) %>%
+  left_join(dates) %>%
+  group_by(tractid, fisc_year, funding_ics) %>%
+  arrange(week) %>%
+  mutate(ytd = cumsum(week_sum)) %>%
+  group_by(tractid, week_start, week, funding_ics) %>%
+  summarise(avg_ytd = mean(ytd))
+
+budg_by_year_sum_fips %>%
+  group_by(week) %>%
+  summarize(avg_ytd = sum(avg_ytd)) %>%
+  ggplot(aes(x = week, y = avg_ytd)) +
+  geom_line() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     limits = c(0, NA))
+
+budg_by_year %>%
+  group_by(tractid, fisc_year, week_start, week, funding_ics) %>%
+  summarise(week_sum = sum(budg_per_week)) %>%
+  ungroup() %>%
+  complete(tractid, fisc_year, funding_ics, week = seq(1, 53, by = 1),
+           fill = list(week_sum = 0)) %>%
+  group_by(week, fisc_year) %>%
+  summarise(week_sum = sum(week_sum)) %>%
+  group_by(week) %>%
+  summarize(week_avg = mean(week_sum)) %>%
+  ggplot(aes(x = week, y = week_avg)) +
+  geom_line() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
+                     limits = c(0, NA))
+
+budg_by_year %>%
   mutate(day_fisc = time_length(year_start - fisc_start, unit = "days") + 1,
          week = ceiling(day_fisc/7)) %>%
   group_by(tractid, fisc_year, week, funding_ics) %>%
-  mutate() %>%
   summarise(week_sum = sum(budg_per_week)) %>%
   ungroup() %>%
   complete(tractid, funding_ics, fisc_year, week = seq(1, 53, by = 1),
            fill = list(week_sum = 0)) %>%
   group_by(tractid, fisc_year, funding_ics) %>%
   mutate(ytd = cumsum(week_sum)) %>%
-  group_by(tractid, week, funding_ics) %>%
-  summarise(avg_ytd = mean(ytd)) %>%
-  left_join(dates %>% select(-c(day_fisc, calendar_day)) %>% distinct())
-
-budg_by_year_sum_geoid <- budg_by_year %>%
-  mutate(day_fisc = time_length(year_start - fisc_start, unit = "days") + 1,
-         week = ceiling(day_fisc/7)) %>%
-  group_by(GEOID, fisc_year, week, funding_ics) %>%
-  summarise(week_sum = sum(budg_per_week)) %>%
-  ungroup() %>%
-  complete(GEOID, funding_ics, fisc_year, week = seq(1, 53, by = 1),
-           fill = list(week_sum = 0)) %>%
-  group_by(GEOID, fisc_year, funding_ics) %>%
-  mutate(ytd = cumsum(week_sum)) %>%
-  group_by(GEOID, week, funding_ics) %>%
-  summarise(avg_ytd = mean(ytd)) %>%
-  left_join(dates %>% select(-c(day_fisc, calendar_day)) %>% distinct())
-
-budg_by_year_sum_fips %>%
-  filter(tractid == "01073004502") %>%
-  ggplot(aes(x = week, y = avg_ytd, colour = funding_ics)) +
+  group_by(fisc_year, week) %>%
+  summarise(ytd = sum(ytd)) %>%
+  group_by(fisc_year) %>%
+  ggplot(aes(x = week, y = ytd, group = fisc_year, color = fisc_year)) +
   geom_line() +
   ylim(0, NA)
 ```
@@ -256,7 +278,7 @@ commuter_dist <- function(week_num){
   rename(tractid = DESTINATION) %>%
   right_join(data) %>%
   mutate(avg_ytd = avg_ytd * proportion) %>%
-  group_by(ORIGIN, week, funding_ics, week_start, week_end) %>%
+  group_by(ORIGIN, week, funding_ics, week_start) %>%
   summarize(avg_ytd = sum(avg_ytd)) %>%
   rename(FIPS = ORIGIN) %>%
   filter(!endsWith(FIPS, "000"))
@@ -277,7 +299,7 @@ budg_by_year_sum_comm_ic <- budg_by_year_sum_comm_ic %>%
   select(-c(econ_mult, job_val, state_FIPS, state_name))
 
 budg_by_year_sum_comm_tot <- budg_by_year_sum_comm_ic %>%
-  group_by(FIPS, name, state, week, week_start, week_end) %>%
+  group_by(FIPS, name, state, week, week_start) %>%
   summarize(avg_ytd = sum(avg_ytd),
             econ_ytd = sum(econ_ytd, na.rm = TRUE),
             jobs = sum(jobs, na.rm = TRUE)) %>%
@@ -293,7 +315,7 @@ msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
 
 # baseline funding data frames
 baseline_timevar <- budg_by_year_sum_comm_ic %>%
-  select(FIPS, name, state, funding_ics, week, week_start, week_end, avg_ytd, econ_ytd, jobs)
+  select(FIPS, name, state, funding_ics, week, week_start, avg_ytd, econ_ytd, jobs)
 
 write_csv(baseline_timevar, "output/baseline_timevar.csv")
 
@@ -316,7 +338,7 @@ city_pop <- read.csv("data/city_pop_2024.csv", skip = 1) %>%
 baseline_tot <- baseline_timevar %>%
   filter(week == 53) %>%
   ungroup() %>%
-  select(-c(week, week_start, week_end)) %>%
+  select(-c(week, week_start)) %>%
   rename(raw_funding = avg_ytd,
          econ_impact = econ_ytd) %>%
   left_join(county_pop %>% select(FIPS, pop_2024))
@@ -341,7 +363,7 @@ baseline_tot %>%
 budg_by_year_geoid <- budg_by_year_sum_fips %>% 
   filter(week == 53) %>% 
   distinct() %>%
-  select(-c(week, week_start, week_end))
+  select(-c(week, week_start))
 
 baseline_geoid <- cong_commute %>%
   rename(tractid = DESTINATION) %>%
