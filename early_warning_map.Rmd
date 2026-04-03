@@ -12,14 +12,11 @@ library(scales)
 baseline_timevar <- read.csv("output/baseline_timevar.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad = "0"))
 # NIH_grants <- read.csv("data/NIH_grants.csv")
-NIH_grants_2026 <- read.csv("data/NIH_grants.csv", check.names = FALSE) %>%
-  mutate(across(ends_with("Date"), ~ as_date(.x))) %>%
-  filter(`Budget Start Date` <= as_date("2026-09-30") & `Budget End Date` >= as_date("2025-10-01")) %>%
-  filter(Type %in% c(1, 5))
-NIH_grants_2025 <- read.csv("data/NIH_grants.csv", check.names = FALSE) %>%
-  mutate(across(ends_with("Date"), ~ as_date(.x))) %>%
-  filter(`Budget Start Date` <= as_date("2025-09-30") & `Budget End Date` >= as_date("2024-10-01")) %>%
-  filter(Type %in% c(1, 5))
+
+county_commute <- read.csv("data/county_commute_NIH.csv") %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
+  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
 ```
 
 ```{r generalized version}
@@ -45,40 +42,56 @@ commuter_dist <- function(budg_year_sum, week_num){
   timeline_year <- county_commute %>%
     rename(tractid = DESTINATION) %>%
     right_join(data) %>%
-    mutate(ytd = ytd * proportion) %>%
+    mutate(ytd = ytd * proportion,
+           ytd_fy = ytd_fy * proportion) %>%
     group_by(ORIGIN, week, funding_ics) %>%
-    summarize(ytd = sum(ytd)) %>%
+    summarize(ytd = sum(ytd, na.rm = TRUE),
+              ytd_fy = sum(ytd_fy, na.rm = TRUE)) %>%
     rename(FIPS = ORIGIN) %>%
     filter(!endsWith(FIPS, "000"))
   
   timeline_year
 }
 
+NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
+  mutate(tractid = str_pad(tractid, 11, pad = "0"),
+         FIPS = substr(tractid, 0, 5),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(FIPS)) %>%
+  select(org_name, tractid, FIPS, lat, lon) %>%
+  distinct()
 
-create_timeline <- function(year){
+start_date <- as_date("2023-10-01")
+end_date <- as_date("2024-09-30")
+
+dates <- data.frame(
+  week_start = seq(start_date, end_date, by = "weeks"),
+  week = seq(1, 53, by = 1)) %>%
+  mutate(week_start = format(week_start, "%m-%d"))
+
+timeline <- data.frame(
+  FIPS = character(),
+  funding_ics = character(),
+  fisc_year = factor(),
+  week = integer(),
+  ytd = numeric(),
+  ytd_fy = numeric()
+)
+
+for (year in 2020:2026){
   NIH_grants_year <- read.csv("data/NIH_grants.csv", check.names = FALSE) %>%
     mutate(across(ends_with("Date"), ~ as_date(.x))) %>%
     filter(`Budget Start Date` <= as_date(paste0(year, "-09-30")) & 
              `Budget End Date` >= fy_start(year)) %>%
     filter(Type %in% c(1, 5))
   
-  NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
-    mutate(tractid = str_pad(tractid, 11, pad = "0"),
-           FIPS = substr(tractid, 0, 5),
-           lat = round(lat, 5),
-           lon = round(lon, 5)) %>%
-    filter(lat!=0 & !is.na(FIPS)) %>%
-    select(org_name, tractid, FIPS, lat, lon) %>%
-    distinct()
-  
   budg_year <- NIH_grants_year %>%
     filter(`Funding IC(s)` %in% ic_list) %>%
     mutate(fisc_year = get_fisc(`Budget Start Date`)) %>%
     left_join(inf_by_year) %>%
     mutate(`Total Cost IC` = `Total Cost IC` * inf) %>%
-    rename(award_notice_date = `Award Notice Date`,
-           tot_cost = `Total Cost IC`,
-           cost_idc = `Indirect Cost IC`,
+    rename(tot_cost = `Total Cost IC`,
            proj_num = `Project Number`,
            funding_ics = `Funding IC(s)`,
            budg_start = `Budget Start Date`,
@@ -87,48 +100,37 @@ create_timeline <- function(year){
            lon = Longitude,
            org_name = `Organization Name`) %>%
     filter(!is.na(budg_start) & !is.na(budg_end)) %>%
-    select(org_name, lat, lon, proj_num, award_notice_date, fisc_year, tot_cost, cost_idc, funding_ics, budg_start, budg_end) %>%
-    rowwise() %>%  # split funding between years
-    mutate(fy_seq = list(seq(fisc_year, get_fisc(budg_end)))) %>%
-    unnest(fy_seq) %>%
-    mutate(fisc_year = fy_seq,
+    select(org_name, lat, lon, proj_num, fisc_year, tot_cost, funding_ics, budg_start, budg_end) %>%
+    mutate(fisc_year = year,
            fisc_start = fy_start(fisc_year),
            fisc_end = fy_start(fisc_year + 1) - days(1),
            year_start = pmax(budg_start, fisc_start),
            year_end = pmin(budg_end, fisc_end)) %>% 
-    filter(fisc_year == year) %>%
     rowwise() %>%
     mutate(week_start = list(
       seq(
         floor_date(
           year_start, 
           unit = "week", 
-          week_start = if_else(wday(fisc_start) == 1, 7, wday(fisc_start) - 1)), 
+          week_start = if_else(wday(fisc_start) == 1, 7, wday(fisc_start) - 1)), # correct offset week numbers
         year_end, 
-        by = "weeks")),
-      num_weeks = length(week_start)) %>%
+        by = "weeks"))) %>%
     unnest(week_start) %>%
-    select(-c(fy_seq, fisc_end)) %>%
+    select(-fisc_end) %>%
     mutate(week_end = week_start + days(6),
-           budg_length = time_length(difftime(budg_end, budg_start, units = "days"), "weeks") + 1/7,
+           budg_length = time_length(difftime(budg_end, budg_start, units = "days") + 1, "weeks"),
            # calculate proportion of week
            week_length = case_when(
-             week_end - year_start <= days(6) ~ as.numeric((pmin(year_end, week_end) - year_start + 1)/7),
-             year_end - week_start <= days(6) ~ as.numeric((year_end - pmax(year_start, week_start) + 1)/7),
+             # first week of budget
+             week_end - year_start <= days(6) ~ as.numeric((pmin(year_end, week_end) - year_start + 1)/7), 
+             # last week of budget
+             year_end - week_start <= days(6) ~ as.numeric((year_end - pmax(year_start, week_start) + 1)/7), 
              .default = 1),
            prop_award = week_length/budg_length,
            budg_per_week = prop_award * tot_cost) %>%
     mutate(lat = round(lat, 5),
            lon = round(lon, 5)) %>%
     left_join(NIH_tract_fips)
-  
-  start_date <- as_date("2023-10-01")
-  end_date <- as_date("2024-09-30")
-  
-  dates <- data.frame(
-    week_start = seq(start_date, end_date, by = "weeks"),
-    week = seq(1, 53, by = 1)) %>%
-    mutate(week_start = format(week_start, "%m-%d"))
   
   budg_year <- budg_year %>%
     mutate(week_start = 
@@ -159,30 +161,22 @@ create_timeline <- function(year){
     complete(tractid, funding_ics, week = seq(1, 53, by = 1),
              fill = list(week_sum = 0)) %>%
     group_by(tractid, funding_ics) %>%
-    mutate(ytd = cumsum(week_sum)) %>%
+    mutate(ytd_fy = cumsum(week_sum)) %>%
     select(-week_sum)
+  
+  budg_year_sum <- left_join(budg_year_sum, budg_year_sum_new)
   
   budg_year_sum_comm <- lapply(1:53, commuter_dist, budg_year_sum = budg_year_sum)
   budg_year_sum_comm <- do.call(rbind, budg_year_sum_comm) %>%
     mutate(fisc_year = year)
   
-  budg_year_sum_comm_new <- lapply(1:53, commuter_dist, budg_year_sum = budg_year_sum_new)
-  budg_year_sum_comm_new <- do.call(rbind, budg_year_sum_comm_new) %>%
-    mutate(fisc_year = year)
-  
-  return(list(all = budg_year_sum_comm, new = budg_year_sum_comm_new))
+ timeline <- rbind(timeline, budg_year_sum_comm)
 }
 
-#timeline_2026 <- create_timeline(2026)
-timeline_all_years <- lapply(2020:2026, function(x) create_timeline(x)$all)
-timeline_all_years_new <- lapply(2020:2026, function(x) create_timeline(x)$new)
-
-timeline_all_years <- do.call(rbind, timeline_all_years)
-timeline_all_years_new <- do.call(rbind, timeline_all_years_new)
 ```
 
 ```{r}
-timeline_all_years %>%
+timeline %>%
   filter(fisc_year != 2026 | week <= 24) %>%
   mutate(fisc_year = as_factor(fisc_year)) %>%
   group_by(fisc_year, week) %>%
@@ -194,12 +188,12 @@ timeline_all_years %>%
   theme_minimal() +
   labs(x = "Week", y = "Funding to date", color = "Fiscal year")
 
-timeline_all_years_new %>%
+timeline %>%
   filter(fisc_year != 2026 | week <= 24) %>%
   mutate(fisc_year = as_factor(fisc_year)) %>%
   group_by(fisc_year, week) %>%
-  summarise(ytd = sum(ytd)) %>%
-  ggplot(aes(x = week, y = ytd, group = fisc_year, color = fisc_year)) +
+  summarise(ytd_fy = sum(ytd_fy)) %>%
+  ggplot(aes(x = week, y = ytd_fy, group = fisc_year, color = fisc_year)) +
   geom_line() +
   xlim(0, 52) +
   scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
@@ -209,22 +203,22 @@ timeline_all_years_new %>%
 ```
 
 ```{r}
-baseline_timeline_new <- timeline_all_years_new %>%
+baseline_timeline <- timeline %>%
   filter(fisc_year %in% 2020:2024) %>%
   group_by(week, fisc_year) %>%
-  summarize(ytd = sum(ytd)) %>%
+  summarize(ytd_fy = sum(ytd_fy)) %>%
   group_by(week) %>%
-  summarize(ytd = mean(ytd)) %>%
-  mutate(fisc_year = as_factor("Baseline"))
-
-
-baseline_timeline %>%
-  rbind(timeline_all_years_new %>%
+  summarize(ytd_fy = mean(ytd_fy)) %>%
+  mutate(fisc_year = as_factor("Baseline")) %>%
+  rbind(timeline %>%
           filter(fisc_year == 2025 | (fisc_year == 2026 & week <= 24)) %>%
           mutate(fisc_year = as_factor(fisc_year)) %>%
           group_by(fisc_year, week) %>%
-          summarise(ytd = sum(ytd))) %>%
-  ggplot(aes(x = week, y = ytd, group = fisc_year, color = fisc_year)) +
+          summarise(ytd_fy = sum(ytd_fy)))
+
+
+baseline_timeline %>%
+  ggplot(aes(x = week, y = ytd_fy, group = fisc_year, color = fisc_year)) +
   geom_line() +
   xlim(0, 52) +
   scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
@@ -233,15 +227,18 @@ baseline_timeline %>%
 ```
 
 ```{r}
-baseline_fips <- timeline_all_years %>%
+baseline_fips <- timeline %>%
   filter(fisc_year %in% 2020:2024) %>%
   group_by(FIPS, week, funding_ics) %>%
-  summarize(ytd = mean(ytd, na.rm = T)) %>%
-  rename(ytd_baseline = ytd)
+  summarize(ytd = mean(ytd, na.rm = T),
+            ytd_fy = mean(ytd_fy, na.rm = T)) %>%
+  rename(ytd_baseline = ytd,
+         ytd_fy_baseline = ytd_fy)
 
-timeline_2025 <- timeline_all_years %>%
+timeline_2025 <- timeline %>%
   filter(fisc_year == 2025) %>%
-  rename(ytd_2025 = ytd) %>%
+  rename(ytd_2025 = ytd,
+         ytd_fy_2025 = ytd_fy) %>%
   select(-fisc_year)
 
 baseline_diff <- baseline_fips %>% 
@@ -251,7 +248,8 @@ baseline_diff <- baseline_fips %>%
     left_join(timeline_2025 %>% 
                 filter(week == 53) %>%
                 group_by(FIPS) %>%
-                summarise(ytd_2025 = sum(ytd_2025, na.rm = T))) %>%
+                summarise(ytd_2025 = sum(ytd_2025, na.rm = T),
+                          ytd_fy_2025 = sum(ytd_fy_2025, na.rm = T))) %>%
     mutate(funding_diff = ytd_2025 - ytd_baseline,
            pct_diff = funding_diff/ytd_baseline)
 
@@ -276,12 +274,12 @@ plot_usmap(
        fill = "Difference from \nbaseline")
 
 # same but for 2026
-timeline_2026 <- timeline_all_years %>%
+timeline_2026 <- timeline %>%
   filter(fisc_year == 2026) %>%
   rename(ytd_2026 = ytd) %>%
   select(-fisc_year)
 
-baseline_diff_march <- baseline_fips %>% 
+baseline_diff_2026 <- baseline_fips %>% 
     filter(week == 24) %>%
     group_by(FIPS) %>%
     summarise(ytd_baseline = sum(ytd_baseline, na.rm = T)) %>%
@@ -293,7 +291,7 @@ baseline_diff_march <- baseline_fips %>%
            pct_diff = funding_diff/ytd_baseline)
 
 plot_usmap(
-  data = baseline_diff_march %>% 
+  data = baseline_diff_2026 %>% 
     mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
     left_join(states %>% rename(state_FIPS = FIPS)) %>%
     group_by(state) %>%
@@ -314,507 +312,5 @@ plot_usmap(
 ```
 
 ```{r}
-write_csv(timeline_all_years, "output/funding_timeline_annual.csv")
-write_csv(timeline_all_years_new, "output/spending_timeline_annual.csv")
+write_csv(timeline, "output/funding_timeline_annual.csv")
 ```
-
-```{r}
-get_fisc <- function(date) {
-  if_else(month(date) >= 10, year(date) + 1L, year(date))
-}
-
-fy_start <- function(fy) {
-  as_date(paste0(fy - 1, "-10-01"))
-}
-
-ic_list <- c("NIAID", "NICHD", "NHLBI", "NCI", "OD", "NIDCR", "NINDS", "NIBIB", "NIGMS", 
-             "NEI", "NIDA", "NIDDK", "NHGRI", "NIAAA", "NCATS", "NIEHS", "NIA", "NIMH",
-             "NIAMS", "NLM", "NIMHD", "NIDCD", "NINR", "NCCIH", "FIC")
-
-inf_adj <- c(1.77, 1.35, 1.33, 1.32, 1.31, 1.28, 1.25, 1.23, 1.21, 1.16, 1.07, 1.03, 1, 0.97, 0.96)
-
-inf_by_year <- tibble(inf = inf_adj, fisc_year = c(2001, 2013:2026))
-
-budg_2026 <- NIH_grants_2026 %>%
-  filter(`Funding IC(s)` %in% ic_list) %>%
-  mutate(fisc_year = get_fisc(`Budget Start Date`)) %>%
-  left_join(inf_by_year) %>%
-  mutate(`Total Cost IC` = `Total Cost IC` * inf) %>%
-  rename(award_notice_date = `Award Notice Date`,
-         tot_cost = `Total Cost IC`,
-         cost_idc = `Indirect Cost IC`,
-         proj_num = `Project Number`,
-         funding_ics = `Funding IC(s)`,
-         budg_start = `Budget Start Date`,
-         budg_end = `Budget End Date`,
-         lat = Latitude,
-         lon = Longitude,
-         org_name = `Organization Name`) %>%
-  filter(!is.na(budg_start) & !is.na(budg_end)) %>%
-  select(org_name, lat, lon, proj_num, award_notice_date, fisc_year, tot_cost, cost_idc, funding_ics, budg_start, budg_end) %>%
-  rowwise() %>%  # split funding between years
-  mutate(fy_seq = list(seq(fisc_year, get_fisc(budg_end)))) %>%
-  unnest(fy_seq) %>%
-  mutate(fisc_year = fy_seq,
-         fisc_start = fy_start(fisc_year),
-         fisc_end = fy_start(fisc_year + 1) - days(1),
-         year_start = pmax(budg_start, fisc_start),
-         year_end = pmin(budg_end, fisc_end)) %>% 
-  filter(fisc_year == 2026) %>%
-  rowwise() %>%
-  mutate(week_start = list(
-    seq(
-      floor_date(
-        year_start, 
-        unit = "week", 
-        week_start = if_else(wday(fisc_start) == 1, 7, wday(fisc_start) - 1)), 
-      year_end, 
-      by = "weeks")),
-    num_weeks = length(week_start)) %>%
-  unnest(week_start) %>%
-  select(-c(fy_seq, fisc_end)) %>%
-  mutate(week_end = week_start + days(6),
-         budg_length = time_length(difftime(budg_end, budg_start, units = "days"), "weeks") + 1/7,
-         # calculate proportion of week
-         week_length = case_when(
-           week_end - year_start <= days(6) ~ as.numeric((pmin(year_end, week_end) - year_start + 1)/7),
-           year_end - week_start <= days(6) ~ as.numeric((year_end - pmax(year_start, week_start) + 1)/7),
-           .default = 1),
-         prop_award = week_length/budg_length,
-         budg_per_week = prop_award * tot_cost)
-
-
-budg_2025 <- NIH_grants_2025 %>%
-  filter(`Funding IC(s)` %in% ic_list) %>%
-  mutate(fisc_year = get_fisc(`Budget Start Date`)) %>%
-  left_join(inf_by_year) %>%
-  mutate(`Total Cost IC` = `Total Cost IC` * inf) %>%
-  rename(award_notice_date = `Award Notice Date`,
-         tot_cost = `Total Cost IC`,
-         cost_idc = `Indirect Cost IC`,
-         proj_num = `Project Number`,
-         funding_ics = `Funding IC(s)`,
-         budg_start = `Budget Start Date`,
-         budg_end = `Budget End Date`,
-         lat = Latitude,
-         lon = Longitude,
-         org_name = `Organization Name`) %>%
-  filter(!is.na(budg_start) & !is.na(budg_end)) %>%
-  select(org_name, lat, lon, proj_num, award_notice_date, fisc_year, tot_cost, cost_idc, funding_ics, budg_start, budg_end) %>%
-  rowwise() %>%  # split up fiscal years
-  mutate(fy_seq = list(seq(fisc_year, get_fisc(budg_end)))) %>%
-  unnest(fy_seq) %>%
-  mutate(fisc_year = fy_seq,
-         fisc_start = fy_start(fisc_year),
-         fisc_end = fy_start(fisc_year + 1) - days(1),
-         year_start = pmax(budg_start, fisc_start),
-         year_end = pmin(budg_end, fisc_end)) %>% 
-  filter(fisc_year == 2025) %>%
-  rowwise() %>% # split up weeks of fiscal year
-  mutate(week_start = list(
-    seq(
-      floor_date(
-        year_start, 
-        unit = "week", 
-        week_start = if_else(wday(fisc_start) == 1, 7, wday(fisc_start) - 1)),
-      year_end, 
-      by = "weeks")),
-    num_weeks = length(week_start)) %>%
-  unnest(week_start) %>%
-  select(-c(fy_seq, fisc_end)) %>%
-  mutate(week_end = week_start + days(6),
-         budg_length = time_length(difftime(budg_end, budg_start, units = "days"), "weeks") + 1/7,
-         # calculate proportion of week
-         week_length = case_when(
-           week_end - year_start <= days(6) ~ as.numeric((pmin(year_end, week_end) - year_start + 1)/7),
-           year_end - week_start <= days(6) ~ as.numeric((year_end - pmax(year_start, week_start) + 1)/7),
-           .default = 1),
-         prop_award = week_length/budg_length,
-         budg_per_week = prop_award * tot_cost)
-```
-
-```{r}
-NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
-  mutate(tractid = str_pad(tractid, 11, pad = "0"),
-         FIPS = substr(tractid, 0, 5),
-         lat = round(lat, 5),
-         lon = round(lon, 5)) %>%
-  filter(lat!=0 & !is.na(FIPS)) %>%
-  select(org_name, tractid, FIPS, lat, lon) %>%
-  distinct()
-
-# NIH_tract_fips_new <- read.csv("data/missing_tractid_2026_fixed.csv") %>%
-#   mutate(tractid = str_pad(GEOID, 11, pad = "0"),
-#          FIPS = substr(tractid, 0, 5),
-#          lat = round(lat, 5),
-#          lon = round(lon, 5)) %>%
-#   filter(lat!=0 & !is.na(FIPS)) %>%
-#   select(org_name, tractid, FIPS, lat, lon)
-# 
-# NIH_tract_fips <- rbind(NIH_tract_fips, NIH_tract_fips_new) %>%
-#   distinct()
-
-NIH_geoid <- read.csv("data/geoid_dictionary_July4.csv") %>%
-  select(-GEOID) %>%
-  mutate(GEOID = str_pad(New119Fips, 4, pad = "0"),
-         lat = round(lat, 5),
-         lon = round(lon, 5)) %>%
-  filter(lat!=0 & !is.na(GEOID)) %>%
-  rename(name_geoid = NAMELSAD) %>%
-  select(GEOID, name_geoid, lat, lon) %>%
-  distinct()
-
-# NIH_geoid_new <- read.csv("data/missing_geoid_2026_fixed.csv") %>%
-#   mutate(GEOID = str_pad(GEOID, 4, pad = "0"),
-#          lat = round(lat, 5),
-#          lon = round(lon, 5)) %>%
-#   filter(lat!=0 & !is.na(GEOID)) %>%
-#   rename(name_geoid = NAMELSAD) %>%
-#   select(GEOID, name_geoid, lat, lon)
-# 
-# NIH_geoid <- rbind(NIH_geoid, NIH_geoid_new) %>%
-#   distinct()
-```
-
-```{r}
-budg_2026 <- budg_2026 %>%
-  mutate(lat = round(lat, 5),
-         lon = round(lon, 5)) %>%
-  left_join(NIH_tract_fips) %>%
-  left_join(NIH_geoid)
-
-budg_2025 <- budg_2025 %>%
-  mutate(lat = round(lat, 5),
-         lon = round(lon, 5)) %>%
-  left_join(NIH_tract_fips) %>%
-  left_join(NIH_geoid)
-
-# Will need to incorporate these too:
-# budg_2026 %>%
-#   filter(is.na(GEOID)) %>%
-#   select(org_name, lat, lon) %>%
-#   rbind(read.csv("data/missing_geoid.csv")) %>%
-#   distinct() %>%
-#   write_csv("data/missing_geoid.csv")
-# 
-# budg_2026 %>%
-#   filter(is.na(tractid)) %>%
-#   select(org_name, lat, lon) %>%
-#   distinct() %>%
-#   write_csv("data/missing_tractid3.csv")
-
-start_date <- as_date("2023-10-01")
-end_date <- as_date("2024-09-30")
-
-dates <- data.frame(
-  week_start = seq(start_date, end_date, by = "weeks"),
-  week = seq(1, 53, by = 1)
-) %>%
-  mutate(week_start = format(week_start, "%m-%d"))
-
-budg_2026 <- budg_2026 %>%
-  mutate(week_start = 
-           if_else(fisc_year %% 4 != 0, 
-                   if_else(month(week_start) >= 3 & month(week_start) <= 9, 
-                           week_start - days(1), 
-                           week_start), 
-                   week_start),
-         week_start = format(week_start, "%m-%d")) %>%
-  left_join(dates)
-
-budg_2026_sum <- budg_2026 %>%
-  group_by(tractid, week, funding_ics) %>%
-  summarise(week_sum = sum(budg_per_week, na.rm = TRUE)) %>%
-  ungroup() %>%
-  complete(tractid, funding_ics, week = seq(1, 53, by = 1),
-           fill = list(week_sum = 0)) %>%
-  group_by(tractid, funding_ics) %>%
-  mutate(ytd_2026 = cumsum(week_sum)) %>%
-  select(-week_sum)
-
-
-budg_2025 <- budg_2025 %>%
-  mutate(week_start = 
-           if_else(fisc_year %% 4 != 0, 
-                   if_else(month(week_start) >= 3 & month(week_start) <= 9, 
-                           week_start - days(1), 
-                           week_start), 
-                   week_start),
-         week_start = format(week_start, "%m-%d")) %>%
-  left_join(dates)
-
-budg_2025_sum <- budg_2025 %>%
-  group_by(tractid, week, funding_ics) %>%
-  summarise(week_sum = sum(budg_per_week, na.rm = TRUE)) %>%
-  ungroup() %>%
-  complete(tractid, funding_ics, week = seq(1, 53, by = 1),
-           fill = list(week_sum = 0)) %>%
-  group_by(tractid, funding_ics) %>%
-  mutate(ytd_2025 = cumsum(week_sum)) %>%
-  select(-week_sum)
-
-
-budg_2025_sum_new <- budg_2025 %>%
-  filter(budg_start >= fy_start(2025)) %>%
-  group_by(tractid, week, funding_ics) %>%
-  summarise(week_sum = sum(budg_per_week, na.rm = TRUE)) %>%
-  ungroup() %>%
-  complete(tractid, funding_ics, week = seq(1, 53, by = 1),
-           fill = list(week_sum = 0)) %>%
-  group_by(tractid, funding_ics) %>%
-  mutate(ytd_2025 = cumsum(week_sum)) %>%
-  select(-week_sum)
-```
-
-```{r}
-county_commute <- read.csv("data/county_commute_NIH.csv") %>%
-  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
-  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
-         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
-
-
-commuter_dist_2026 <- function(week_num){
-  data <- budg_2026_sum %>% filter(week == week_num)
-  
-  baseline_2026 <- county_commute %>%
-  rename(tractid = DESTINATION) %>%
-  right_join(data) %>%
-  mutate(ytd_2026 = ytd_2026 * proportion) %>%
-  group_by(ORIGIN, week, funding_ics) %>%
-  summarize(ytd_2026 = sum(ytd_2026)) %>%
-  rename(FIPS = ORIGIN) %>%
-  filter(!endsWith(FIPS, "000"))
-  
-  baseline_2026
-}
-
-budg_2026_sum_comm <- lapply(1:53, commuter_dist_2026)
-budg_2026_sum_comm <- do.call(rbind, budg_2026_sum_comm)
-
-baseline_timevar_sum <- baseline_timevar %>%
-  filter(funding_ics == "NIH_tot") %>%
-  group_by(week) %>%
-  summarize(avg_ytd = sum(avg_ytd))
-
-budg_2026_sum_comm %>%
-  group_by(week) %>%
-  summarize(ytd_2026 = sum(ytd_2026)) %>%
-  #filter(FIPS == "01073") %>%
-  ggplot() +
-  geom_line(aes(x = week, y = ytd_2026), color = "red") +
-  geom_line(aes(x = baseline_timevar_sum$week, y = baseline_timevar_sum$avg_ytd), color = "blue") +
-  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
-                     limits = c(0, NA)) +
-  labs(y = "Funding to date") +
-  theme_minimal() +
-  xlim(0, 24)
-
-```
-
-```{r 2025 timeline}
-commuter_dist_2025 <- function(week_num){
-  data <- budg_2025_sum %>% filter(week == week_num)
-  
-  baseline_2025 <- county_commute %>%
-  rename(tractid = DESTINATION) %>%
-  right_join(data) %>%
-  mutate(ytd_2025 = ytd_2025 * proportion) %>%
-  group_by(ORIGIN, week, funding_ics) %>%
-  summarize(ytd_2025 = sum(ytd_2025)) %>%
-  rename(FIPS = ORIGIN) %>%
-  filter(!endsWith(FIPS, "000"))
-  
-  baseline_2025
-}
-
-budg_2025_sum_comm <- lapply(1:53, commuter_dist_2025)
-budg_2025_sum_comm <- do.call(rbind, budg_2025_sum_comm)
-
-budg_2025_sum_comm %>%
-  group_by(week) %>%
-  summarize(ytd_2025 = sum(ytd_2025)) %>%
-  #filter(FIPS == "01073") %>%
-  ggplot() +
-  geom_line(aes(x = week, y = ytd_2025), color = "red") +
-  #geom_line(aes(x = baseline_timevar_sum$week, y = baseline_timevar_sum$avg_ytd), color = "blue") +
-  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
-                     limits = c(0, NA)) +
-  labs(y = "Funding to date") +
-  theme_minimal() +
-  xlim(0, 52)
-```
-
-```{r 2025 timeline new}
-commuter_dist_2025_new <- function(week_num){
-  data <- budg_2025_sum_new %>% filter(week == week_num)
-  
-  baseline_2025 <- county_commute %>%
-  rename(tractid = DESTINATION) %>%
-  right_join(data) %>%
-  mutate(ytd_2025 = ytd_2025 * proportion) %>%
-  group_by(ORIGIN, week, funding_ics) %>%
-  summarize(ytd_2025 = sum(ytd_2025)) %>%
-  rename(FIPS = ORIGIN) %>%
-  filter(!endsWith(FIPS, "000"))
-  
-  baseline_2025
-}
-
-budg_2025_sum_comm_new <- lapply(1:53, commuter_dist_2025_new)
-budg_2025_sum_comm_new <- do.call(rbind, budg_2025_sum_comm_new)
-
-budg_2025_sum_comm_new %>%
-  group_by(week) %>%
-  summarize(ytd_2025 = sum(ytd_2025)) %>%
-  #filter(FIPS == "01073") %>%
-  ggplot() +
-  geom_line(aes(x = week, y = ytd_2025), color = "red") +
-  #geom_line(aes(x = baseline_timevar_sum$week, y = baseline_timevar_sum$avg_ytd), color = "blue") +
-  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale()),
-                     limits = c(0, NA)) +
-  labs(y = "Funding to date") +
-  theme_minimal() +
-  xlim(0, 52)
-```
-
-```{r}
-week_max <- as.numeric(ceiling(difftime(today(), fy_start(get_fisc(today())), units = "weeks")))
-
-budg_2026_tot <- budg_2026_sum_comm %>%
-  group_by(FIPS, week) %>%
-  summarise(ytd_2026 = sum(ytd_2026, na.rm = T)) %>%
-  mutate(funding_ics = "NIH_tot")
-
-budg_2026_sum_comm <- rbind(budg_2026_sum_comm, budg_2026_tot)
-
-budg_2026_diff <- budg_2026_sum_comm %>%
-  left_join(baseline_timevar) %>%
-  mutate(funding_diff = ytd_2026 - avg_ytd,
-         pct_diff = funding_diff/avg_ytd)
-
-budg_2026_diff %>%
-  filter(FIPS == "27053") %>%
-  group_by(week_start, week) %>%
-  summarise(funding_diff = sum(funding_diff),
-            avg_ytd = sum(avg_ytd)) %>%
-  mutate(pct_diff = funding_diff/avg_ytd) %>%
-  ggplot(aes(x = week, y = pct_diff)) +
-  geom_line() +
-  theme_minimal() + 
-  scale_y_continuous(labels = scales::label_percent())
-
-plot_usmap(
-  data = budg_2026_sum_comm %>% rename(fips = FIPS) %>% filter(funding_ics == "NIH_tot" & week == 20),
-  values = "ytd_2026",
-  regions = "counties",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale()))
-
-plot_usmap(
-  data = baseline_timevar %>% rename(fips = FIPS) %>% filter(funding_ics == "NIH_tot" & week == 20),
-  values = "avg_ytd",
-  regions = "counties",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale()))
-
-
-
-
-weeks <- dates %>% select(week, week_start) %>% distinct()
-
-log10_sign <- trans_new(
-  "log10_sign",
-  transform = function(x) sign(x) * log10(abs(x) + 1),
-  inverse = function(x) sign(x) * (10^abs(x) - 1))
-
-budg_2026_diff %>%
-  select(FIPS, name, state, funding_ics, week, week_start, ytd_2026, avg_ytd, funding_diff) %>%
-  rename(ytd_baseline = avg_ytd,
-         ytd_diff = funding_diff) %>%
-  write_csv("output/difference_county_3.13.csv")
-
-# county map
-plot_usmap(
-  data = budg_2026_diff %>% rename(fips = FIPS) %>% filter(funding_ics == "NIH_tot" & week == week_max),
-  values = "funding_diff",
-  regions = "counties",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_gradient2(trans = log10_sign,
-                       low = muted("red"),
-                       high = muted("green"),
-                       breaks = c(-1e6,-1e3,0,1e3,1e6),
-                       labels = label_currency(scale_cut = cut_short_scale(), prefix = "$", accuracy = 1)) +
-  labs(title = paste0("Week ", week_max, " (", weeks$week_start[week = week_max], ")"),
-       fill = "Difference from \nbaseline")
-
-# county map percent diff
-plot_usmap(
-  data = budg_2026_diff %>% rename(fips = FIPS) %>% filter(funding_ics == "NIH_tot" & week == week_max),
-  values = "pct_diff",
-  regions = "counties",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_gradient2(low = muted("red"),
-                       high = muted("green")) +
-  labs(title = paste0("Week ", week_max, " (", weeks$week_start[week = week_max], ")"),
-       fill = "Percent difference from \nbaseline")
-
-# state map pct diff
-plot_usmap(
-  data = budg_2026_diff %>% 
-    filter(funding_ics == "NIH_tot" & week == 24) %>%
-    group_by(state, week, week_start) %>%
-    summarize(funding_diff = sum(funding_diff, na.rm = T),
-              avg_ytd = sum(avg_ytd)) %>%
-    mutate(pct_diff = funding_diff/avg_ytd),
-  values = "pct_diff",
-  regions = "states",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_gradient2(low = muted("red"),
-                       high = muted("green"),
-                       labels = label_percent()) +
-  labs(title = paste0("Week ", week_max, " (", weeks$week_start[week = week_max], ")"),
-       fill = "Difference from \nbaseline")
-  
-# state map
-plot_usmap(
-  data = budg_2026_diff %>% 
-    filter(funding_ics == "NIH_tot" & week == 24) %>%
-    group_by(state, week, week_start) %>%
-    summarize(funding_diff = sum(funding_diff, na.rm = T)),
-  values = "funding_diff",
-  regions = "states",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_gradient2(trans = log10_sign,
-                       low = muted("red"),
-                       high = muted("green"),
-                       breaks = c(-1e8, -1e6, -1e3, 0, 1e3, 1e6, 1e8),
-                       labels = label_currency(scale_cut = cut_short_scale(), prefix = "$", accuracy = 1)) +
-  labs(title = paste0("Week ", week_max, " (", weeks$week_start[week = week_max], ")"),
-       fill = "Difference from \nbaseline")
-
-
-budg_2026_diff %>%
-  filter(FIPS == "27053" & funding_ics == "NIH_tot") %>%
-  # group_by(week) %>%
-  # summarise(funding_diff = sum(funding_diff)) %>%
-  ggplot(aes(x = week, y = funding_diff)) +
-  geom_line() +
-  theme_minimal() +
-  xlim(0, week_max) +
-  ylim(NA, 0)
-```
-
