@@ -79,7 +79,7 @@ div_incl <- c("OIA", "OISE")
 nsf_grants %<>% mutate(account_name = ifelse(dir_abbr == "O/D", div_abbr, dir_abbr)) %>%
   filter(account_name %in% c(dir_incl, div_incl))
 ```
-%>% 
+
 
 ```{r budget-cuts}
 # https://www.usinflationcalculator.com/ 2020-2027 dollars inflation adjusted to 2026 using: https://www.usinflationcalculator.com/ and assumption of 2% inflation from 2026 to 2027 
@@ -88,9 +88,9 @@ inf_by_year <- tibble(inf = inf_adj, fund_oblg_fiscal_yr = c(2020:2027))
 # df of historic funding in FY2020-2025, proposed for FY2027 via 
 # appropriation tabs (FY2020-FY2024) https://www.nsf.gov/about/budget/all and table (FY2025 and FY2027):  # https://nsf-gov-resources.nsf.gov/files/FY-2027-NSF-Budget-Request-to-Congress.pdf
 # unit is dollars in millions
-budg_tab <- read.csv("data/nsf_budg_table.csv") %>%
+budg_tab <- read.csv("nsf_data/nsf_budg_table.csv") %>%
             filter(!is.na(X)) %>%
-            mutate(across(X2020_budg:X2027_budg, ~as.numeric(.x))) 
+            mutate(across(X2020_budg:X2027_budg, ~as.numeric(.x)))
 
 budg_tab %<>%
   rowwise() %>%
@@ -111,7 +111,7 @@ nsf_grants %<>%
   filter(fund_oblg_fiscal_yr != 2025)
 
 nsf_grants <- bind_rows(nsf_grants %>% mutate(cut_amt = prop_cut * adj_fund))
-
+nsf_grants_inst <- nsf_grants
 
 ```
 
@@ -125,7 +125,7 @@ geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
          tractid = str_pad(TractFIPS_Str, 11, pad="0"),
          inst_street_address = inst_stree) %>%
   filter(! StateName %in% c("American Samoa", "Guam", "Commonwealth of the Northern Mariana Islands", "Puerto Rico")) %>%
-  select(tractid, inst_stree, inst_name) %>%
+  select(tractid, inst_street_address, inst_name) %>%
   distinct()
 
 nsf_grants %<>% left_join(geo_dict) %>%
@@ -164,11 +164,11 @@ commute <- fread("data/county_commute_NIH.csv") %>%
 
 #summarize NIH data by FIPS code
 NSF_budget_cuts_tract <- expand.grid(tractid = unique(nsf_grants$tractid),
-                                    account_name = unique(nsf_grants$account_name),
-                                    fund_oblg_fiscal_yr = unique(nsf_grants$fund_oblg_fiscal_yr)) %>%
+                                     account_name = unique(nsf_grants$account_name),
+                                     fund_oblg_fiscal_yr = unique(nsf_grants$fund_oblg_fiscal_yr)) %>%
   left_join(nsf_grants) %>%
   group_by(tractid, account_name) %>%
-  summarise(budg_loss = mean(budg_loss, na.rm=TRUE)) 
+  summarise(budg_loss = mean(budg_loss, na.rm=TRUE))
 
 
 #combine commuter data with NSF data
@@ -206,8 +206,10 @@ msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
 city_commute_NSF_sum <- county_commute_NSF %>% 
                         left_join(msa) %>%
                         mutate(CBSA_FIPS = ifelse(is.na(CBSA_FIPS), FIPS, CBSA_FIPS),
-                               CBSA_NAME = ifelse(is.na(CBSA_FIPS), CBSA_NAME, paste(name, state, sep = ", "))) %>%
-                        select(CBSA_FIPS, CBSA_NAME, state_name, state, ends_with("cuts"))
+                               CBSA_NAME = ifelse(is.na(CBSA_NAME), paste(name, state, sep = ", "), CBSA_NAME)) %>%
+                        select(CBSA_FIPS, CBSA_NAME, state_name, state, ends_with("cuts")) %>%
+  group_by(CBSA_FIPS, CBSA_NAME) %>%
+  summarize(across(ends_with("cuts"), sum, na.rm = TRUE))
 
 write.csv(city_commute_NSF_sum, "output/NSF_budget27_city.csv", row.names=FALSE)
 ```
@@ -215,7 +217,7 @@ write.csv(city_commute_NSF_sum, "output/NSF_budget27_city.csv", row.names=FALSE)
 # Congressional Districts
 
 ```{r Prep District Commuter Flows}
-cong_commute <- fread("data/home_119_workTR.csv") %>%
+cong_commute <- fread("https://osf.io/m5kb6/download") %>%
   mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
          Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
   rename(commuters = commutes) %>%
@@ -265,7 +267,8 @@ cong_commute_NSF <- merge(cong_commute, NSF_budget_cuts_tract, by.x = "DESTINATI
   left_join(NSF_state_dict %>% 
               select(state, state_name, state_FIPS) %>% 
               distinct()) %>%
-  mutate(across(starts_with("budg"), ~ .x * 2.25, .names = "econ_{.col}"))
+  mutate(across(starts_with("budg"), ~ .x * 2.25, .names = "econ_{.col}")) %>%
+  filter(GEOID != "0")
 
 
 print(nrow(cong_commute_NSF))
@@ -277,8 +280,7 @@ write.csv(cong_commute_NSF, "output/NSF_budget27_cong.csv", row.names=F)
 ```{r state summaries}
 cong_commute_NSF %>%
   group_by(state, state_name) %>%
-  summarise(across(ends_with(c("cuts")), ~ sum(.x, na.rm = TRUE))) %>%
-  filter(!is.na(state_name))  -> state_cong
+  summarise(across(ends_with(c("cuts")), ~ sum(.x, na.rm = TRUE))) -> state_cong
 
 print(nrow(state_cong))
 
@@ -296,14 +298,11 @@ filter(NSF_budg_state, econ_budg_NSF_cuts>10^8)
 cong_commute_NSF %>% filter(econ_budg_NSF_cuts > 10^7)
 cong_commute_NSF %>% filter(econ_budg_NSF_cuts > 0)
 
-mutate(NSF_budg_cong, sum_budg = sum_budg*2.25) %>%
-  filter(sum_budg > 10000000)
-
 ```
 
 
 ```{r topline state stats}
-nsf_grants %>%
+nsf_grants_inst %>%
   group_by(inst_state_name, inst_name, fund_oblg_fiscal_yr) %>%
   summarize(annual_cut = sum(cut_amt)) %>%
   group_by(inst_state_name, inst_name) %>%
@@ -313,24 +312,24 @@ nsf_grants %>%
   mutate(econ_loss = annual_loss*2.25) %>%
   mutate(annual_loss = round(annual_loss/1000000, digits=1),
          econ_loss = round(econ_loss/1000000, digits=1)) %>%
-  filter(inst_state_name %in% state.name) %>%
+  filter(inst_state_name %in% c(state.name, "District of Columbia")) %>%
   rename(State = inst_state_name,
          `Research Org` = inst_name,
          `Projected White House Budget Reduction ($M)` = annual_loss,
          `Projected Economic Loss ($M)` = econ_loss) %>%
-  write.csv("nsf_output/top2inst_state.csv", row.names=FALSE)  
+  write.csv("output/top2inst_state.csv", row.names=FALSE)  
 
-nsf_grants %>%
+nsf_grants_inst %>%
   group_by(inst_state_name, fund_oblg_fiscal_yr) %>%
   summarize(annual_cut = sum(cut_amt)) %>%
   group_by(inst_state_name) %>%
   summarize(annual_loss = mean(annual_cut)) %>%
-  filter(inst_state_name %in% state.name) %>%
+  filter(inst_state_name %in% c(state.name, "District of Columbia")) %>%
   mutate(econ_loss = annual_loss*2.25) %>%
   mutate(annual_loss = round(annual_loss/1000000, digits=1),
          econ_loss = round(econ_loss/1000000, digits=1)) %>%
   rename(State = inst_state_name,
          `Projected White House Budget Reduction ($M)` = annual_loss,
          `Projected Economic Loss ($M)` = econ_loss) %>%
-  write.csv("nsf_output/static_state_loss.csv", row.names=FALSE)  
+  write.csv("output/static_state_loss.csv", row.names=FALSE)  
 ```
