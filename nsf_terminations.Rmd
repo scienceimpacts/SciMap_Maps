@@ -1,0 +1,304 @@
+---
+title: "nsf_terminations"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if (!require('rstudioapi')) BiocManager::install("rstudioapi");library(rstudioapi)
+
+# change working directory to folder with script
+setwd(dirname(rstudioapi::getSourceEditorContext()$path)) 
+
+library(tidyverse)
+library(readxl)
+library(sf)
+library(data.table)
+library(magrittr)
+
+options(scipen=999)
+```
+
+```{r}
+nsf_terminations <- read.csv("data/nsf_terminations.csv") %>%
+  mutate(across(ends_with("date"), ~ as_date(.x)))
+
+# read in grant data
+nsf_grants <- read.csv("nsf_data/nsf_grants.csv")
+
+orgs <- nsf_grants %>% 
+  distinct(inst_name, inst_city_name, inst_state_name, inst_street_address) %>% 
+  rename(org_name = inst_name, org_city = inst_city_name, state_name = inst_state_name) %>% 
+  left_join(states %>% rename(org_state = state)) %>% 
+  mutate(org_name = if_else(org_name == "Carnegie-Mellon University", "Carnegie Mellon University", org_name),
+         org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name),
+         inst_street_address = if_else(org_name == "University of Miami", "1251 MEMORIAL DR", inst_street_address)) %>%
+  select(-c(state_name, FIPS)) %>%
+  distinct()
+
+missing_orgs_fixed <- read.csv("data/missing_orgs_fixed.csv") %>%
+  rename(inst_street_address = matched_address,
+         tractid = GEOID) %>%
+  mutate(tractid = str_pad(tractid, 11, pad = "0"),
+         state_FIPS = str_sub(tractid, 1, 2)) %>%
+  left_join(states %>% mutate(state_FIPS = FIPS)) %>%
+  select(tractid, names(orgs))
+
+orgs <- rbind(orgs, missing_orgs_fixed %>% select(-tractid)) %>%
+  mutate(org_city = str_to_upper(org_city))
+
+nsf_terminations <- nsf_terminations %>%
+  mutate(org_name = if_else(org_name == "OHIO STATE UNIVERSITY, THE", "Ohio State University", org_name),
+         org_name = if_else(org_name == "University of Colorado Boulder", "University of Colorado at Boulder", org_name),
+         org_city = if_else(org_name == "Knology Ltd.", "NEW YORK", org_city),
+         org_state = if_else(org_name == "Knology Ltd.", "New York", org_state),
+         org_city = if_else(org_name == "University of Colorado at Boulder", "BOULDER", org_city),
+         org_city = if_else(org_name == "Arizona State University", "TEMPE", org_city),
+         org_city = str_to_upper(org_city)) %>%
+  left_join(orgs) %>% 
+  filter(org_state %in% c(state.abb, "DC"))
+
+#directorates to include
+dir_incl <- c("BIO", "CSE", "EDU", "ENG", "GEO", "MPS", "SBE", "TIP")
+
+# divisions within office of director to include
+div_incl <- c("OIA", "OISE")
+
+# helper column to put listed account categories together (O/D divisions are split out)
+nsf_terminations %<>% mutate(account_name = ifelse(dir == "O/D", div, dir)) %>%
+  filter(account_name %in% c(dir_incl, div_incl))
+
+# get tracts
+geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
+  distinct() %>%
+  mutate(FIPS = str_pad(CountyFIPS_str, 5, pad = "0"),
+         GEOID = str_pad(CongFIPS, 4, pad="0"),
+         tractid = str_pad(TractFIPS_Str, 11, pad="0"),
+         inst_street_address = inst_stree) %>%
+  filter(! StateName %in% c("American Samoa", "Guam", "Commonwealth of the Northern Mariana Islands", "Puerto Rico")) %>%
+  select(tractid, inst_street_address, inst_name) %>%
+  distinct() %>%
+  rename(org_name = inst_name) %>% 
+  mutate(org_name = if_else(org_name == "Carnegie-Mellon University", "Carnegie Mellon University", org_name),
+         org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name)) %>%
+  rbind(missing_orgs_fixed %>% select(tractid, inst_street_address, org_name))
+
+nsf_terminations %<>% left_join(geo_dict)
+```
+
+```{r}
+county_commute <- read.csv("data/county_commute_NIH.csv") %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
+  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+
+cong_commute <- fread("https://osf.io/m5kb6/download") %>%
+  mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
+         Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
+  rename(commuters = commutes) %>%
+  filter(!is.na(Cong_ORIGIN))
+
+cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
+  select(GEOID, STATE_NAME, NAME, PARTY) %>%
+  rename(state = STATE_NAME,
+         pol_party = PARTY,
+         rep_name = NAME)
+
+# get total workers per cong district
+cong_commute_sum <- cong_commute %>%
+  group_by(Cong_DESTINATION) %>%
+  summarise(total_workers = sum(commuters, na.rm=TRUE))
+
+# merge in total workers
+cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
+  select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
+  rename(DESTINATION = Cong_DESTINATION,
+         ORIGIN = Cong_ORIGIN)
+
+# calculate proportion of workers who work in district X who live in district Y
+cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+```
+
+```{r}
+start_date <- as_date("2025-02-28")
+
+nsf_terminations %<>%
+  filter(termination_date >= start_date) %>%
+  pivot_longer(c(termination_date, reinstatement_date), names_to = "date_status", values_to = "date") %>% 
+  filter(!is.na(date)) %>%
+  mutate(total_loss = estimated_budget - estimated_outlays,
+         total_loss = if_else(total_loss < 0, 0, total_loss), 
+         total_loss = if_else(date_status == "reinstatement_date", -total_loss, total_loss), # total amount lost at the moment
+         total_impacted = if_else(total_loss < 0, 0, total_loss), # total amount ever impacted
+         week = floor_date(date, 
+                           unit = "week", 
+                           week_start = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))) 
+
+current_week <- floor_date(today(), 
+                           unit = "week", 
+                           week_start = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))
+
+# organization level
+terminations_org_nsf <- nsf_terminations %>%
+  complete(org_name, week = seq(start_date, today(), by = "weeks"),
+           fill = list(total_loss = 0, total_impacted = 0)) %>%
+  select(-c(org_city, org_state)) %>%
+  left_join(nsf_terminations %>% distinct(org_name, org_city, org_state)) %>%
+  group_by(org_name, org_city, org_state, week) %>%
+  summarize(across(c("total_loss", "total_impacted"), ~ sum(.x))) %>%
+  group_by(org_name, org_city, org_state) %>%
+  arrange(week) %>%
+  mutate(across(c("total_loss", "total_impacted"), ~ cumsum(.x))) %>%
+  rename(current_loss = total_loss,
+         overall_loss = total_impacted) %>%
+  left_join(states %>% rename(org_state = state)) %>%
+  mutate(current_econ_loss = current_loss * econ_mult,
+         current_job_loss = current_loss * job_val,
+         overall_econ_loss = overall_loss * econ_mult,
+         overall_job_loss = overall_loss * job_val) %>%
+  select(org_name, org_city, org_state, starts_with(c("week", "current", "overall")))
+
+write_csv(terminations_org_nsf, "output/terminations_org_nsf.csv")
+```
+
+```{r}
+terminations_sum_nsf <- nsf_terminations %>%
+  group_by(tractid, week) %>%
+  summarise(week_loss = sum(total_loss),
+            week_impacted = sum(total_impacted))
+
+# tract to county commutes
+terminations_sum_comm_nsf <- county_commute %>%
+  rename(tractid = DESTINATION) %>%
+  right_join(terminations_sum_nsf) %>%
+  mutate(week_loss = week_loss * proportion,
+         week_impacted = week_impacted * proportion) %>%
+  group_by(ORIGIN, week) %>%
+  summarize(week_loss = sum(week_loss),
+            week_impacted = sum(week_impacted)) %>%
+  rename(FIPS = ORIGIN) %>%
+  filter(!endsWith(FIPS, "000")) %>%
+  ungroup() %>%
+  complete(FIPS, week = seq(start_date, today(), by = "weeks"),
+           fill = list(week_loss = 0, week_impacted = 0)) %>%
+  group_by(FIPS) %>%
+  arrange(week) %>%
+  mutate(current_loss = cumsum(week_loss),
+         overall_loss = cumsum(week_impacted))
+
+# add in state multipliers
+terminations_sum_comm_nsf <- terminations_sum_comm_nsf %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  mutate(current_econ_loss = current_loss * econ_mult,
+         current_job_loss = current_loss * job_val,
+         overall_econ_loss = overall_loss * econ_mult,
+         overall_job_loss = overall_loss * job_val) %>%
+  select(FIPS, week, starts_with(c("current", "overall")))
+
+# county level
+write_csv(terminations_sum_comm_nsf, "output/terminations_county_nsf.csv")
+```
+
+```{r}
+msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
+  select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
+  rename(FIPS = CountyFIPS) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
+         CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
+
+fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0")) %>%
+  select(FIPS, name)
+
+# city level
+terminations_sum_comm_nsf %>%
+  left_join(msa) %>%
+  left_join(fips_names) %>%
+  mutate(CBSA_FIPS = ifelse(is.na(CBSA_FIPS), FIPS, CBSA_FIPS)) %>%
+  mutate(CBSA_NAME = ifelse(is.na(CBSA_NAME), name, CBSA_NAME)) %>%
+  group_by(CBSA_FIPS, CBSA_NAME, week) %>%
+  summarise(across(ends_with("loss"), ~ sum(.x))) %>%
+  write_csv("output/terminations_city_nsf.csv")
+```
+
+```{r}
+# tract to district commutes
+terminations_sum_cong_nsf <- cong_commute %>%
+  rename(tractid = DESTINATION) %>%
+  right_join(terminations_sum_nsf) %>%
+  mutate(week_loss = week_loss * proportion,
+         week_impacted = week_impacted * proportion) %>%
+  group_by(ORIGIN, week) %>%
+  summarize(week_loss = sum(week_loss),
+            week_impacted = sum(week_impacted)) %>%
+  rename(GEOID = ORIGIN) %>%
+  filter(GEOID != "0000") %>%
+  ungroup() %>%
+  complete(GEOID, week = seq(start_date, today(), by = "weeks"),
+           fill = list(week_loss = 0, week_impacted = 0)) %>%
+  group_by(GEOID) %>%
+  arrange(week) %>%
+  mutate(current_loss = cumsum(week_loss),
+         overall_loss = cumsum(week_impacted))
+
+# add in state multipliers
+terminations_sum_cong_nsf <- terminations_sum_cong_nsf %>%
+  mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
+  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  mutate(current_econ_loss = current_loss * econ_mult,
+         current_job_loss = current_loss * job_val,
+         overall_econ_loss = overall_loss * econ_mult,
+         overall_job_loss = overall_loss * job_val) %>%
+  select(GEOID, state, week, starts_with(c("current", "overall")))
+
+# district level
+write_csv(terminations_sum_cong_nsf %>% select(-state), "output/terminations_district_nsf.csv")
+
+# state level
+terminations_sum_cong_nsf %>%
+  group_by(state, week) %>%
+  summarise(across(ends_with("loss"), ~ sum(.x))) %>%
+  write_csv("output/terminations_state_nsf.csv")
+```
+
+```{r}
+# plots to check values
+terminations_sum_comm_nsf %>%
+  group_by(week) %>%
+  summarise(current_loss = sum(current_loss),
+            overall_loss = sum(overall_loss)) %>%
+  ggplot() +
+  geom_line(aes(x = week, y = current_loss), color = "red") +
+  geom_line(aes(x = week, y = overall_loss), color = "blue") +
+  theme_minimal() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(x = "Date", y = "Total funding currently impacted")
+
+library(usmap)
+plot_usmap(
+  data = terminations_sum_comm_nsf %>% rename(fips = FIPS) %>% filter(week == max(week)),
+  values = "overall_loss",
+  regions = "counties",
+  color = "white",
+  linewidth = 0.0
+) +
+  scale_fill_viridis_c(trans = "log10",
+                       labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(fill = "Total funding \nimpacted")
+
+plot_usmap(
+  data = terminations_sum_cong_nsf %>%
+  group_by(state, week) %>%
+  summarise(across(ends_with("loss"), ~ sum(.x))) %>% filter(week == max(week)),
+  values = "overall_loss",
+  regions = "states",
+  color = "white",
+  linewidth = 0.0
+) +
+  labs(fill = "Total funding \nimpacted") +
+  scale_fill_viridis_c(trans = "log10",
+                       labels = label_dollar(scale_cut = cut_short_scale()))
+```
+
