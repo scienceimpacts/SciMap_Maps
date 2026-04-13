@@ -188,7 +188,8 @@ county_commute_NSF <- merge(commute, NSF_budget_cuts_tract, by.x = "DESTINATION"
   ungroup() %>%
   mutate_all(funs(replace(., is.na(.), 0)))  %>%
   right_join(NSF_state_dict) %>%
-  mutate(across(starts_with("budg"), ~ .x * 2.25, .names = "econ_{.col}"))
+  mutate(across(starts_with("budg"), ~ .x * 2.64, .names = "econ_{.col}")) %>%
+  mutate(across(starts_with("budg"), ~ .x / 72000, .names = "jobs_{.col}"))
 
 print(nrow(county_commute_NSF))
 
@@ -267,7 +268,8 @@ cong_commute_NSF <- merge(cong_commute, NSF_budget_cuts_tract, by.x = "DESTINATI
   left_join(NSF_state_dict %>% 
               select(state, state_name, state_FIPS) %>% 
               distinct()) %>%
-  mutate(across(starts_with("budg"), ~ .x * 2.25, .names = "econ_{.col}")) %>%
+  mutate(across(starts_with("budg"), ~ .x * 2.64, .names = "econ_{.col}")) %>%
+  mutate(across(starts_with("budg"), ~ .x / 72000, .names = "jobs_{.col}")) %>%
   filter(GEOID != "0")
 
 
@@ -309,7 +311,8 @@ nsf_grants_inst %>%
   summarize(annual_loss = mean(annual_cut)) %>%
   group_by(inst_state_name) %>%
   slice_max(annual_loss, n=2) %>%
-  mutate(econ_loss = annual_loss*2.25) %>%
+  mutate(econ_loss = annual_loss*2.64) %>%
+  mutate(job_loss = annual_loss/72000) %>%
   mutate(annual_loss = round(annual_loss/1000000, digits=1),
          econ_loss = round(econ_loss/1000000, digits=1)) %>%
   filter(inst_state_name %in% c(state.name, "District of Columbia")) %>%
@@ -325,7 +328,8 @@ nsf_grants_inst %>%
   group_by(inst_state_name) %>%
   summarize(annual_loss = mean(annual_cut)) %>%
   filter(inst_state_name %in% c(state.name, "District of Columbia")) %>%
-  mutate(econ_loss = annual_loss*2.25) %>%
+  mutate(econ_loss = annual_loss*2.64) %>%
+  mutate(job_loss = annual_loss/72000) %>%
   mutate(annual_loss = round(annual_loss/1000000, digits=1),
          econ_loss = round(econ_loss/1000000, digits=1)) %>%
   rename(State = inst_state_name,
