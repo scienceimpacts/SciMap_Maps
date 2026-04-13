@@ -1,0 +1,6 @@
+org_name,org_city,org_state,lat,lon,matched_address,location_type,GEOID,NAMELSAD,NAMELSADCO,STATE_NAME
+American Chemical Society (ACS),Washington,DC,38.9053482,-77.0361475,"1155 16th St NW, Washington, DC 20036, USA",ROOFTOP,"11001010100",Census Tract 101,District of Columbia,District of Columbia
+HOUSTON CHRISTIAN UNIVERSITY,Houston,TX,29.6946466,-95.5162157,"7502 Fondren Rd, Houston, TX 77074, USA",ROOFTOP,"48201422800",Census Tract 4228,Harris County,Texas
+Society for Personality and Social Psychology,Annandale,VA,38.8303905,-77.1963703,"Annandale, VA, USA",APPROXIMATE,"51059452102",Census Tract 4521.02,Fairfax County,Virginia
+Regis College,Weston,MA,42.3510169,-71.3090972,"235 Wellesley St, Weston, MA 02493, USA",ROOFTOP,"25017367200",Census Tract 3672,Middlesex County,Massachusetts
+Manhattanville College,Purchase,NY,41.0320144,-73.7158605,"2900 Purchase St, Purchase, NY 10577, USA",ROOFTOP,"36119008602",Census Tract 86.02,Westchester County,New York
