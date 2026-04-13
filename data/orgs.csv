@@ -1,0 +1,519 @@
+org_name,org_city,org_state
+Carnegie Mellon University,PITTSBURGH,PA
+Utah State University,LOGAN,UT
+University of Arizona,TUCSON,AZ
+University of Pittsburgh,PITTSBURGH,PA
+University of Nebraska-Lincoln,LINCOLN,NE
+WestEd,SAN FRANCISCO,CA
+University of Texas at San Antonio,SAN ANTONIO,TX
+University of Washington,Seattle,WA
+Arizona State University,SCOTTSDALE,AZ
+TERC Inc,CAMBRIDGE,MA
+Purdue University,WEST LAFAYETTE,IN
+University of New Mexico,ALBUQUERQUE,NM
+University of Texas at El Paso,EL PASO,TX
+Juniata College,HUNTINGDON,PA
+The Texas A&M University System HSC,COLLEGE STATION,TX
+SRI International,MENLO PARK,CA
+Colorado State University-Pueblo,PUEBLO,CO
+Johns Hopkins University,BALTIMORE,MD
+Oregon State University,CORVALLIS,OR
+University of California-Berkeley,BERKELEY,CA
+University of Maryland Baltimore County,BALTIMORE,MD
+CUNY College of Staten Island,STATEN ISLAND,NY
+Oklahoma State University,STILLWATER,OK
+New York University,NEW YORK,NY
+St. Catherine University,SAINT PAUL,MN
+North Carolina State University,RALEIGH,NC
+San Francisco State University,SAN FRANCISCO,CA
+California State University-Fresno Foundation,FRESNO,CA
+University of South Alabama,MOBILE,AL
+Regents of the University of Michigan - Ann Arbor,ANN ARBOR,MI
+"Board of Regents, NSHE, obo University of Nevada, Reno",RENO,NV
+University of Minnesota-Twin Cities,MINNEAPOLIS,MN
+California Polytechnic State University Foundation,SAN LUIS OBISPO,CA
+University of Washington,SEATTLE,WA
+"University of Maryland, College Park",COLLEGE PARK,MD
+Florida Gulf Coast University,FORT MYERS,FL
+University of Virginia Main Campus,CHARLOTTESVILLE,VA
+University of California-Irvine,IRVINE,CA
+Colorado State University,FORT COLLINS,CO
+University of Georgia Research Foundation Inc,ATHENS,GA
+University of California-Davis,DAVIS,CA
+MOLLOY UNIVERSITY,ROCKVILLE CENTRE,NY
+North Dakota State University Fargo,FARGO,ND
+Benedictine University,LISLE,IL
+Northeastern University,BOSTON,MA
+University of California-Santa Barbara,SANTA BARBARA,CA
+San Jose State University Foundation,SAN JOSE,CA
+Michigan State University,EAST LANSING,MI
+University of South Carolina at Columbia,COLUMBIA,SC
+Family Health International,DURHAM,NC
+South Dakota School of Mines and Technology,RAPID CITY,SD
+University of Cincinnati Main Campus,CINCINNATI,OH
+San Diego State University Foundation,SAN DIEGO,CA
+"California State University, East Bay Foundation, Inc.",HAYWARD,CA
+Georgia Tech Research Corporation,ATLANTA,GA
+University of North Carolina Greensboro,GREENSBORO,NC
+Northwestern University,EVANSTON,IL
+Case Western Reserve University,CLEVELAND,OH
+Horizon Research Inc,CHAPEL HILL,NC
+University of Oregon Eugene,EUGENE,OR
+CUNY Queensborough Community College,BAYSIDE,NY
+University of Utah,SALT LAKE CITY,UT
+University of Kentucky Research Foundation,LEXINGTON,KY
+"Teachers College, Columbia University",NEW YORK,NY
+College of William and Mary,WILLIAMSBURG,VA
+University of Colorado at Boulder,Boulder,CO
+Vanderbilt University,NASHVILLE,TN
+University of Texas at Austin,AUSTIN,TX
+University of Denver,DENVER,CO
+CUNY New York City College of Technology,BROOKLYN,NY
+University of Puerto Rico-Rio Piedras,SAN JUAN,PR
+NEVADA STATE UNIVERSITY,HENDERSON,NV
+Tufts University,MEDFORD,MA
+University of California-San Francisco,SAN FRANCISCO,CA
+Columbia University,NEW YORK,NY
+Coeur d' Alene Tribe,PLUMMER,ID
+American Society For Engineering Education,WASHINGTON,DC
+SUNY at Stony Brook,STONY BROOK,NY
+Lehigh University,BETHLEHEM,PA
+University of Tennessee Knoxville,KNOXVILLE,TN
+Kent State University,KENT,OH
+University of Nevada Las Vegas,LAS VEGAS,NV
+"ISEECHANGE, Inc.",NEW ORLEANS,LA
+New Mexico State University,LAS CRUCES,NM
+Auburn University,AUBURN,AL
+Rutgers University New Brunswick,NEW BRUNSWICK,NJ
+University of Wisconsin-Milwaukee,MILWAUKEE,WI
+West Chester University of Pennsylvania,WEST CHESTER,PA
+University of Puerto Rico,SAN JUAN,PR
+Bowdoin College,BRUNSWICK,ME
+University of Wisconsin-Madison,MADISON,WI
+"SageFox Consulting Group, LLC",AMHERST,MA
+Jackson State University,JACKSON,MS
+University of Colorado at Colorado Springs,COLORADO SPRINGS,CO
+Christopher Newport University,NEWPORT NEWS,VA
+Education Development Center,WALTHAM,MA
+George Mason University,FAIRFAX,VA
+"Georgia State University Research Foundation, Inc.",ATLANTA,GA
+University of California-Los Angeles,LOS ANGELES,CA
+Stanford University,STANFORD,CA
+American Institute of Mathematics,PASADENA,CA
+Duquesne University,PITTSBURGH,PA
+University of Rochester,ROCHESTER,NY
+Swarthmore College,SWARTHMORE,PA
+Portland State University,PORTLAND,OR
+HARRIS-STOWE STATE UNIVERSITY,SAINT LOUIS,MO
+Drexel University,PHILADELPHIA,PA
+COSMIC PICTURE DISTRIBUTION LLC,SOMERS,NY
+Clark Atlanta University,ATLANTA,GA
+Franklin and Marshall College,LANCASTER,PA
+American Society For Cell Biology,ROCKVILLE,MD
+University of Illinois at Chicago,CHICAGO,IL
+CUNY City College,NEW YORK,NY
+"Young People's Project, Inc.",CAMBRIDGE,MA
+Regents of the University of Idaho,MOSCOW,ID
+Syracuse University,SYRACUSE,NY
+University of California-Santa Cruz,SANTA CRUZ,CA
+HEALTHPARTNERS Institute,MINNEAPOLIS,MN
+Boise State University,BOISE,ID
+University of Pennsylvania,PHILADELPHIA,PA
+University of Southern California,LOS ANGELES,CA
+Cornell University,ITHACA,NY
+Western Washington University,BELLINGHAM,WA
+University of Arkansas,FAYETTEVILLE,AR
+Allegheny College,MEADVILLE,PA
+Northern Arizona University,FLAGSTAFF,AZ
+Occidental College,LOS ANGELES,CA
+Rochester Institute of Tech,ROCHESTER,NY
+Coastal and Estuarine Research Federation,SEATTLE,WA
+Seattle Community College District Office,SEATTLE,WA
+University of Texas at Dallas,RICHARDSON,TX
+University of Colorado Boulder,,CO
+Texas A&M University,COLLEGE STATION,TX
+Missouri University of Science and Technology,ROLLA,MO
+California State University-Dominguez Hills Foundation,CARSON,CA
+Southern Illinois University at Edwardsville,EDWARDSVILLE,IL
+CUNY Queens College,FLUSHING,NY
+Clemson University,CLEMSON,SC
+"The University Corporation, Northridge",NORTHRIDGE,CA
+Carleton College,NORTHFIELD,MN
+Child Trends Inc,ROCKVILLE,MD
+University of North Carolina at Chapel Hill,CHAPEL HILL,NC
+"The Geological Society of America, Inc.",BOULDER,CO
+"OHIO STATE UNIVERSITY, THE",COLUMBUS,OH
+Appalachian College Association,WALLAND,TN
+University of Massachusetts Lowell,LOWELL,MA
+National Academy of Sciences,WASHINGTON,DC
+Alabama A&M University,NORMAL,AL
+Texas State University - San Marcos,SAN MARCOS,TX
+Hamilton College,CLINTON,NY
+"University Enterprises, Incorporated",SACRAMENTO,CA
+Science Museum of Minnesota,SAINT PAUL,MN
+New York University,New York,NY
+Concord Consortium,CONCORD,MA
+University of New Hampshire,DURHAM,NH
+George Washington University,WASHINGTON,DC
+Indiana University,BLOOMINGTON,IN
+Florida State University,TALLAHASSEE,FL
+University of California-San Diego,LA JOLLA,CA
+University of Houston,HOUSTON,TX
+Society of Women Engineers,CHICAGO,IL
+The University of Texas Rio Grande Valley,EDINBURG,TX
+American Physical Society,COLLEGE PARK,MD
+Harvard University,CAMBRIDGE,MA
+Texas A&M University Corpus Christi,CORPUS CHRISTI,TX
+University of Puerto Rico Medical Sciences Campus,SAN JUAN,PR
+Xavier University of Louisiana,NEW ORLEANS,LA
+Columbus State University,COLUMBUS,GA
+Kansas State University,MANHATTAN,KS
+North Carolina Agricultural & Technical State University,GREENSBORO,NC
+University of North Carolina at Charlotte,CHARLOTTE,NC
+University of California - Merced,MERCED,CA
+California State University Channel Islands,CAMARILLO,CA
+Salisbury University,SALISBURY,MD
+Georgia Tech Applied Research Corporation,ATLANTA,GA
+Trustees of Boston University,BOSTON,MA
+Virginia Commonwealth University,RICHMOND,VA
+Louisiana State University,BATON ROUGE,LA
+Tennessee State University,NASHVILLE,TN
+Association of Public and Land-Grant Universities,WASHINGTON,DC
+American Chemical Society (ACS),WASHINGTON,DC
+American Association for the Advancement of Science,WASHINGTON,DC
+Exploratorium,SAN FRANCISCO,CA
+Rutgers University Newark,NEWARK,NJ
+University of Arkansas at Pine Bluff,PINE BLUFF,AR
+Elmhurst University,ELMHURST,IL
+Chicago State University,CHICAGO,IL
+Texas Southern University,HOUSTON,TX
+"Cal Poly Pomona Foundation, Inc.",POMONA,CA
+Bethune-Cookman University,DAYTONA BEACH,FL
+William Marsh Rice University,HOUSTON,TX
+Florida International University,MIAMI,FL
+Heritage University,TOPPENISH,WA
+University of Houston - Clear Lake,HOUSTON,TX
+Santa Monica College,SANTA MONICA,CA
+SUNY College at Geneseo,GENESEO,NY
+Washington State University,PULLMAN,WA
+Clarkson University,POTSDAM,NY
+CSU Fullerton Auxiliary Services Corporation,FULLERTON,CA
+The University of Central Florida Board of Trustees,ORLANDO,FL
+Montclair State University,MONTCLAIR,NJ
+Texas A&M International University,LAREDO,TX
+California State University-Long Beach Foundation,LONG BEACH,CA
+Chico State Enterprises,CHICO,CA
+Southwestern College,CHULA VISTA,CA
+University of North Texas,DENTON,TX
+University of Connecticut,STORRS,CT
+ALAMO COMMUNITY COLLEGE DISTRICT - St. Philip's College,SAN ANTONIO,TX
+Morehouse College,ATLANTA,GA
+Winston-Salem State University,WINSTON SALEM,NC
+Howard University,WASHINGTON,DC
+Fort Valley State University,FORT VALLEY,GA
+Virginia Polytechnic Institute and State University,BLACKSBURG,VA
+Morgan State University,BALTIMORE,MD
+Hampton University,HAMPTON,VA
+Appalachian State University,BOONE,NC
+Texas Tech University,LUBBOCK,TX
+University of Missouri-Saint Louis,SAINT LOUIS,MO
+Cleveland State University,CLEVELAND,OH
+Wepan Inc,WASHINGTON,DC
+University of Missouri-Columbia,COLUMBIA,MO
+University of Massachusetts Amherst,AMHERST,MA
+Bowie State University,BOWIE,MD
+David Lipscomb University,NASHVILLE,TN
+University of Hawaii,HONOLULU,HI
+Fielding Graduate University,SANTA BARBARA,CA
+"GPRA Strategic Management, Inc.",WHITE PLAINS,MD
+University of Chicago,CHICAGO,IL
+American Bar Foundation,CHICAGO,IL
+Washington University,SAINT LOUIS,MO
+Montana State University,BOZEMAN,MT
+University of Illinois at Urbana-Champaign,URBANA,IL
+Tulane University,NEW ORLEANS,LA
+Massachusetts Institute of Technology,CAMBRIDGE,MA
+University of Massachusetts Boston,DORCHESTER,MA
+American Indian Science and Engineering Society (AISES),ALBUQUERQUE,NM
+American University,WASHINGTON,DC
+University of Arkansas Little Rock,LITTLE ROCK,AR
+Florida Agricultural and Mechanical University,TALLAHASSEE,FL
+City College of San Francisco,SAN FRANCISCO,CA
+Loyola University of Chicago,CHICAGO,IL
+American Institutes for Research in the Behavioral Sciences,ARLINGTON,VA
+American Society for Biochemistry and Molecular Biology,ROCKVILLE,MD
+University of Delaware,NEWARK,DE
+Villanova University,VILLANOVA,PA
+University of Florida,GAINESVILLE,FL
+Mercyhurst University,ERIE,PA
+La Salle University,PHILADELPHIA,PA
+Arcadia University,GLENSIDE,PA
+Teachers Development Group,PORTLAND,OR
+Association of American Colleges and Universities,WASHINGTON,DC
+Ithaca College,ITHACA,NY
+Allan Hancock College,SANTA MARIA,CA
+Massachusetts Bay Community College,WELLESLEY HILLS,MA
+"Association for Women in Mathematics, Inc.",PROVIDENCE,RI
+Fisk University,NASHVILLE,TN
+University of California-Riverside,RIVERSIDE,CA
+The University of Texas Health Science Center at Houston,HOUSTON,TX
+WNET,NEW YORK,NY
+University of Minnesota Duluth,DULUTH,MN
+University of Rhode Island,KINGSTON,RI
+University of Mississippi,UNIVERSITY,MS
+Duke University,DURHAM,NC
+University of Memphis,MEMPHIS,TN
+National Bureau of Economic Research Inc,CAMBRIDGE,MA
+University of Missouri-Kansas City,COLUMBIA,MO
+PBS FOUNDATION,ARLINGTON,VA
+SUNY College of Environmental Science and Forestry,SYRACUSE,NY
+SUNY at Albany,ALBANY,NY
+University Enterprises Corporation at CSUSB,SAN BERNARDINO,CA
+Brandeis University,WALTHAM,MA
+Eureka Scientific Inc,OAKLAND,CA
+Haverford College,HAVERFORD,PA
+The New York City Foundation for Computer Science Education,ARMONK,NY
+Kutztown University,KUTZTOWN,PA
+Rand Corporation,SANTA MONICA,CA
+Yakima Valley Community College,YAKIMA,WA
+St Mary's University San Antonio,SAN ANTONIO,TX
+CUNY John Jay College of Criminal Justice,NEW YORK,NY
+Galveston College,GALVESTON,TX
+West Hills Community College,COALINGA,CA
+Alverno College,MILWAUKEE,WI
+Riverside Community College District/Riverside City College,RIVERSIDE,CA
+American Geophysical Union,WASHINGTON,DC
+University of Miami,CORAL GABLES,FL
+Miami University,OXFORD,OH
+University of Oklahoma Norman Campus,NORMAN,OK
+University of South Florida,TAMPA,FL
+North Carolina Central University,DURHAM,NC
+Emory University,ATLANTA,GA
+John Carroll University,CLEVELAND,OH
+University of Wisconsin-Whitewater,WHITEWATER,WI
+Iowa State University,AMES,IA
+Brown University,PROVIDENCE,RI
+Temple University,PHILADELPHIA,PA
+Botanical Society of America,SAINT LOUIS,MO
+City Colleges of Chicago Harry S Truman College,CHICAGO,IL
+University of San Diego,SAN DIEGO,CA
+Harvard University,Cambridge,MA
+Albany State University,ALBANY,GA
+University of the District of Columbia,WASHINGTON,DC
+"CAST, Inc.",LYNNFIELD,MA
+Stevens Institute of Technology,HOBOKEN,NJ
+University of Iowa,IOWA CITY,IA
+New Jersey Institute of Technology,NEWARK,NJ
+Twin Cities Public Television,SAINT PAUL,MN
+Urban Institute,WASHINGTON,DC
+Yale University,NEW HAVEN,CT
+Framingham State University,FRAMINGHAM,MA
+BRIDGEWATER STATE UNIVERSITY,BRIDGEWATER,MA
+Worcester State University,WORCESTER,MA
+Metropolitan State University of Denver,DENVER,CO
+HOUSTON CHRISTIAN UNIVERSITY,HOUSTON,TX
+New Mexico Highlands University,LAS VEGAS,NM
+Rio Hondo College,CITY OF INDUSTRY,CA
+Menlo College,ATHERTON,CA
+University of Puerto Rico Mayaguez,MAYAGUEZ,PR
+Southern Utah University,CEDAR CITY,UT
+Eastern Washington University,CHENEY,WA
+University of West Florida,PENSACOLA,FL
+University of Kansas Center for Research Inc,LAWRENCE,KS
+Western Michigan University,KALAMAZOO,MI
+CSUB Auxiliary for Sponsored Programs Administration,Bakersfield,CA
+Spelman College,ATLANTA,GA
+Seattle Pacific University,SEATTLE,WA
+Kentucky Community & Technical College System,VERSAILLES,KY
+Florida Atlantic University,BOCA RATON,FL
+Seattle University,SEATTLE,WA
+Tuskegee University,TUSKEGEE INSTITUTE,AL
+San Jacinto College District,PASADENA,TX
+Housatonic Community College,BRIDGEPORT,CT
+Ecological Society of America,WASHINGTON,DC
+Princeton University,PRINCETON,NJ
+Northwestern University at Chicago,EVANSTON,IL
+American Association of Physics Teachers,COLLEGE PARK,MD
+Rensselaer Polytechnic Institute,TROY,NY
+Eastern Michigan University,YPSILANTI,MI
+Pacific Resources for Education and Learning,HONOLULU,HI
+Pepperdine University,MALIBU,CA
+Weber State University,OGDEN,UT
+Ivy Tech Community College of Indiana,INDIANAPOLIS,IN
+Pennsylvania State Univ University Park,UNIVERSITY PARK,PA
+Los Angeles County Museum of Natural History Foundation,LOS ANGELES,CA
+Georgia Gwinnett College,LAWRENCEVILLE,GA
+Chaminade University of Honolulu,HONOLULU,HI
+ZIKER ENTERPRISES LLC,SAN JOSE,CA
+Indigenous Education Institute,FRIDAY HARBOR,WA
+University of Alabama Tuscaloosa,TUSCALOOSA,AL
+SUNY at Buffalo,AMHERST,NY
+Claremont Graduate University,CLAREMONT,CA
+University of New Orleans,NEW ORLEANS,LA
+BLACK IN MARINE SCIENCE,SPOKANE,WA
+Nova Southeastern University,FT LAUDERDALE,FL
+San Antonio College,SAN ANTONIO,TX
+HudsonAlpha Institute for Biotechnology,HUNTSVILLE,AL
+Texas A&M Engineering Experiment Station,COLLEGE STATION,TX
+University of Alaska Fairbanks Campus,FAIRBANKS,AK
+Texas Christian University,FORT WORTH,TX
+Clark University,WORCESTER,MA
+Louisiana Tech University,RUSTON,LA
+American Society For Microbiology,WASHINGTON,DC
+University of The Virgin Islands,CHARLOTTE AMALIE,VI
+University of Southern Mississippi,HATTIESBURG,MS
+SUNY College at Oneonta,ONEONTA,NY
+Society for Personality and Social Psychology,ANNANDALE,VA
+James Madison University,HARRISONBURG,VA
+Illinois Institute of Technology,CHICAGO,IL
+Mississippi State University,MISSISSIPPI STATE,MS
+United States Air Force Academy,U S A F ACADEMY,CO
+University of Texas at Arlington,ARLINGTON,TX
+Educational Testing Service,PRINCETON,NJ
+Bank Street College of Education,NEW YORK,NY
+East Central University,ADA,OK
+Georgetown University,WASHINGTON,DC
+Hofstra University,HEMPSTEAD,NY
+SUNY Empire State College,SARATOGA SPRINGS,NY
+Marymount University,ARLINGTON,VA
+Colorado School of Mines,GOLDEN,CO
+"Loyola University Maryland, Inc.",BALTIMORE,MD
+Azusa Pacific University,AZUSA,CA
+SUNY at Binghamton,BINGHAMTON,NY
+Sam Houston State University,HUNTSVILLE,TX
+Rowan University,GLASSBORO,NJ
+Boston College,CHESTNUT HILL,MA
+Bradley University,PEORIA,IL
+SOUTHERN CALIFORNIA TRIBAL CHAIRMENS ASSOCIATION,PALA,CA
+Old Dominion University Research Foundation,NORFOLK,VA
+University of Toledo,TOLEDO,OH
+Central Michigan University,MOUNT PLEASANT,MI
+Wayne State University,DETROIT,MI
+Hinds Community College-Utica,RAYMOND,MS
+Jarvis Christian College,HAWKINS,TX
+Prairie View A & M University,PRAIRIE VIEW,TX
+Millersville University,MILLERSVILLE,PA
+Southern Connecticut State University,NEW HAVEN,CT
+University of Alaska Anchorage Campus,ANCHORAGE,AK
+Virginia State University,PETERSBURG,VA
+University of Alabama in Huntsville,HUNTSVILLE,AL
+Children's Museum of Pittsburgh,PITTSBURGH,PA
+Institute for Learning Innovation,PORTLAND,OR
+Knology Ltd.,GOSHEN,CT
+INSTITUTE FOR NATIVE PACIFIC EDUCATION AND CULTURE,KAPOLEI,HI
+CUNY Kingsborough Community College,BROOKLYN,NY
+Greater Washington Educational Telecommunications Association,ARLINGTON,VA
+Oregon Museum of Science and Industry,PORTLAND,OR
+Salem State University,SALEM,MA
+Oberlin College,OBERLIN,OH
+Dartmouth College,HANOVER,NH
+"Inclusive Engineering Consortium, Inc.",WILMETTE,IL
+Mathematical Sciences Research Institute,BERKELEY,CA
+Maricopa County Community College District,TEMPE,AZ
+University of Notre Dame,NOTRE DAME,IN
+Central Washington University,ELLENSBURG,WA
+Whitworth University,SPOKANE,WA
+Lehigh Carbon Community College,SCHNECKSVILLE,PA
+Research Foundation of the City University of New York,NEW YORK,NY
+The National GEM Consortium,ALEXANDRIA,VA
+Northern Illinois University,DEKALB,IL
+SMART GIRLS HQ LLC,CHARLOTTE,NC
+University of Louisiana at Lafayette,LAFAYETTE,LA
+University Corporation For Atmospheric Res,BOULDER,CO
+East Carolina University,GREENVILLE,NC
+University of Puerto Rico-Arecibo Campus,ARECIBO,PR
+GLOBAL FUND FOR WOMEN INC,SAN FRANCISCO,CA
+Smith College,NORTHAMPTON,MA
+LISA FITZPATRICK & ASSOCIATES MD PC,WASHINGTON,DC
+Johnson C. Smith University,CHARLOTTE,NC
+PUBLIC POLICY LAB,BROOKLYN,NY
+Columbus State Community College,COLUMBUS,OH
+SUNY Onondaga Community College,SYRACUSE,NY
+Council of Graduate Schools,WASHINGTON,DC
+Federation of Amer Societies For Exper Biology,ROCKVILLE,MD
+Chapman University,ORANGE,CA
+University of Alabama at Birmingham,BIRMINGHAM,AL
+University of North Georgia,DAHLONEGA,GA
+PHARMACOUSTICS TECHNOLOGIES LLC,POTSDAM,NY
+CLAUDIUS LEGAL INTELLIGENCE INC,MIAMI,FL
+Berry College,MOUNT BERRY,GA
+Saint Louis University,SAINT LOUIS,MO
+Bowling Green State University,BOWLING GREEN,OH
+Middle Tennessee State University,MURFREESBORO,TN
+Oakland University,ROCHESTER,MI
+Central State University,WILBERFORCE,OH
+University of Nebraska at Omaha,OMAHA,NE
+Hawaii Pacific University,HONOLULU,HI
+Santa Clara University,SANTA CLARA,CA
+MANHATTAN UNIVERSITY,BRONX,NY
+UNIVERSITY OF PUERTO RICO AT CAROLINA,CAROLINA,PR
+Kean University,UNION,NJ
+Texas Woman's University,DENTON,TX
+INA SOLUTIONS INC.,FAIRFAX,VA
+MYVILLAGE PROJECT INC,JACKSONVILLE,FL
+Northern Virginia Community College,ANNANDALE,VA
+Crow Canyon Archaeological Center,CORTEZ,CO
+SHAKOPEE MDEWAKANTON SIOUX COMMUNITY,PRIOR LAKE,MN
+Institute For Advanced Study,PRINCETON,NJ
+CUNY Borough of Manhattan Community College,NEW YORK,NY
+Shaw University,RALEIGH,NC
+Middlesex Community College,BEDFORD,MA
+Hudson County Community College,JERSEY CITY,NJ
+Western Kentucky University,BOWLING GREEN,KY
+Yale University,New Haven,CT
+Delaware State University,DOVER,DE
+"LEARNING NETWORK, LLC, THE",ALLEN,TX
+University of Northern Colorado,GREELEY,CO
+Association of American Geographers,WASHINGTON,DC
+Missouri State University,SPRINGFIELD,MO
+Wichita State University,WICHITA,KS
+Regis College,WESTON,MA
+St. Petersburg College,CLEARWATER,FL
+"University of California, Office of the President, Oakland",OAKLAND,CA
+Dona Ana Branch Community College,LAS CRUCES,NM
+RIPPLE EFFECT WATER LITERACY PROJECT,NEW ORLEANS,LA
+"GRANTED ADVISORS, LLC",NEW ORLEANS,LA
+University of Colorado at Denver-Downtown Campus,DENVER,CO
+West Virginia University Research Corporation,MORGANTOWN,WV
+St Jude Children's Research Hospital,MEMPHIS,TN
+University of Maryland Eastern Shore,PRINCESS ANNE,MD
+W1FB US MILITARY ACADEMY,WEST POINT,NY
+Southern Methodist University,DALLAS,TX
+Reuben H. Fleet Science Center,SAN DIEGO,CA
+Gordon Research Conferences,EAST GREENWICH,RI
+New York Hall of Science,CORONA,NY
+Chicago Children's Museum,CHICAGO,IL
+"Associated Universities, Inc.",VIENNA,VA
+LONG ISLAND CHILDREN'S MUSEUM,GARDEN CITY,NY
+Pratt Institute,BROOKLYN,NY
+Donald Danforth Plant Science Center,SAINT LOUIS,MO
+Sierra Streams Institute,NEVADA CITY,CA
+Northwest Indian College,BELLINGHAM,WA
+Texas A&M University-San Antonio,SAN ANTONIO,TX
+California State University San Marcos Corporation,SAN MARCOS,CA
+The Chicago School of Professional Psychology,CHICAGO,IL
+"RUTGERS, THE STATE UNIVERSITY OF NEW JERSEY",NEWARK,NJ
+University of North Dakota Main Campus,GRAND FORKS,ND
+CHANGEAERIAL LLC,SAN DIEGO,CA
+National Opinion Research Center,CHICAGO,IL
+West Texas A&M University,CANYON,TX
+Manhattanville College,PURCHASE,NY
+"Woodwell Climate Research Center, Inc.",FALMOUTH,MA
+Santa Fe Institute,SANTA FE,NM
+University of North Carolina at Wilmington,WILMINGTON,NC
+Mozilla Foundation,SAN FRANCISCO,CA
+EDNA INC.,OXFORD,MA
+Fort Hays State University,HAYS,KS
+Lawrence Technological University,SOUTHFIELD,MI
+American Museum Natural History,NEW YORK,NY
+Georgia Piedmont Technical College,CLARKSTON,GA
+University of Vermont & State Agricultural College,BURLINGTON,VT
+National Postdoctoral Association,NORTH POTOMAC,MD
+Northern Kentucky University,NEWPORT,KY
+QUALITY EDUCATION FOR MINORITIES NETWORK,WASHINGTON,DC
+WORLD METEOROLOGICAL ORGANIZATION,GENEVE,GENEVA
+"START International, Inc.",FORT COLLINS,CO
+FUTURE EARTH,FORT COLLINS,CO
+University of Guam,MANGILAO,GU
+Cuesta College,SAN LUIS OBISPO,CA
+University of Wyoming,LARAMIE,WY

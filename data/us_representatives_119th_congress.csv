@@ -1,0 +1,442 @@
+OBJECTID,GEOID,STFIPS,CDFIPS,STATE_ABBR,NAME,LAST_NAME,PARTY,SQMI,STATE_NAME,Shape__Area,Shape__Length
+1,101,1,1,AL,Barry Moore,Moore,Republican,7335.82,Alabama,1.79618079,22.88010915
+2,102,1,2,AL,Shomari Figures,Figures,Democrat,9551.34,Alabama,2.354936287,15.28121835
+3,103,1,3,AL,Mike Rogers,Rogers,Republican,6870.28,Alabama,1.724847713,7.749121887
+4,104,1,4,AL,Robert B. Aderholt,Aderholt,Republican,8853.57,Alabama,2.240823195,11.96623397
+5,105,1,5,AL,Dale W. Strong,Strong,Republican,4066.66,Alabama,1.036197231,5.943363497
+6,106,1,6,AL,Gary J. Palmer,Palmer,Republican,4554.71,Alabama,1.137728668,8.495931645
+7,107,1,7,AL,Terri A. Sewell,Sewell,Democrat,10400.34,Alabama,2.585200665,12.52628247
+8,200,2,0,AK,Nicholas J. Begich III,Begich,Republican,587042.86,Alaska,281.7182234,557.648162
+9,401,4,1,AZ,David Schweikert,Schweikert,Republican,1614.18,Arizona,0.406585308,3.751039312
+10,402,4,2,AZ,Elijah Crane,Crane,Republican,58490.8,Arizona,14.98420349,25.17828935
+11,403,4,3,AZ,Yassamin Ansari,Ansari,Democrat,206.48,Arizona,0.051843063,1.311330879
+12,404,4,4,AZ,Greg Stanton,Stanton,Democrat,179.76,Arizona,0.045115698,1.674218407
+13,405,4,5,AZ,Andy Biggs,Biggs,Republican,405.76,Arizona,0.101728174,2.054373234
+14,406,4,6,AZ,Juan Ciscomani,Ciscomani,Republican,13711.3,Arizona,3.403049855,13.70759697
+15,407,4,7,AZ,Adelita S. Grijalva,Grijalva,Democrat,15422.75,Arizona,3.823196211,16.92130178
+16,408,4,8,AZ,Abraham J. Hamadeh,Hamadeh,Republican,578.79,Arizona,0.145930972,2.416247549
+17,409,4,9,AZ,Paul A. Gosar,Gosar,Republican,23375.24,Arizona,5.956119656,20.33879508
+18,501,5,1,AR,Eric A. “Rick” Crawford,Crawford,Republican,20400.87,Arkansas,5.240860909,23.75441311
+19,502,5,2,AR,J. French Hill,Hill,Republican,5441.31,Arkansas,1.394263675,8.226653658
+20,503,5,3,AR,Steve Womack,Womack,Republican,4244.97,Arkansas,1.09905894,5.638412464
+21,504,5,4,AR,Bruce Westerman,Westerman,Republican,23111.08,Arkansas,5.856257105,16.78179765
+22,601,6,1,CA,Vacant,Vacant,Republican,27048.32,California,7.472482061,20.85601092
+23,602,6,2,CA,Jared Huffman,Huffman,Democrat,13112.31,California,3.589167921,22.15869714
+24,603,6,3,CA,Kevin Kiley,Kiley,Republican,22048.58,California,5.848495435,23.8379278
+25,604,6,4,CA,Mike Thompson,Thompson,Democrat,3905.94,California,1.047902579,9.162719667
+26,605,6,5,CA,Tom McClintock,McClintock,Republican,9967.65,California,2.637957116,14.24319273
+27,606,6,6,CA,Ami Bera,Bera,Democrat,254.26,California,0.068128565,1.697800647
+28,607,6,7,CA,Doris O. Matsui,Matsui,Democrat,693.56,California,0.185165345,3.714414897
+29,608,6,8,CA,John Garamendi,Garamendi,Democrat,488.8,California,0.130084379,6.192734226
+30,609,6,9,CA,Josh Harder,Harder,Democrat,1383.49,California,0.367428626,4.437500127
+31,610,6,10,CA,Mark DeSaulnier,DeSaulnier,Democrat,555.42,California,0.147342096,3.185777011
+32,611,6,11,CA,Nancy Pelosi,Pelosi,Democrat,41.96,California,0.011112381,1.131762297
+33,612,6,12,CA,Lateefah Simon,Simon,Democrat,93.18,California,0.024684416,1.946214767
+34,613,6,13,CA,Adam Gray,Gray,Democrat,6349.25,California,1.66310391,9.601022285
+35,614,6,14,CA,Eric Swalwell,Swalwell,Democrat,586.96,California,0.155177995,2.541550078
+36,615,6,15,CA,Kevin Mullin,Mullin,Democrat,111.63,California,0.029491422,2.213545185
+37,616,6,16,CA,Sam T. Liccardo,Liccardo,Democrat,533.56,California,0.140527185,3.699506585
+38,617,6,17,CA,Ro Khanna,Khanna,Democrat,180.75,California,0.047654028,1.790703037
+39,618,6,18,CA,Zoe Lofgren,Lofgren,Democrat,4607.87,California,1.200141985,9.586423237
+40,619,6,19,CA,Jimmy Panetta,Panetta,Democrat,2833.02,California,0.735209119,12.32867717
+41,620,6,20,CA,Vince Fong,Fong,Republican,9722.56,California,2.510186365,18.30207973
+42,621,6,21,CA,Jim Costa,Costa,Democrat,893.51,California,0.232935729,3.938814086
+43,622,6,22,CA,David G. Valadao,Valadao,Republican,4320.69,California,1.115447542,6.705292638
+44,623,6,23,CA,Jay Obernolte,Obernolte,Republican,17985.42,California,4.595285746,11.95841661
+45,624,6,24,CA,Salud O. Carbajal,Carbajal,Democrat,4912.3,California,1.254541868,11.67690679
+46,625,6,25,CA,Raul Ruiz,Ruiz,Democrat,12351.97,California,3.109768814,15.73020265
+47,626,6,26,CA,Julia Brownley,Brownley,Democrat,1724.96,California,0.438396725,4.683245833
+48,627,6,27,CA,George Whitesides,Whitesides,Democrat,1528.48,California,0.389049497,3.701635993
+49,628,6,28,CA,Judy Chu,Chu,Democrat,789.68,California,0.200218571,4.411812646
+50,629,6,29,CA,Luz M. Rivas,Rivas,Democrat,129.33,California,0.032795451,1.546045234
+51,630,6,30,CA,Laura Friedman,Friedman,Democrat,180.08,California,0.045634649,2.020964454
+52,631,6,31,CA,"Gilbert Ray Cisneros, Jr.",Cisneros,Democrat,210.97,California,0.053409883,2.554137107
+53,632,6,32,CA,Brad Sherman,Sherman,Democrat,297.24,California,0.075233186,2.385444592
+54,633,6,33,CA,Pete Aguilar,Aguilar,Democrat,190.23,California,0.048145599,1.849635566
+55,634,6,34,CA,Jimmy Gomez,Gomez,Democrat,50.05,California,0.012660086,0.891173208
+56,635,6,35,CA,Norma J. Torres,Torres,Democrat,177.42,California,0.044862419,1.530255405
+57,636,6,36,CA,Ted Lieu,Lieu,Democrat,97.35,California,0.024576591,1.943111009
+58,637,6,37,CA,Sydney Kamlager-Dove,Kamlager-Dove,Democrat,52.83,California,0.013354814,0.75838092
+59,638,6,38,CA,Linda T. Sánchez,Sánchez,Democrat,150.7,California,0.038074906,1.893172503
+60,639,6,39,CA,Mark Takano,Takano,Democrat,285.77,California,0.072148425,2.165453791
+61,640,6,40,CA,Young Kim,Kim,Republican,393.25,California,0.099110529,2.926947099
+62,641,6,41,CA,Ken Calvert,Calvert,Republican,1345.69,California,0.339079096,8.528029558
+63,642,6,42,CA,Robert Garcia,Garcia,Democrat,213.51,California,0.053625417,4.456067414
+64,643,6,43,CA,Maxine Waters,Waters,Democrat,72.42,California,0.018283732,1.086692807
+65,644,6,44,CA,Nanette Diaz Barragan,Barragan,Democrat,92.26,California,0.023273904,1.995494592
+66,645,6,45,CA,Derek Tran,Tran,Democrat,103.97,California,0.026224632,2.066499983
+67,646,6,46,CA,J. Luis Correa,Correa,Democrat,74.98,California,0.018906585,1.221183619
+68,647,6,47,CA,Dave Min,Min,Democrat,173.81,California,0.043758717,2.90286862
+69,648,6,48,CA,Darrell Issa,Issa,Republican,3634.41,California,0.909078101,7.609415532
+70,649,6,49,CA,Mike Levin,Levin,Democrat,497.97,California,0.124921135,3.308111305
+71,650,6,50,CA,Scott H. Peters,Peters,Democrat,258.68,California,0.064640799,4.238540757
+72,651,6,51,CA,Sara Jacobs,Jacobs,Democrat,191.05,California,0.047656687,2.316130993
+73,652,6,52,CA,Juan Vargas,Vargas,Democrat,136.78,California,0.034040913,1.519726676
+74,801,8,1,CO,Diana DeGette,DeGette,Democrat,155.55,Colorado,0.042345537,2.495925175
+75,802,8,2,CO,Joe Neguse,Neguse,Democrat,11539.78,Colorado,3.165742594,11.32064441
+76,803,8,3,CO,Jeff Hurd,Hurd,Republican,50086.8,Colorado,13.39319624,23.73192764
+77,804,8,4,CO,Lauren Boebert,Boebert,Republican,32295.93,Colorado,8.739911614,19.40582164
+78,805,8,5,CO,Jeff Crank,Crank,Republican,1474.3,Colorado,0.396034953,3.028007476
+79,806,8,6,CO,Jason A. Crow,Crow,Democrat,310.96,Colorado,0.084552844,3.415456166
+80,807,8,7,CO,Brittany Pettersen,Pettersen,Democrat,7200.12,Colorado,1.93550061,9.952371042
+81,808,8,8,CO,Gabe Evans,Evans,Republican,1031.48,Colorado,0.282481676,4.197739725
+82,901,9,1,CT,John B. Larson,Larson,Democrat,676.17,Connecticut,0.18975516,3.830512493
+83,902,9,2,CT,Joe Courtney,Courtney,Democrat,2061.3,Connecticut,0.577155882,10.28002615
+84,903,9,3,CT,Rosa L. DeLauro,DeLauro,Democrat,484.05,Connecticut,0.134939395,5.043342986
+85,904,9,4,CT,James A. Himes,Himes,Democrat,452.6,Connecticut,0.125869997,4.832917841
+86,905,9,5,CT,Jahana Hayes,Hayes,Democrat,1280.33,Connecticut,0.358629998,4.378042564
+87,1000,10,0,DE,Sarah McBride,McBride,Democrat,1968.04,Delaware,0.529983292,13.07068517
+88,1198,11,98,DC,Eleanor Holmes Norton,Norton,Democrat,61.68,District of Columbia,0.016590141,1.246562868
+89,1201,12,1,FL,Jimmy Patronis,Patronis,Republican,3238.4,Florida,0.789811689,15.0621571
+90,1202,12,2,FL,Neal P. Dunn,Dunn,Republican,10085.6,Florida,2.451389954,31.13958617
+91,1203,12,3,FL,Kat Cammack,Cammack,Republican,7485.38,Florida,1.809738817,14.84663576
+92,1204,12,4,FL,Aaron Bean,Bean,Republican,1805.83,Florida,0.438699354,13.22892312
+93,1205,12,5,FL,John H. Rutherford,Rutherford,Republican,604.74,Florida,0.146583268,8.808191711
+94,1206,12,6,FL,Randy Fine,Fine,Republican,3718.35,Florida,0.894526275,10.84835827
+95,1207,12,7,FL,Cory Mills,Mills,Republican,905.38,Florida,0.216797219,8.381216468
+96,1208,12,8,FL,Mike Haridopolos,Haridopolos,Republican,1691.09,Florida,0.402216991,16.14208346
+97,1209,12,9,FL,Darren Soto,Soto,Democrat,1846.12,Florida,0.439112876,3.42598432
+98,1210,12,10,FL,Maxwell Frost,Frost,Democrat,272.54,Florida,0.06508058,1.501263695
+99,1211,12,11,FL,Daniel Webster,Webster,Republican,1836.15,Florida,0.438631801,3.944243915
+100,1212,12,12,FL,Gus M. Bilirakis,Bilirakis,Republican,1722.58,Florida,0.411489993,20.30601041
+101,1213,12,13,FL,Anna Paulina Luna,Luna,Republican,233.65,Florida,0.055494056,9.359553069
+102,1214,12,14,FL,Kathy Castor,Castor,Democrat,283.53,Florida,0.067330693,10.41795047
+103,1215,12,15,FL,Laurel M. Lee,Lee,Republican,674.87,Florida,0.160512024,1.887532069
+104,1216,12,16,FL,Vern Buchanan,Buchanan,Republican,1176.78,Florida,0.27856423,8.251198028
+105,1217,12,17,FL,W. Gregory Steube,Steube,Republican,1507.59,Florida,0.354974225,15.59604742
+106,1218,12,18,FL,C. Scott Franklin,Franklin,Republican,7084.87,Florida,1.67252068,7.312566862
+107,1219,12,19,FL,Byron Donalds,Donalds,Republican,712,Florida,0.16691847,26.05972245
+108,1220,12,20,FL,Sheila Cherfilus-McCormick,Cherfilus-McCormick,Democrat,2396.52,Florida,0.561723276,5.056074143
+109,1221,12,21,FL,Brian J. Mast,Mast,Republican,1623.84,Florida,0.382847565,9.55124853
+110,1222,12,22,FL,Lois Frankel,Frankel,Democrat,253.36,Florida,0.059443037,2.833456482
+111,1223,12,23,FL,Jared Moskowitz,Moskowitz,Democrat,170.88,Florida,0.039998005,3.145504763
+112,1224,12,24,FL,Frederica S. Wilson,Wilson,Democrat,102.97,Florida,0.024025902,3.538013311
+113,1225,12,25,FL,Debbie Wasserman Schultz,Schultz,Democrat,207.22,Florida,0.04840555,1.645297353
+114,1226,12,26,FL,Mario Diaz-Balart,Diaz-Balart,Republican,2354.4,Florida,0.54999625,14.35062577
+115,1227,12,27,FL,Maria Elvira Salazar,Salazar,Republican,123,Florida,0.028647082,2.430690769
+116,1228,12,28,FL,Carlos A. Gimenez,Gimenez,Republican,2356,Florida,0.547664755,33.01878171
+117,1301,13,1,GA,Earl L. “Buddy” Carter,Carter,Republican,7433.85,Georgia,1.826429426,53.36759633
+118,1302,13,2,GA,Sanford D. Bishop Jr.,Bishop,Democrat,10119.79,Georgia,2.495461418,10.84627682
+119,1303,13,3,GA,Brian Jack,Jack,Republican,4249.29,Georgia,1.064317872,6.921771942
+120,1304,13,4,GA,Henry C. “Hank” Johnson Jr.,Johnson,Democrat,273.57,Georgia,0.069006517,2.095751074
+121,1305,13,5,GA,Nikema Williams,Williams,Democrat,226.19,Georgia,0.056968257,1.677784996
+122,1306,13,6,GA,Lucy McBath,McBath,Democrat,523.19,Georgia,0.131785936,2.564401244
+123,1307,13,7,GA,Richard McCormick,McCormick,Republican,1158.99,Georgia,0.294073445,3.981924192
+124,1308,13,8,GA,Austin Scott,Scott,Republican,11080.48,Georgia,2.731445225,12.83302886
+125,1309,13,9,GA,Andrew S. Clyde,Clyde,Republican,3462.72,Georgia,0.881361774,8.087103898
+126,1310,13,10,GA,Mike Collins,Collins,Republican,5341.24,Georgia,1.345654369,8.620895307
+127,1311,13,11,GA,Barry Loudermilk,Loudermilk,Republican,1502.83,Georgia,0.38121356,4.123124019
+128,1312,13,12,GA,Rick W. Allen,Allen,Republican,9824.65,Georgia,2.449135517,10.6022157
+129,1313,13,13,GA,David Scott,Scott,Democrat,543.4,Georgia,0.136816648,3.646339849
+130,1314,13,14,GA,Vacant,Vacant,Republican,2961.02,Georgia,0.752518721,5.72280297
+131,1501,15,1,HI,Ed Case,Case,Democrat,203.35,Hawaii,0.045863737,2.802970517
+132,1502,15,2,HI,Jill N. Tokuda,Tokuda,Democrat,6227.76,Hawaii,1.394304897,18.42283692
+133,1601,16,1,ID,Russ Fulcher,Fulcher,Republican,39905.24,Idaho,11.87623092,27.61688839
+134,1602,16,2,ID,Michael K. Simpson,Simpson,Republican,43663.32,Idaho,12.58041276,22.58824848
+135,1701,17,1,IL,Jonathan L. Jackson,Jackson,Democrat,620.21,Illinois,0.172995789,4.023356765
+136,1702,17,2,IL,Robin L. Kelly,Kelly,Democrat,3930.42,Illinois,1.085864815,6.941855272
+137,1703,17,3,IL,Delia C. Ramirez,Ramirez,Democrat,156.82,Illinois,0.04408592,2.663140214
+138,1704,17,4,IL,Jesús G. “Chuy” García,García,Democrat,96.79,Illinois,0.027171104,1.89045681
+139,1705,17,5,IL,Mike Quigley,Quigley,Democrat,158,Illinois,0.044524741,2.950784798
+140,1706,17,6,IL,Sean Casten,Casten,Democrat,229.78,Illinois,0.064408388,2.258418925
+141,1707,17,7,IL,Danny K. Davis,Davis,Democrat,68.47,Illinois,0.019229357,1.661545617
+142,1708,17,8,IL,Raja Krishnamoorthi,Krishnamoorthi,Democrat,291.32,Illinois,0.082029511,3.107649247
+143,1709,17,9,IL,Janice D. Schakowsky,Schakowsky,Democrat,172.17,Illinois,0.048558734,2.556947382
+144,1710,17,10,IL,Bradley Scott Schneider,Schneider,Democrat,535.77,Illinois,0.151623944,2.894287329
+145,1711,17,11,IL,Bill Foster,Foster,Democrat,928.12,Illinois,0.261492496,4.823892208
+146,1712,17,12,IL,Mike Bost,Bost,Republican,14273.64,Illinois,3.807547977,13.65106044
+147,1713,17,13,IL,Nikki Budzinski,Budzinski,Democrat,2300.24,Illinois,0.623303543,8.68985862
+148,1714,17,14,IL,Lauren Underwood,Underwood,Democrat,1998.05,Illinois,0.558623125,5.076760983
+149,1715,17,15,IL,Mary E. Miller,Miller,Republican,16988.02,Illinois,4.628843672,21.76186097
+150,1716,17,16,IL,Darin LaHood,LaHood,Republican,9022.58,Illinois,2.516420085,18.52071552
+151,1717,17,17,IL,Eric Sorensen,Sorensen,Democrat,4567.48,Illinois,1.271225158,14.45852365
+152,1801,18,1,IN,Frank J. Mrvan,Mrvan,Democrat,1112.08,Indiana,0.310455522,3.426371687
+153,1802,18,2,IN,Rudy Yakym III,Yakym ,Republican,4397.75,Indiana,1.222982603,5.422497161
+154,1803,18,3,IN,Marlin A. Stutzman,Stutzman,Republican,4445.59,Indiana,1.233194197,5.185044448
+155,1804,18,4,IN,James R. Baird,Baird,Republican,6126.16,Indiana,1.681485498,6.983198034
+156,1805,18,5,IN,Victoria Spartz,Spartz,Republican,2209.32,Indiana,0.605978582,3.777184613
+157,1806,18,6,IN,Jefferson Shreve,Shreve,Republican,3298.25,Indiana,0.896922625,5.247221221
+158,1807,18,7,IN,André Carson,Carson,Democrat,282.84,Indiana,0.077067198,1.204301332
+159,1808,18,8,IN,Mark B. Messmer,Messmer,Republican,8216.95,Indiana,2.205534753,11.27132079
+160,1809,18,9,IN,Erin Houchin,Houchin,Republican,6098.49,Indiana,1.639908254,7.757383481
+161,1901,19,1,IA,Mariannette Miller-Meeks,Miller-Meeks,Republican,10997.61,Iowa,3.069851153,11.94162596
+162,1902,19,2,IA,Ashley Hinson,Hinson,Republican,12985.65,Iowa,3.694257892,10.91335105
+163,1903,19,3,IA,Zachary Nunn,Nunn,Republican,10748.59,Iowa,2.985872966,10.79092596
+164,1904,19,4,IA,Randy Feenstra,Feenstra,Republican,21540.89,Iowa,6.107633007,17.15546932
+165,2001,20,1,KS,Tracey Mann,Mann,Republican,49841.34,Kansas,13.38228956,22.49924705
+166,2002,20,2,KS,Derek Schmidt,Schmidt,Republican,15505.57,Kansas,4.142708694,18.67672191
+167,2003,20,3,KS,Sharice Davids,Davids,Democrat,2293.78,Kansas,0.613994746,4.052702619
+168,2004,20,4,KS,Ron Estes,Estes,Republican,14637.51,Kansas,3.865732224,10.76756378
+169,2101,21,1,KY,James Comer,Comer,Republican,11957.06,Kentucky,3.139200845,21.06634262
+170,2102,21,2,KY,Brett Guthrie,Guthrie,Republican,7445.92,Kentucky,1.964289964,10.5444337
+171,2103,21,3,KY,Morgan McGarvey,McGarvey,Democrat,323.09,Kentucky,0.086053018,1.607895844
+172,2104,21,4,KY,Thomas Massie,Massie,Republican,4967.81,Kentucky,1.329261289,10.69954954
+173,2105,21,5,KY,Harold Rogers,Rogers,Republican,11880.49,Kentucky,3.130950037,12.11608504
+174,2106,21,6,KY,Andy Barr,Barr,Republican,3831.55,Kentucky,1.017900828,7.187411559
+175,2201,22,1,LA,Steve Scalise,Scalise,Republican,4151.7,Louisiana,1.00406362,73.83217005
+176,2202,22,2,LA,Troy A. Carter,Carter,Democrat,2147.17,Louisiana,0.520282106,10.7937403
+177,2203,22,3,LA,Clay Higgins,Higgins,Republican,8176.31,Louisiana,1.97781384,61.19269256
+178,2204,22,4,LA,Mike Johnson,Johnson,Republican,15041.75,Louisiana,3.709504288,25.92570686
+179,2205,22,5,LA,Julia Letlow,Letlow,Republican,10785.82,Louisiana,2.657800749,20.48035703
+180,2206,22,6,LA,Cleo Fields,Fields,Democrat,5032.08,Louisiana,1.233560285,17.4094874
+181,2301,23,1,ME,Chellie Pingree,Pingree,Democrat,3459.88,Maine,1.003618611,43.96232134
+182,2302,23,2,ME,Jared F. Golden,Golden,Democrat,29005.88,Maine,8.657802758,53.93333292
+183,2401,24,1,MD,Andy Harris,Harris,Republican,3937.43,Maryland,1.058056728,64.22605096
+184,2402,24,2,MD,"Johnny Olszewski, Jr.",Olszewski,Democrat,823.57,Maryland,0.22344171,5.452759683
+185,2403,24,3,MD,Sarah Elfreth,Elfreth,Democrat,504.49,Maryland,0.136243038,7.303514548
+186,2404,24,4,MD,Glenn Ivey,Ivey,Democrat,218.98,Maryland,0.058916152,2.038295503
+187,2405,24,5,MD,Steny H. Hoyer,Hoyer,Democrat,1531.6,Maryland,0.410057674,16.97131846
+188,2406,24,6,MD,April McClain Delaney,Delaney,Democrat,2432.32,Maryland,0.659815615,8.711322292
+189,2407,24,7,MD,Kweisi Mfume,Mfume,Democrat,131.16,Maryland,0.03546658,3.19089635
+190,2408,24,8,MD,Jamie Raskin,Raskin,Democrat,280.29,Maryland,0.075590099,1.787435034
+191,2501,25,1,MA,Richard E. Neal,Neal,Democrat,2292.9,Massachusetts,0.648177629,5.592275752
+192,2502,25,2,MA,James P. McGovern,McGovern,Democrat,1863.68,Massachusetts,0.52803048,5.741307352
+193,2503,25,3,MA,Lori Trahan,Trahan,Democrat,779.07,Massachusetts,0.221285522,3.668020363
+194,2504,25,4,MA,Jake Auchincloss,Auchincloss,Democrat,700,Massachusetts,0.196938041,5.398456439
+195,2505,25,5,MA,Katherine M. Clark,Clark,Democrat,228.69,Massachusetts,0.064753699,2.537881516
+196,2506,25,6,MA,Seth Moulton,Moulton,Democrat,549.03,Massachusetts,0.15607553,8.878836069
+197,2507,25,7,MA,Ayanna Pressley,Pressley,Democrat,61.71,Massachusetts,0.017448227,2.135262533
+198,2508,25,8,MA,Stephen F. Lynch,Lynch,Democrat,300.34,Massachusetts,0.084729535,5.096288189
+199,2509,25,9,MA,William R. Keating,Keating,Democrat,1307.61,Massachusetts,0.366682441,24.60601177
+200,2601,26,1,MI,Jack Bergman,Bergman,Republican,27793.8,Michigan,8.325801278,64.20141343
+201,2602,26,2,MI,John R. Moolenaar,Moolenaar,Republican,9908.97,Michigan,2.861322729,10.93129108
+202,2603,26,3,MI,Hillary J. Scholten,Scholten,Democrat,819.41,Michigan,0.234353532,5.334100536
+203,2604,26,4,MI,Bill Huizenga,Huizenga,Republican,2440.39,Michigan,0.691555904,6.042537395
+204,2605,26,5,MI,Tim Walberg,Walberg,Republican,5357.2,Michigan,1.50759,9.718573833
+205,2606,26,6,MI,Debbie Dingell,Dingell,Democrat,998.55,Michigan,0.282123065,4.1423723
+206,2607,26,7,MI,Tom Barrett,Barrett,Republican,2814.39,Michigan,0.801272519,4.438795449
+207,2608,26,8,MI,Kristen McDonald Rivet,Rivet,Democrat,2265.86,Michigan,0.651688476,6.344724069
+208,2609,26,9,MI,Lisa C. McClain,McClain,Republican,4688.94,Michigan,1.346916037,11.21899833
+209,2610,26,10,MI,John James,James,Republican,229.23,Michigan,0.065109503,2.23145966
+210,2611,26,11,MI,Haley M. Stevens,Stevens,Democrat,336.1,Michigan,0.095457118,1.712301641
+211,2612,26,12,MI,Rashida Tlaib,Tlaib,Democrat,191.48,Michigan,0.054217357,1.211418767
+212,2613,26,13,MI,Shri Thanedar,Thanedar,Democrat,215.91,Michigan,0.061063646,2.173503597
+213,2701,27,1,MN,Brad Finstad,Finstad,Republican,12454.87,Minnesota,3.614028199,13.68134737
+214,2702,27,2,MN,Angie Craig,Craig,Democrat,1809.87,Minnesota,0.530899826,4.403635608
+215,2703,27,3,MN,Kelly Morrison,Morrison,Democrat,516.99,Minnesota,0.152874101,2.594553954
+216,2704,27,4,MN,Betty McCollum,McCollum,Democrat,333.99,Minnesota,0.098728491,1.540908285
+217,2705,27,5,MN,Ilhan Omar,Omar,Democrat,137.19,Minnesota,0.040539593,1.066789045
+218,2706,27,6,MN,Tom Emmer,Emmer,Republican,2615.22,Minnesota,0.777079547,6.69498853
+219,2707,27,7,MN,Michelle Fischbach,Fischbach,Republican,32025.05,Minnesota,9.678276081,26.83604346
+220,2708,27,8,MN,Pete Stauber,Stauber,Republican,34487.51,Minnesota,10.64444859,25.2337307
+221,2801,28,1,MS,Trent Kelly,Kelly,Republican,10094.66,Mississippi,2.559258661,9.226373152
+222,2802,28,2,MS,Bennie G. Thompson,Thompson,Democrat,18404.1,Mississippi,4.59712483,21.29236364
+223,2803,28,3,MS,Michael Guest,Guest,Republican,11823.03,Mississippi,2.928388347,12.25245359
+224,2804,28,4,MS,Mike Ezell,Ezell,Republican,7336.7,Mississippi,1.794934093,16.21219899
+225,2901,29,1,MO,Wesley Bell,Bell,Democrat,258.53,Missouri,0.069361879,1.677423218
+226,2902,29,2,MO,Ann Wagner,Wagner,Republican,1821.37,Missouri,0.487380328,4.614012858
+227,2903,29,3,MO,"Robert F. Onder, Jr.",Onder,Republican,7697.95,Missouri,2.058124718,13.11293175
+228,2904,29,4,MO,Mark Alford,Alford,Republican,14664.53,Missouri,3.908448818,12.90660271
+229,2905,29,5,MO,Emanuel Cleaver,Cleaver,Democrat,431.41,Missouri,0.116231483,1.924960338
+230,2906,29,6,MO,Sam Graves,Graves,Republican,20483.52,Missouri,5.584886182,15.92680102
+231,2907,29,7,MO,Eric Burlison,Burlison,Republican,5864.92,Missouri,1.53623048,6.243987331
+232,2908,29,8,MO,Jason Smith,Smith,Republican,18484.6,Missouri,4.854296669,15.3413098
+233,3001,30,1,MT,Ryan K. Zinke,Zinke,Republican,40777.85,Montana,12.48160857,28.66749582
+234,3002,30,2,MT,Troy Downing,Downing,Republican,106265.44,Montana,32.59830048,30.27561283
+235,3101,31,1,NE,Mike Flood,Flood,Republican,6053.36,Nebraska,1.687593273,9.301254952
+236,3102,31,2,NE,Don Bacon,Bacon,Republican,1249,Nebraska,0.347411863,3.416467681
+237,3103,31,3,NE,Adrian Smith,Smith,Republican,70045.09,Nebraska,19.57883871,29.70421675
+238,3201,32,1,NV,Dina Titus,Titus,Democrat,1018.89,Nevada,0.263285857,2.785003926
+239,3202,32,2,NV,Mark E. Amodei,Amodei,Republican,65518.26,Nevada,18.02340797,20.10924573
+240,3203,32,3,NV,Susie Lee,Lee,Democrat,2024.76,Nevada,0.522274901,5.105629134
+241,3204,32,4,NV,Steven Horsford,Horsford,Democrat,42008.87,Nevada,11.13104945,16.98014021
+242,3301,33,1,NH,Chris Pappas,Pappas,Democrat,2292.61,New Hampshire,0.659895441,9.231739317
+243,3302,33,2,NH,Maggie Goodlander,Goodlander,Democrat,6971.07,New Hampshire,2.018601967,12.54843412
+244,3401,34,1,NJ,Donald Norcross,Norcross,Democrat,373.68,New Jersey,0.101753232,2.364349569
+245,3402,34,2,NJ,Jeff Van Drew,Drew,Republican,2034.04,New Jersey,0.551446716,40.40053938
+246,3403,34,3,NJ,"Herbert C. Conaway, Jr.",Conaway,Democrat,1099.31,New Jersey,0.300181055,4.592362025
+247,3404,34,4,NJ,Christopher H. Smith,Smith,Republican,659.86,New Jersey,0.180446719,8.136150947
+248,3405,34,5,NJ,Josh S. Gottheimer,Gottheimer,Democrat,672.12,New Jersey,0.186637534,3.422421372
+249,3406,34,6,NJ,Frank Pallone Jr.,Pallone,Democrat,193.89,New Jersey,0.053323339,5.552698073
+250,3407,34,7,NJ,"Thomas H. Kean, Jr.",Kean,Republican,1377.42,New Jersey,0.380353241,5.150950663
+251,3408,34,8,NJ,Robert Menendez,Menendez,Democrat,51.18,New Jersey,0.014127005,2.348270077
+252,3409,34,9,NJ,Nellie Pou,Pou,Democrat,114.08,New Jersey,0.031573314,2.347722706
+253,3410,34,10,NJ,LaMonica McIver,McIver,Democrat,77.89,New Jersey,0.021503822,1.641234405
+254,3411,34,11,NJ,Vacant,Vacant,Democrat,412.47,New Jersey,0.114126505,2.647688739
+255,3412,34,12,NJ,Bonnie Watson Coleman,Coleman,Democrat,445.62,New Jersey,0.122419011,3.088776975
+256,3501,35,1,NM,Melanie A. Stansbury,Stansbury,Democrat,17589.71,New Mexico,4.460252308,13.88619605
+257,3502,35,2,NM,Gabe Vasquez,Vasquez,Democrat,51553.8,New Mexico,12.91352122,23.57138699
+258,3503,35,3,NM,Teresa Leger Fernandez,Fernandez,Democrat,52449.77,New Mexico,13.51979433,25.47814024
+259,3601,36,1,NY,Nick LaLota,LaLota,Republican,667.41,New York,0.184777816,14.08789178
+260,3602,36,2,NY,Andrew R. Garbarino,Garbarino,Republican,240.03,New York,0.066286125,7.671496374
+261,3603,36,3,NY,Thomas R. Suozzi,Suozzi,Democrat,193.63,New York,0.053524507,2.828240675
+262,3604,36,4,NY,Laura Gillen,Gillen,Democrat,115.53,New York,0.031865935,4.809438314
+263,3605,36,5,NY,Gregory W. Meeks,Meeks,Democrat,47.05,New York,0.012976044,1.76224458
+264,3606,36,6,NY,Grace Meng,Meng,Democrat,26.06,New York,0.007196122,0.63179817
+265,3607,36,7,NY,Nydia M. Velázquez,Velázquez,Democrat,21.99,New York,0.006069738,0.815189142
+266,3608,36,8,NY,Hakeem S. Jeffries,Jeffries,Democrat,26.34,New York,0.007260383,1.414017487
+267,3609,36,9,NY,Yvette D. Clarke,Clarke,Democrat,15.21,New York,0.004192468,0.374890988
+268,3610,36,10,NY,Daniel S. Goldman,Goldman,Democrat,15.41,New York,0.004250141,0.976397361
+269,3611,36,11,NY,Nicole Malliotakis,Malliotakis,Republican,64.48,New York,0.017762713,1.436142553
+270,3612,36,12,NY,Jerrold Nadler,Nadler,Democrat,9.78,New York,0.00270136,0.554435605
+271,3613,36,13,NY,Adriano Espaillat,Espaillat,Democrat,11.14,New York,0.003081238,0.681374659
+272,3614,36,14,NY,Alexandria Ocasio-Cortez,Ocasio-Cortez,Democrat,29.2,New York,0.008072529,1.633630045
+273,3615,36,15,NY,Ritchie Torres,Torres,Democrat,18.63,New York,0.005152914,0.540005354
+274,3616,36,16,NY,George Latimer,Latimer,Democrat,125.81,New York,0.034867578,1.788105464
+275,3617,36,17,NY,Michael Lawler,Lawler,Republican,864.51,New York,0.240775251,3.848111406
+276,3618,36,18,NY,Patrick Ryan,Ryan,Democrat,1934.15,New York,0.541375535,5.28590283
+277,3619,36,19,NY,Josh Riley,Riley,Democrat,8375.07,New York,2.366473423,12.89409798
+278,3620,36,20,NY,Paul Tonko,Tonko,Democrat,1403.16,New York,0.399807594,4.192617364
+279,3621,36,21,NY,Elise M. Stefanik,Stefanik,Republican,16985.96,New York,4.927668746,16.83341293
+280,3622,36,22,NY,John W. Mannion,Mannion,Democrat,2493.16,New York,0.711835219,5.232770247
+281,3623,36,23,NY,Nicholas A. Langworthy,Langworthy,Republican,6523.07,New York,1.844366393,11.23848516
+282,3624,36,24,NY,Claudia Tenney,Tenney,Republican,7336,New York,2.101585269,21.56665293
+283,3625,36,25,NY,Joseph D. Morelle,Morelle,Democrat,713.88,New York,0.204548024,2.917930443
+284,3626,36,26,NY,Timothy M. Kennedy,Kennedy,Democrat,262.31,New York,0.074974865,2.809706269
+285,3701,37,1,NC,Donald G. Davis,Davis,Democrat,8450.77,North Carolina,2.188471594,25.85166389
+286,3702,37,2,NC,Deborah K. Ross,Ross,Democrat,413.18,North Carolina,0.106729151,2.242080104
+287,3703,37,3,NC,Gregory F. Murphy,Murphy,Republican,6967.8,North Carolina,1.785816294,67.67108306
+288,3704,37,4,NC,Valerie P. Foushee,Foushee,Democrat,1082.22,North Carolina,0.279972739,3.733481569
+289,3705,37,5,NC,Virginia Foxx,Foxx,Republican,4237.89,North Carolina,1.100855051,8.001869416
+290,3706,37,6,NC,Addison P. McDowell,McDowell,Republican,1687.36,North Carolina,0.435701262,4.316897083
+291,3707,37,7,NC,David Rouzer,Rouzer,Republican,4897.96,North Carolina,1.245034691,19.73095524
+292,3708,37,8,NC,Mark Harris,Harris,Republican,3767.11,North Carolina,0.963826987,6.854987634
+293,3709,37,9,NC,Richard Hudson,Hudson,Republican,3306.25,North Carolina,0.851679238,8.16834771
+294,3710,37,10,NC,Pat Harrigan,Harrigan,Republican,1923.95,North Carolina,0.497062369,4.806569979
+295,3711,37,11,NC,Chuck Edwards,Edwards,Republican,6307.42,North Carolina,1.62264404,8.857297224
+296,3712,37,12,NC,Alma S. Adams,Adams,Democrat,274.89,North Carolina,0.070502622,1.797675775
+297,3713,37,13,NC,Brad Knott,Knott,Republican,3766.18,North Carolina,0.973658718,9.536840593
+298,3714,37,14,NC,Tim Moore,Moore,Republican,2234.48,North Carolina,0.574442952,6.769853332
+299,3800,38,0,ND,Julie Fedorchak,Fedorchak,Republican,70698.83,North Dakota,21.83985905,25.1848718
+300,3901,39,1,OH,Greg Landsman,Landsman,Democrat,611.08,Ohio,0.165355911,2.940485968
+301,3902,39,2,OH,David J. Taylor,Taylor,Republican,7441.92,Ohio,2.007141128,9.172758867
+302,3903,39,3,OH,Joyce Beatty,Beatty,Democrat,221.1,Ohio,0.060425877,1.248462764
+303,3904,39,4,OH,Jim Jordan,Jordan,Republican,4921.25,Ohio,1.35481538,7.608850569
+304,3905,39,5,OH,Robert E. Latta,Latta,Republican,5562.34,Ohio,1.543006522,10.15531079
+305,3906,39,6,OH,Michael A. Rulli,Rulli,Republican,4842.41,Ohio,1.327661378,8.778819515
+306,3907,39,7,OH,Max L. Miller,Miller,Republican,1325.78,Ohio,0.367535545,4.530463787
+307,3908,39,8,OH,Warren Davidson,Davidson,Republican,1804.96,Ohio,0.491277586,4.520877174
+308,3909,39,9,OH,Marcy Kaptur,Kaptur,Democrat,2611.79,Ohio,0.729270611,13.02110477
+309,3910,39,10,OH,Michael R. Turner,Turner,Republican,996.6,Ohio,0.271227457,2.887377951
+310,3911,39,11,OH,Shontel M. Brown,Brown,Democrat,216.54,Ohio,0.060462376,2.212489112
+311,3912,39,12,OH,Troy Balderson,Balderson,Republican,5633.3,Ohio,1.539058948,8.067733827
+312,3913,39,13,OH,Emilia Strong Sykes,Sykes,Democrat,630.99,Ohio,0.17500309,2.777315102
+313,3914,39,14,OH,David P. Joyce,Joyce,Republican,2484.39,Ohio,0.693506592,4.324504062
+314,3915,39,15,OH,Mike Carey,Carey,Republican,1943.17,Ohio,0.530136552,6.871477254
+315,4001,40,1,OK,Kevin Hern,Hern,Republican,1103.44,Oklahoma,0.285867228,3.370765159
+316,4002,40,2,OK,Josh Brecheen,Brecheen,Republican,22414.44,Oklahoma,5.746294454,16.11227333
+317,4003,40,3,OK,Frank D. Lucas,Lucas,Republican,32906.98,Oklahoma,8.534267278,22.17286561
+318,4004,40,4,OK,Tom Cole,Cole,Republican,9890.09,Oklahoma,2.516585901,11.24123245
+319,4005,40,5,OK,Stephanie I. Bice,Bice,Republican,3584.2,Oklahoma,0.922063379,5.766895869
+320,4101,41,1,OR,Suzanne Bonamici,Bonamici,Democrat,3366.79,Oregon,1.007650667,13.13326156
+321,4102,41,2,OR,Cliff Bentz,Bentz,Republican,72876.85,Oregon,21.10768892,26.21431857
+322,4103,41,3,OR,Maxine Dexter,Dexter,Democrat,1405.96,Oregon,0.418867698,5.254344133
+323,4104,41,4,OR,Val T. Hoyle,Hoyle,Democrat,11718.97,Oregon,3.386278175,21.20557294
+324,4105,41,5,OR,Janelle S. Bynum,Bynum,Democrat,5630.41,Oregon,1.653391847,10.26086014
+325,4106,41,6,OR,Andrea Salinas,Salinas,Democrat,1906.83,Oregon,0.564254227,4.452309881
+326,4201,42,1,PA,Brian K. Fitzpatrick,Fitzpatrick,Republican,716.62,Pennsylvania,0.196700354,2.628690436
+327,4202,42,2,PA,Brendan F. Boyle,Boyle,Democrat,64.41,Pennsylvania,0.017604968,0.952514278
+328,4203,42,3,PA,Dwight Evans,Evans,Democrat,53.55,Pennsylvania,0.014629231,1.064800904
+329,4204,42,4,PA,Madeleine Dean,Dean,Democrat,733.56,Pennsylvania,0.201293544,3.949209082
+330,4205,42,5,PA,Mary Gay Scanlon,Scanlon,Democrat,231.28,Pennsylvania,0.063116248,2.349820471
+331,4206,42,6,PA,Chrissy Houlahan,Houlahan,Democrat,935.75,Pennsylvania,0.255711774,3.403766447
+332,4207,42,7,PA,Ryan Mackenzie,Mackenzie,Republican,1184.47,Pennsylvania,0.327233428,3.207472095
+333,4208,42,8,PA,"Robert P. Bresnahan, Jr.",Bresnahan,Republican,2840.24,Pennsylvania,0.791547533,6.038394324
+334,4209,42,9,PA,Daniel Meuser,Meuser,Republican,6153.51,Pennsylvania,1.712170204,9.012074843
+335,4210,42,10,PA,Scott Perry,Perry,Republican,1294.24,Pennsylvania,0.354787641,4.106055953
+336,4211,42,11,PA,Lloyd Smucker,Smucker,Republican,1545.09,Pennsylvania,0.421861125,3.914876532
+337,4212,42,12,PA,Summer L. Lee,Lee,Democrat,433.75,Pennsylvania,0.119103015,2.961097909
+338,4213,42,13,PA,John Joyce,Joyce,Republican,6403.52,Pennsylvania,1.755276906,7.902386385
+339,4214,42,14,PA,Guy Reschenthaler,Reschenthaler,Republican,4808.89,Pennsylvania,1.316061545,7.524590148
+340,4215,42,15,PA,Glenn Thompson,Thompson,Republican,13083.15,Pennsylvania,3.645815031,10.75949514
+341,4216,42,16,PA,Mike Kelly,Kelly,Republican,3894.88,Pennsylvania,1.086925116,6.311887026
+342,4217,42,17,PA,Christopher R. Deluzio,Deluzio,Democrat,909.08,Pennsylvania,0.250514875,3.52214317
+343,4401,44,1,RI,Gabe Amo,Amo,Democrat,278,Rhode Island,0.077954947,6.334697475
+344,4402,44,2,RI,Seth Magaziner,Magaziner,Democrat,795.82,Rhode Island,0.222777983,6.577683009
+345,4501,45,1,SC,Nancy Mace,Mace,Republican,2726.13,South Carolina,0.680491779,49.01190323
+346,4502,45,2,SC,Joe Wilson,Wilson,Republican,3201.27,South Carolina,0.805776912,7.919519384
+347,4503,45,3,SC,Sheri Biggs,Biggs,Republican,5845.86,South Carolina,1.4835851,7.405298757
+348,4504,45,4,SC,William R. Timmons IV,Timmons ,Republican,1249.08,South Carolina,0.319170454,4.157257539
+349,4505,45,5,SC,Ralph Norman,Norman,Republican,5252.15,South Carolina,1.336331115,8.649150604
+350,4506,45,6,SC,James E. Clyburn,Clyburn,Democrat,7078.83,South Carolina,1.77387991,21.30656634
+351,4507,45,7,SC,Russell Fry,Fry,Republican,5455.75,South Carolina,1.380934336,17.48764992
+352,4600,46,0,SD,Dusty Johnson,Johnson,Republican,77115.91,South Dakota,22.5785078,23.87903102
+353,4701,47,1,TN,Diana Harshbarger,Harshbarger,Republican,4465.97,Tennessee,1.15915573,7.564606416
+354,4702,47,2,TN,Tim Burchett,Burchett,Republican,2684.87,Tennessee,0.695992074,7.368674594
+355,4703,47,3,TN,Charles J. “Chuck” Fleischmann,Fleischmann,Republican,4066.61,Tennessee,1.04776196,9.364035501
+356,4704,47,4,TN,Scott DesJarlais,DesJarlais,Republican,6567.63,Tennessee,1.687678317,10.62909847
+357,4705,47,5,TN,Andrew Ogles,Ogles,Republican,2077.33,Tennessee,0.536023926,7.230149136
+358,4706,47,6,TN,John W. Rose,Rose,Republican,6044.5,Tennessee,1.569170448,9.192169075
+359,4707,47,7,TN,Matt Van Epps,Van Epps,Republican,6034.43,Tennessee,1.562556582,8.66865848
+360,4708,47,8,TN,David Kustoff,Kustoff,Republican,9379.39,Tennessee,2.419866026,10.52394233
+361,4709,47,9,TN,Steve Cohen,Cohen,Democrat,808.65,Tennessee,0.207501935,4.746875873
+362,4801,48,1,TX,Nathaniel Moran,Moran,Republican,9868.87,Texas,2.452602483,14.00452586
+363,4802,48,2,TX,Daniel Crenshaw,Crenshaw,Republican,656.66,Texas,0.159162806,3.437501221
+364,4803,48,3,TX,Keith Self,Self,Republican,1496,Texas,0.374555039,3.798713568
+365,4804,48,4,TX,Pat Fallon,Fallon,Republican,5432.06,Texas,1.364633295,15.12916189
+366,4805,48,5,TX,Lance Gooden,Gooden,Republican,3784.83,Texas,0.941180385,9.089053305
+367,4806,48,6,TX,Jake Ellzey,Ellzey,Republican,6019.72,Texas,1.488123507,11.25655272
+368,4807,48,7,TX,Lizzie Fletcher,Fletcher,Democrat,132.81,Texas,0.032058989,2.108284919
+369,4808,48,8,TX,Morgan Luttrell,Luttrell,Republican,3000.68,Texas,0.730702337,6.374121636
+370,4809,48,9,TX,Al Green,Green,Democrat,220.01,Texas,0.05307029,2.03558492
+371,4810,48,10,TX,Michael T. McCaul,McCaul,Republican,7799.62,Texas,1.892756361,11.38866973
+372,4811,48,11,TX,August Pfluger,Pfluger,Republican,19344.62,Texas,4.750903066,14.45236794
+373,4812,48,12,TX,Craig A. Goldman,Goldman,Republican,994.86,Texas,0.248120633,3.921477636
+374,4813,48,13,TX,Ronny Jackson,Jackson,Republican,35360.95,Texas,9.036708633,20.38523964
+375,4814,48,14,TX,Randy K. Weber Sr.,Weber,Republican,2603.61,Texas,0.627386418,26.65973223
+376,4815,48,15,TX,Monica De La Cruz,De La Cruz,Republican,6295.23,Texas,1.49567713,12.80462136
+377,4816,48,16,TX,Veronica Escobar,Escobar,Democrat,316.37,Texas,0.078044272,2.078342193
+378,4817,48,17,TX,Pete Sessions,Sessions,Republican,10661.59,Texas,2.614721108,15.69603757
+379,4818,48,18,TX,Christian D. Menefee,Menefee,Democrat,232.11,Texas,0.056147468,3.225566837
+380,4819,48,19,TX,Jodey C. Arrington,Arrington,Republican,30260.53,Texas,7.57843828,13.5683008
+381,4820,48,20,TX,Joaquin Castro,Castro,Democrat,179.98,Texas,0.043350605,2.068136852
+382,4821,48,21,TX,Chip Roy,Roy,Republican,6332.91,Texas,1.533871093,8.107327121
+383,4822,48,22,TX,Troy Nehls,Nehls,Republican,3219.49,Texas,0.773625105,17.49856819
+384,4823,48,23,TX,Tony Gonzales,Gonzales,Republican,58961.35,Texas,14.33315544,30.64231034
+385,4824,48,24,TX,Beth Van Duyne,Van Duyne,Republican,277.05,Texas,0.069163172,2.806889162
+386,4825,48,25,TX,Roger Williams,Williams,Republican,9135.56,Texas,2.271943974,10.5863532
+387,4826,48,26,TX,Brandon Gill,Gill,Republican,2057.35,Texas,0.516231931,6.598868621
+388,4827,48,27,TX,Michael Cloud,Cloud,Republican,10541.76,Texas,2.523837718,33.42667849
+389,4828,48,28,TX,Henry Cuellar,Cuellar,Democrat,11469.85,Texas,2.71903511,12.70809719
+390,4829,48,29,TX,Sylvia R. Garcia,Garcia,Democrat,207.63,Texas,0.050183158,3.11220584
+391,4830,48,30,TX,Jasmine Crockett,Crockett,Democrat,369.77,Texas,0.092048271,2.485459468
+392,4831,48,31,TX,John R. Carter,Carter,Republican,5712.96,Texas,1.401160066,9.513564721
+393,4832,48,32,TX,Julie Johnson,Johnson,Democrat,151.2,Texas,0.037734216,2.512961848
+394,4833,48,33,TX,Marc A. Veasey,Veasey,Democrat,225.63,Texas,0.056239453,4.3609334
+395,4834,48,34,TX,Vicente Gonzalez,Gonzalez,Democrat,4180.09,Texas,0.982228068,33.63522781
+396,4835,48,35,TX,Greg Casar,Casar,Democrat,527.47,Texas,0.127743559,4.554041537
+397,4836,48,36,TX,Brian Babin,Babin,Republican,6057.86,Texas,1.472841208,13.94566999
+398,4837,48,37,TX,Lloyd Doggett,Doggett,Democrat,227.02,Texas,0.055148469,2.119423407
+399,4838,48,38,TX,Wesley Hunt,Hunt,Republican,310.42,Texas,0.075129821,2.761060901
+400,4901,49,1,UT,Blake Moore,Moore,Republican,11356.28,Utah,3.169870903,9.574645853
+401,4902,49,2,UT,Celeste Maloy,Maloy,Republican,40040.32,Utah,10.74672909,19.02388402
+402,4903,49,3,UT,Mike Kennedy,Kennedy,Republican,28960.44,Utah,7.822246323,19.16653399
+403,4904,49,4,UT,Burgess Owens,Owens,Republican,4541.08,Utah,1.236111426,7.44055097
+404,5000,50,0,VT,Becca Balint,Balint,Democrat,9615.23,Vermont,2.798070691,9.831544176
+405,5101,51,1,VA,Robert J. Wittman,Wittman,Republican,3091.34,Virginia,0.817740651,38.878992
+406,5102,51,2,VA,Jennifer A. Kiggans,Kiggans,Republican,2168.69,Virginia,0.568741392,37.88743327
+407,5103,51,3,VA,Robert C. “Bobby” Scott,Scott,Democrat,255.96,Virginia,0.0670753,8.489844803
+408,5104,51,4,VA,Jennifer McClellan,McClellan,Democrat,3465.09,Virginia,0.908548287,9.321805603
+409,5105,51,5,VA,John J. McGuire III,McGuire,Republican,9609.96,Virginia,2.530371357,9.602979463
+410,5106,51,6,VA,Ben Cline,Cline,Republican,6305.97,Virginia,1.68160134,10.2324268
+411,5107,51,7,VA,Eugene Simon Vindman,Vindman,Democrat,2760.51,Virginia,0.736217988,8.728822923
+412,5108,51,8,VA,"Donald S. Beyer, Jr.",Beyer,Democrat,148.66,Virginia,0.039929357,1.993078727
+413,5109,51,9,VA,H. Morgan Griffith,Griffith,Republican,10162.67,Virginia,2.663516571,13.89855721
+414,5110,51,10,VA,Suhas Subramanyam,Subramanyam,Democrat,1705.79,Virginia,0.458400345,4.538578085
+415,5111,51,11,VA,James R. Walkinshaw,Walkinshaw,Democrat,254.3,Virginia,0.068362622,1.810173466
+416,5301,53,1,WA,Suzan K. DelBene,DelBene,Democrat,338.47,Washington,0.105412494,3.610447467
+417,5302,53,2,WA,Rick Larsen,Larsen,Democrat,4486.83,Washington,1.417414404,25.58157922
+418,5303,53,3,WA,Marie Gluesenkamp Perez,Perez,Democrat,7398.4,Washington,2.23840974,16.08026885
+419,5304,53,4,WA,Dan Newhouse,Newhouse,Republican,18189.99,Washington,5.598808774,17.92975646
+420,5305,53,5,WA,Michael Baumgartner,Baumgartner,Republican,18983.87,Washington,5.864494262,11.855813
+421,5306,53,6,WA,Emily Randall,Randall,Democrat,7039.46,Washington,2.18023366,25.73287888
+422,5307,53,7,WA,Pramila Jayapal,Jayapal,Democrat,137.76,Washington,0.042650171,3.073091159
+423,5308,53,8,WA,Kim Schrier ,Schrier ,Democrat,9995.96,Washington,3.093527729,12.6803271
+424,5309,53,9,WA,Adam Smith,Smith,Democrat,185.36,Washington,0.057241524,2.466097408
+425,5310,53,10,WA,Marilyn Strickland,Strickland,Democrat,720.77,Washington,0.220944022,5.967582729
+426,5401,54,1,WV,Carol D. Miller,Miller,Republican,14450.08,West Virginia,3.849646433,14.09764027
+427,5402,54,2,WV,Riley M. Moore,Moore,Republican,9779.96,West Virginia,2.64422695,16.07177688
+428,5501,55,1,WI,Bryan Steil,Steil,Republican,1571.94,Wisconsin,0.447147627,5.104208159
+429,5502,55,2,WI,Mark Pocan,Pocan,Democrat,4368.27,Wisconsin,1.248318652,6.369836449
+430,5503,55,3,WI,Derrick Van Orden,Van Orden,Republican,11544.2,Wisconsin,3.358157457,15.55722172
+431,5504,55,4,WI,Gwen Moore,Moore,Democrat,140.53,Wisconsin,0.040228152,1.714655421
+432,5505,55,5,WI,Scott Fitzgerald,Fitzgerald,Republican,2219.22,Wisconsin,0.636205641,4.676091329
+433,5506,55,6,WI,Glenn Grothman,Grothman,Republican,5352.74,Wisconsin,1.550635923,9.745155156
+434,5507,55,7,WI,Thomas P. Tiffany,Tiffany,Republican,24050.83,Wisconsin,7.182450922,25.08576772
+435,5508,55,8,WI,Tony Wied,Wied,Republican,6846.86,Wisconsin,2.017901775,15.29821334
+436,5600,56,0,WY,Harriet M. Hageman,Hageman,Republican,97809.83,Wyoming,27.97085822,21.99932747
+437,6098,60,98,AS,Aumua Amata Coleman Radewagen,Radewagen,Republican,77.99,American Samoa,0.016916668,1.825067091
+438,6698,66,98,GU,James C. Moylan,Moylan,Republican,216.46,Guam,0.046795996,1.433019462
+439,6998,69,98,MP,Kimberlyn King-Hinds,King-Hinds,Republican,184.46,Northern Mariana,0.040336333,3.252966049
+440,7298,72,98,PR,Pablo José Hernández,Hernández,Democrat,3486.4,Puerto Rico,0.771304755,6.861808524
+441,7898,78,98,VI,Stacey E. Plaskett,Plaskett,Democrat,137.41,Virgin Islands,0.030357336,2.991084441
