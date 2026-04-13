@@ -1,0 +1,403 @@
+---
+  title: "NIH-award-diff"
+output: html_document
+date: "2025-05-28"
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if (!require('rstudioapi')) BiocManager::install("rstudioapi");library(rstudioapi)
+
+# change working directory to folder with script
+setwd(dirname(rstudioapi::getSourceEditorContext()$path)) 
+
+library(tidyverse)
+library(readxl)
+library(sf)
+library(magrittr)
+library(data.table)
+
+options(scipen=999)
+```
+
+```{r budget-cuts}
+# https://www.usinflationcalculator.com/ 2020-2027 dollars inflation adjusted to 2026 using: https://www.usinflationcalculator.com/ and assumption of 2% inflation from 2026 to 2027 
+inf_adj <- c(1.26, 1.21, 1.12, 1.07, 1.04, 1.02, 1, .98)
+
+
+# vectors of historic funding in FY2025, proposed for FY2027
+#FY2027 budget: https://www.whitehouse.gov/wp-content/uploads/2026/04/budget_fy2027.pdf
+#historic budget for ICs and NIH: https://officeofbudget.od.nih.gov/pdfs/FY26/br/Overview%20of%20FY%202026%20Supplementary%20Tables.pdf
+# unit is dollars in millions
+# placeholders for now: IC-specific cuts
+NCI_budg <- c(7221, 7353)
+NIAID_budg <- c(6562, 4751)
+NIA_budg <- c(4512, 4217)
+NIH_budg <- c(46001, 41000)
+
+prop_lost <- function(budget_vect){
+  # apply inflation adjustment
+  inf_adj_budget <- budget_vect * c(inf_adj[6],inf_adj[8])
+  
+  # calculate proportion of 2026 budget proposed for 2027
+  prop_2026 <- tail(inf_adj_budget, 1)/head(inf_adj_budget, 1)
+  
+  # return proportion cut
+  return(1 - prop_2026)
+}
+
+# calculate proportion cut for each IC and the full NIH
+NCI_cut <- prop_lost(NCI_budg)
+NIAID_cut <- prop_lost(NIAID_budg)
+NIA_cut <- prop_lost(NIA_budg)
+NIH_cut <- prop_lost(NIH_budg)
+
+# establish baseine by comparison to FY2020-FY2024
+NIH_prior <- read.csv("data/NIH_grants.csv") %>%
+                filter(Fiscal.Year >= 2020 & Fiscal.Year <=2024) %>%
+                mutate(Latitude = round(Latitude, 5), Longitude = round(Longitude, 5))
+# define ICs in NIH
+ic_list <- c("NIAID", "NICHD", "NHLBI", "NCI", "OD", "NIDCR", "NINDS", "NIBIB", "NIGMS", 
+             "NEI", "NIDA", "NIDDK", "NHGRI", "NIAAA", "NCATS", "NIEHS", "NIA", "NIMH",
+             "NIAMS", "NLM", "NIMHD", "NIDCD", "NINR", "NCCIH", "FIC")
+
+inf_by_year <- tibble(inf = inf_adj, Fiscal.Year = c(2020:2027))
+
+# calculate losses for total NIH funding
+NIH_total_cuts <- NIH_prior  %>%
+  filter(Funding.IC.s. %in% ic_list) %>%
+  left_join(inf_by_year) %>%
+  mutate(Total.Cost.IC = Total.Cost.IC * inf) %>%
+  group_by(Fiscal.Year, Organization.Name,Latitude, Longitude) %>%
+  summarize(NIH_funding = sum(Total.Cost.IC, na.rm=TRUE)) %>%
+  group_by(Organization.Name, Latitude, Longitude) %>%
+  summarize(IC_funding = mean(NIH_funding, na.rm=TRUE)) %>%
+  mutate(Funding.IC.s. = "NIH_tot")
+
+NIH_budget_cuts <- NIH_prior %>%
+  filter(Funding.IC.s. %in% ic_list) %>%
+  left_join(inf_by_year) %>%
+  mutate(Total.Cost.IC = Total.Cost.IC * inf) %>%
+  group_by(Funding.IC.s., Fiscal.Year, Organization.Name, Latitude, Longitude) %>%
+  summarize(IC_funding = sum(Total.Cost.IC, na.rm=TRUE)) %>%
+  group_by(Funding.IC.s., Organization.Name, Latitude, Longitude) %>%
+  summarize(IC_funding = mean(IC_funding, na.rm=TRUE)) %>%
+  # additionally calculate cuts to a few focal ICs
+  filter(Funding.IC.s. %in% c("NIA", "NIAID", "NCI")) %>%
+  rbind(NIH_total_cuts) %>%
+  pivot_wider(values_from = IC_funding, names_from = Funding.IC.s.) %>%
+  mutate(budg_NIA_cuts = NIA_cut * NIA,
+         budg_NIAID_cuts = NIAID_cut * NIAID,
+         budg_NCI_cuts = NCI_cut * NCI,
+         budg_NIH_cuts = NIH_cut * NIH_tot) %>% 
+  rename(lat = Latitude, 
+         lon = Longitude,
+         org_name = Organization.Name) 
+
+```
+
+
+```{r geolocate grants}
+
+NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
+  mutate(tractid = str_pad(tractid, 11, pad = "0"),
+         FIPS = substr(tractid, 0, 5),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(FIPS)) %>%
+  filter(tractid != "00NOT_FOUND") %>%
+  select(org_name, tractid, FIPS, lat, lon) %>%
+  distinct() 
+
+NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0"),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(GEOID)) %>%
+  filter(!(GEOID=="0104" & name_geoid == "Congressional District 4")) %>%
+  distinct()
+
+
+NIH_budget_cuts_loc <- left_join(NIH_budget_cuts, NIH_tract_fips)%>%
+  left_join(NIH_geoid) %>%
+  filter(!is.na(FIPS))
+
+# handle duplicates
+NIH_budget_cuts_loc$org_name[NIH_budget_cuts_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_cuts_loc$GEOID == "0805"] <- "UNIVERSITY OF COLORADO - COLORADO SPRINGS"
+NIH_budget_cuts_loc$org_name[NIH_budget_cuts_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_cuts_loc$GEOID == "0802"] <- "UNIVERSITY OF COLORADO BOULDER"
+NIH_budget_cuts_loc$org_name[NIH_budget_cuts_loc$org_name=="ALPHA GENESIS INC"] <- "ALPHA GENESIS, INC."
+NIH_budget_cuts_loc$org_name[NIH_budget_cuts_loc$org_name=="FRED HUTCHINSON CANCER RESEARCH CENTER"] <- "FRED HUTCHINSON CANCER CENTER"
+NIH_budget_cuts_loc$org_name[NIH_budget_cuts_loc$org_name %in% c("BATTELLE MEMORIAL INSTITU", "BATTELLE CENTERS/PUB HLTH RES & EVALUATN")] <- "BATTELLE MEMORIAL INSTITUTE"
+
+```
+
+```{r State-level info}
+# read in multiplier info
+state_mult_2026 <- read.csv("data/state_mult_2026.csv") %>% 
+                rename(tot_fund = 2, 
+                       econ_act = 8,
+                       state_name= 1,
+                       jobs_per_m = 3) %>%
+                mutate(econ_act = as.numeric(gsub(",", "", econ_act)),
+                       tot_fund = as.numeric(gsub(",", "", tot_fund)),
+                       job_val = as.numeric(gsub(",", "", jobs_per_m))/1000000,
+                       state_name = str_replace_all(state_name, "\\u00A0", " ")) %>%
+                mutate(econ_mult = econ_act/tot_fund) %>%
+                select(state_name, econ_mult, job_val) %>%
+                left_join(data.frame(state_name = c(state.name, "District of Columbia"),
+                                     state = c(state.abb, "DC"))) %>%
+                select(-state_name) %>%
+                filter(!is.na(state))
+
+# dictionary to map fips codes to state names
+NIH_state_dict <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
+  filter(!endsWith(FIPS, "000")) %>%
+  left_join(state_mult_2026)
+
+# append state FIPS codes
+NIH_state_dict <- tibble(
+  state_name = c(state.name, "District of Columbia"),
+  state = c(state.abb, "DC")) %>%
+  right_join(NIH_state_dict) %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  arrange(state) 
+
+```
+
+```{r Commuter Weighting}
+# commute is a dataframe derived from 2016 Census data with the following columns
+# ORIGIN: is the FIPS code for the county of residence
+# proportion: is the proportion of people working in a given DESTINATION who live in a specific ORIGIN
+
+# IMPORTANT: some FIPS codes have leading zeros
+commute <- fread("data/county_commute_NIH.csv") %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
+  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+
+# Quality check: all destination weights should sum to 1
+commute %>% 
+  group_by(DESTINATION) %>% 
+  summarize(sum = round(sum(proportion), digits=5)) %>% 
+  filter(sum < 1) %>%
+  nrow() 
+
+
+```
+
+```{r County Calculations}
+#summarize NIH data by FIPS code
+NIH_sum_budget_cuts_tract <- NIH_budget_cuts_loc %>% 
+  group_by(tractid) %>% 
+  summarise(across(starts_with(c("budg")), ~ sum(.x, na.rm = TRUE))) 
+
+
+#combine commuter data with NIH data
+county_commute_NIH <- merge(commute, NIH_sum_budget_cuts_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE)
+
+#replace all NA values with zeros
+county_commute_NIH <- mutate_all(county_commute_NIH , funs(replace(., is.na(.), 0)))
+
+
+county_commute_NIH_sum <- county_commute_NIH %>%
+  mutate(across(starts_with("budg"), ~ .x * proportion)) %>%
+  rename(FIPS = ORIGIN) %>%
+  group_by(FIPS) %>% 
+  summarise(across(starts_with("budg"), ~ sum(.x, na.rm = TRUE))) %>%
+  right_join(NIH_state_dict) %>%
+  mutate(across(starts_with("budg"), ~ .x * econ_mult, .names = "econ_{.col}"),
+         across(starts_with("budg"), ~ .x * job_val, .names = "jobs_{.col}")) %>%
+  select(FIPS, state_name, state, name, budg_NIH_cuts, econ_budg_NIH_cuts, jobs_budg_NIH_cuts)
+
+
+write.csv(county_commute_NIH_sum, "output/NIH_budget27_county.csv", row.names=FALSE)
+
+```
+
+```{r city-level}
+msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
+  select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
+  rename(FIPS = CountyFIPS) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
+         CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
+
+city_commute_NIH_sum <- county_commute_NIH_sum %>% 
+                        left_join(msa) %>%
+                        mutate(CBSA_FIPS = ifelse(is.na(CBSA_FIPS), FIPS, CBSA_FIPS),
+                               CBSA_NAME = ifelse(is.na(CBSA_FIPS), CBSA_NAME, paste(name, state, sep = ", "))) %>%
+                        select(CBSA_FIPS, CBSA_NAME, state_name, state, budg_NIH_cuts, econ_budg_NIH_cuts, jobs_budg_NIH_cuts)
+
+write.csv(city_commute_NIH_sum, "output/NIH_budget27_city.csv", row.names=FALSE)
+
+```
+
+# Congressional Districts
+
+```{r Prep District Commuter Flows}
+cong_commute <- fread("data/home_119_workTR.csv") %>%
+  mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
+         Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
+  rename(commuters = commutes) %>%
+  filter(!is.na(Cong_ORIGIN))
+
+cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
+  select(GEOID, STATE_NAME, NAME, PARTY) %>%
+  rename(state = STATE_NAME,
+         pol_party = PARTY,
+         rep_name = NAME)
+
+#get total workers per cong district
+cong_commute_sum <- cong_commute %>%
+  group_by(Cong_DESTINATION) %>%
+  summarise(total_workers = sum(commuters, na.rm=TRUE))
+
+#merge in total workers
+cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
+  select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
+  rename(DESTINATION = Cong_DESTINATION,
+         ORIGIN = Cong_ORIGIN) 
+
+#calculate proportion of workers who work in district X who live in district Y
+cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+
+```
+
+
+```{r District Calculations}
+#combine commuter data with NIH data
+cong_commute_NIH <- merge(cong_commute, NIH_sum_budget_cuts_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE)
+
+#for congressional districts with no commuter flow data; assume all money from these districts stays in these districts
+for (i in 1:nrow(cong_commute_NIH)){
+  if (is.na(cong_commute_NIH$ORIGIN[i])){
+    cong_commute_NIH$proportion[i] <- 1
+    cong_commute_NIH$ORIGIN[i] <- cong_commute_NIH$DESTINATION[i]
+  }
+}
+
+#replace all NA values with zeros
+cong_commute_NIH <- mutate_all(cong_commute_NIH, funs(replace(., is.na(.), 0)))
+
+#use commuter flows (e.g., proportion of people who work in district X but live in district Y) to weight the impact of NIH funding
+cong_commute_NIH_sum <- cong_commute_NIH %>%
+  mutate(across(starts_with("budg"), ~ .x * proportion)) %>%
+  rename(GEOID = ORIGIN) %>%
+  group_by(GEOID) %>% 
+  summarise(across(starts_with("budg"), ~ sum(.x, na.rm = TRUE)))  %>%
+  left_join(cong_info %>% rename(state_name=state)) %>%
+                    left_join(NIH_state_dict %>% 
+                                select(state, state_name, state_FIPS, econ_mult, job_val) %>% 
+                                distinct()) %>%
+  mutate(across(starts_with("budg"), ~ .x * econ_mult, .names = "econ_{.col}"),
+         across(starts_with("budg"), ~ .x * job_val, .names = "jobs_{.col}")) %>%
+  filter(! state_name %in% c("American Samoa", "Guam", "Puerto Rico", "virgin Islands")) %>%
+  select(GEOID, rep_name, pol_party, state_name, state, budg_NIH_cuts, econ_budg_NIH_cuts, jobs_budg_NIH_cuts) %>%
+  filter(!is.na(state_name))
+
+print(nrow(cong_commute_NIH_sum))
+
+write.csv(cong_commute_NIH_sum, "output/NIH_budget27_cong.csv", row.names=F)
+
+```
+
+```{r institution level calculations}
+# org name corrections from terminated grants analysis
+corrected_df <- read.csv("data/org_names_corrected.csv") 
+
+NIH_budget_cuts_loc %>%
+  group_by(org_name, tractid) %>%
+  summarize(across(starts_with("budg"), ~ sum(., na.rm=TRUE)))-> budg_inst
+
+replacements <- c("Of" = "of", "At" = "at", "And" = "and",
+                  "Univ " = "University ", "Ctr" = "Center", 
+                  "Col " = "College ", "Hlth" = "Health", "Scis" = "Sciences",
+                  "Sci " = "Science ", "Llc" = "LLC",
+                  " The" = "the", "For" = "for", "Res " = "Research ", 
+                  "Hosp " = "Hospital ", "Med " = "Medical ", 
+                  "Fdn" = "Foundation")
+
+#combine commuter data with NIH data
+cong_commute_NIH_inst_merge <- merge(cong_commute, budg_inst, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) 
+
+#replace all NA values with zeros
+cong_commute_NIH_inst <- mutate_all(cong_commute_NIH_inst_merge , funs(replace(., is.na(.), 0))) %>%
+  mutate(across(starts_with(c("budg")), ~ . * proportion)) %>%
+  rename(GEOID = ORIGIN) %>%
+  group_by(GEOID, org_name) %>% 
+  summarize(across(starts_with(c("budg")), ~ sum(., na.rm=TRUE))) %>%
+  slice_max(budg_NIH_cuts, n=5) %>%
+  left_join(cong_info %>% rename(state_name=state)) %>%
+                    left_join(NIH_state_dict %>% 
+                                select(state, state_name, state_FIPS, econ_mult, job_val) %>% 
+                                distinct()) %>%
+  mutate(across(starts_with("budg"), ~ .x * econ_mult, .names = "econ_{.col}"),
+         across(starts_with("budg"), ~ .x * job_val, .names = "jobs_{.col}")) %>%
+  slice_max(econ_budg_NIH_cuts, n=5) %>%
+  mutate(org_name = str_to_title(org_name) ) %>%
+  mutate(org_name = str_replace_all(org_name, replacements)) %>%
+  left_join(corrected_df) %>%
+  mutate(org_name = ifelse(is.na(corrected_name) | corrected_name == "", org_name, corrected_name)) %>%
+  select(GEOID, rep_name, pol_party, state_name, state, org_name, budg_NIH_cuts, econ_budg_NIH_cuts, jobs_budg_NIH_cuts) 
+
+write.csv(cong_commute_NIH_inst, "output/top5inst_budg27_cong.csv", row.names=FALSE)
+
+
+```
+
+```{r State Estimates}
+
+cong_commute_NIH_sum %>%
+  select(-ends_with("log")) %>%
+  group_by(state, state_name) %>%
+  summarise(across(ends_with("cuts"), ~ sum(.x, na.rm = TRUE))) -> state_cong
+
+print(nrow(state_cong))
+
+write.csv(state_cong, file="output/NIH_budget27_state.csv", row.names=FALSE)
+
+```
+
+```{r State top institutions}
+
+#replace all NA values with zeros
+state_commute_NIH_inst <- cong_commute_NIH_inst_merge %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  mutate(across(starts_with(c("budg")), ~ . * proportion)) %>%
+  rename(GEOID = ORIGIN) %>%
+  left_join(cong_info %>% rename(state_name=state)) %>%
+                    left_join(NIH_state_dict %>% 
+                                select(state, state_name, state_FIPS, econ_mult, job_val) %>% 
+                                distinct()) %>%
+  mutate(across(starts_with("budg"), ~ .x * econ_mult, .names = "econ_{.col}"),
+         across(starts_with("budg"), ~ .x * job_val, .names = "jobs_{.col}")) %>%
+  group_by(state_name, org_name) %>% 
+  summarize(across(ends_with(c("cuts")), ~ sum(., na.rm=TRUE))) %>%
+  slice_max(econ_budg_NIH_cuts, n=5) %>%
+  mutate(org_name = str_to_title(org_name) ) %>%
+  mutate(org_name = str_replace_all(org_name, replacements)) %>%
+  left_join(corrected_df) %>%
+  mutate(org_name = ifelse(is.na(corrected_name) | corrected_name == "", org_name, corrected_name)) %>%
+  select(state_name, org_name, budg_NIH_cuts, econ_budg_NIH_cuts, jobs_budg_NIH_cuts) 
+
+
+write.csv(state_commute_NIH_inst, "output/top5inst_budg27_state.csv", row.names=FALSE)
+```
+
+
+```{r Get Stats Used in Report}
+state_cong$jobs_budg_NIH_cuts %>% sum()
+state_cong$econ_budg_NIH_cuts %>% sum()
+
+filter(state_cong, econ_budg_NIH_cuts > 100000000) %>%
+  select(state, econ_budg_NIH_cuts) %>%
+  arrange(desc(econ_budg_NIH_cuts))
+
+filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 5000000) %>%
+  nrow()
+
+filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 10000000) %>%
+  nrow()
+
+```
