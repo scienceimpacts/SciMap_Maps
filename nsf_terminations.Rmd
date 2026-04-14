@@ -138,6 +138,8 @@ nsf_terminations %<>%
 current_week <- floor_date(today(), 
                            unit = "week", 
                            week_start = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))
+nsf_econ_mult <- 2.64
+nsf_job_val <- 1/72000
 
 # organization level
 terminations_org_nsf <- nsf_terminations %>%
@@ -153,10 +155,10 @@ terminations_org_nsf <- nsf_terminations %>%
   rename(current_loss = total_loss,
          overall_loss = total_impacted) %>%
   left_join(states %>% rename(org_state = state)) %>%
-  mutate(current_econ_loss = current_loss * econ_mult,
-         current_job_loss = current_loss * job_val,
-         overall_econ_loss = overall_loss * econ_mult,
-         overall_job_loss = overall_loss * job_val) %>%
+  mutate(current_econ_loss = current_loss * nsf_econ_mult,
+         current_job_loss = current_loss * nsf_job_val,
+         overall_econ_loss = overall_loss * nsf_econ_mult,
+         overall_job_loss = overall_loss * nsf_job_val) %>%
   select(org_name, org_city, org_state, starts_with(c("week", "current", "overall")))
 
 write_csv(terminations_org_nsf, "output/terminations_org_nsf.csv")
@@ -191,10 +193,10 @@ terminations_sum_comm_nsf <- county_commute %>%
 terminations_sum_comm_nsf <- terminations_sum_comm_nsf %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
   left_join(states %>% rename(state_FIPS = FIPS)) %>%
-  mutate(current_econ_loss = current_loss * econ_mult,
-         current_job_loss = current_loss * job_val,
-         overall_econ_loss = overall_loss * econ_mult,
-         overall_job_loss = overall_loss * job_val) %>%
+  mutate(current_econ_loss = current_loss * nsf_econ_mult,
+         current_job_loss = current_loss * nsf_job_val,
+         overall_econ_loss = overall_loss * nsf_econ_mult,
+         overall_job_loss = overall_loss * nsf_job_val) %>%
   select(FIPS, week, starts_with(c("current", "overall")))
 
 # county level
@@ -247,10 +249,10 @@ terminations_sum_cong_nsf <- cong_commute %>%
 terminations_sum_cong_nsf <- terminations_sum_cong_nsf %>%
   mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
   left_join(states %>% rename(state_FIPS = FIPS)) %>%
-  mutate(current_econ_loss = current_loss * econ_mult,
-         current_job_loss = current_loss * job_val,
-         overall_econ_loss = overall_loss * econ_mult,
-         overall_job_loss = overall_loss * job_val) %>%
+  mutate(current_econ_loss = current_loss * nsf_econ_mult,
+         current_job_loss = current_loss * nsf_job_val,
+         overall_econ_loss = overall_loss * nsf_econ_mult,
+         overall_job_loss = overall_loss * nsf_job_val) %>%
   select(GEOID, state, week, starts_with(c("current", "overall")))
 
 # district level
@@ -261,6 +263,18 @@ terminations_sum_cong_nsf %>%
   group_by(state, week) %>%
   summarise(across(ends_with("loss"), ~ sum(.x))) %>%
   write_csv("output/terminations_state_nsf.csv")
+```
+
+```{r website values}
+terminations_sum_cong_nsf %>%
+  filter(week == max(week)) %>%
+  ungroup() %>%
+  summarize(raw_loss_ever = sum(overall_loss),
+            econ_loss_ever = sum(overall_econ_loss),
+            job_loss_ever = sum(overall_job_loss),
+            raw_loss_current = sum(current_loss),
+            econ_loss_current = sum(current_econ_loss),
+            job_loss_current = sum(current_job_loss))
 ```
 
 ```{r}
