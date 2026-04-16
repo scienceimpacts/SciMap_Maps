@@ -19,8 +19,55 @@ library(magrittr)
 options(scipen=999)
 ```
 
+```{r combine-files, eval=FALSE}
+library(jsonlite)
+library(purrr)
+library(dplyr)
+library(readr)
+
+# get path for NSF grants
+json_folder <- "NSF_Grants"
+json_files <- list.files(json_folder, pattern = "\\.json$", full.names = TRUE, recursive = TRUE)
+
+extract_fields <- function(grant) {
+  
+  data.frame(fund_oblg_fiscal_yr = grant$oblg_fy$fund_oblg_fiscal_yr,
+             fund_oblg_amt = grant$oblg_fy$fund_oblg_amt) %>%
+    mutate(awd_id = grant$awd_id %||% NA,
+           agcy_id = grant$agcy_id %||% NA,
+           tran_type = grant$tran_type %||% NA,
+           awd_inst_txt = grant$awd_istr_txt %||% NA,
+           cfda_num = grant$cfda_num %||% NA,
+           awd_eff_date = grant$awd_eff_date %||% NA,
+           awd_exp_date = grant$awd_exp_date %||% NA,
+           tot_intn_awd_amt = grant$tot_intn_awd_amt %||% NA,
+           awd_amount = grant$awd_amount %||% NA,
+           awd_min_amd_letter_date = grant$awd_min_amd_letter_date %||% NA,
+           awd_max_amd_letter_date = grant$awd_max_amd_letter_date %||% NA,
+           dir_abbr = grant$dir_abbr %||% NA,
+           div_abbr = grant$div_abbr %||% NA,
+           inst_name = grant$inst$inst_name %||% NA,
+           inst_street_address = grant$inst$inst_street_address %||% NA,
+           inst_city_name = grant$inst$inst_city_name %||% NA,
+           inst_state_name = grant$inst$inst_state_name %||% NA,
+           inst_zip  = grant$inst$inst_zip_code %||% NA,
+           awd_instr = grant$awd_istr_txt %||% NA)
+}
+
+
+# Apply extraction to each record
+all_data <- map_dfr(json_files, function(file) {
+  fromJSON(file) %>% extract_fields()
+})
+
+library(data.table)
+
+fwrite(all_data, "nsf_data/nsf_grants.csv")
+```
+
 ```{r clean-grants}
-nsf_grants <- read.csv("nsf_data/nsf_grants.csv")
+nsf_grants <- read.csv("nsf_data/nsf_grants.csv") %>%
+  mutate(across(ends_with("date"), ~ as_date(.x)))
 
 #directorates to include
 dir_incl <- c("BIO", "CSE", "EDU", "ENG", "GEO", "MPS", "SBE", "TIP")
@@ -31,20 +78,62 @@ div_incl <- c("OIA", "OISE")
 # helper column to put listed account categories together (O/D divisions are split out)
 nsf_grants %<>% mutate(account_name = ifelse(dir_abbr == "O/D", div_abbr, dir_abbr)) %>%
   filter(account_name %in% c(dir_incl, div_incl))
+
+# number of grants baseline
+nrow(nsf_grants %>% filter(fund_oblg_fiscal_yr %in% 2020:2024))
 ```
 
 
-```{r budget-cuts}
+```{r}
+get_fisc <- function(date) {
+  if_else(month(date) >= 10, year(date) + 1L, year(date))
+}
+
+fy_start <- function(fy) {
+  as_date(paste0(fy - 1, "-10-01"))
+}
+
 # https://www.usinflationcalculator.com/ 2020-2027 dollars inflation adjusted to 2026 using: https://www.usinflationcalculator.com/ and assumption of 2% inflation from 2026 to 2027 
-inf_adj <- c(1.26, 1.21, 1.12, 1.07, 1.04, 1.02, 1, .98)
-inf_by_year <- tibble(inf = inf_adj, fund_oblg_fiscal_yr = c(2020:2027))
+inf_adj <- c(1.77, 1.35, 1.33, 1.32, 1.31, 1.28, 1.25, 1.23, 1.21, 1.16, 1.07, 1.03, 1)
+
+inf_by_year <- tibble(inf = inf_adj, fisc_year = c(2001, 2013:2024, 2026))
 
 # calculate losses for each grant
-nsf_grants %<>% 
+nsf_grants_week <- nsf_grants %>% 
+  rename(fisc_year = fund_oblg_fiscal_yr) %>%
+  mutate(fisc_year = get_fisc(awd_eff_date)) %>%
   left_join(inf_by_year) %>%
-  filter(!is.na(inf)) %>%
   mutate(adj_fund = inf * fund_oblg_amt) %>%
-  filter(fund_oblg_fiscal_yr %in% 2020:2024)
+  rowwise() %>%  # split funding between years
+  mutate(fy_seq = list(seq(fisc_year, get_fisc(awd_exp_date)))) %>%
+  unnest(fy_seq) %>%
+  mutate(fisc_year = fy_seq,
+         fisc_start = fy_start(fisc_year),
+         fisc_end = fy_start(fisc_year + 1) - days(1),
+         year_start = pmax(awd_eff_date, fisc_start),
+         year_end = pmin(awd_exp_date, fisc_end)) %>%
+  filter(fisc_year %in% 2020:2024) %>%
+  rowwise() %>%
+  mutate(week_start = list(
+    seq(
+      floor_date(
+        year_start, 
+        unit = "week", 
+        week_start = if_else(wday(fisc_start) == 1, 7, wday(fisc_start) - 1)), 
+      year_end, 
+      by = "weeks")),
+    num_weeks = length(week_start)) %>%
+  unnest(week_start) %>%
+  select(-c(fy_seq, fisc_end)) %>%
+  mutate(week_end = week_start + days(6),
+         budg_length = time_length(difftime(awd_exp_date, awd_eff_date, units = "days"), "weeks") + 1/7,
+         # calculate proportion of week
+         week_length = case_when(
+           week_end - year_start <= days(6) ~ as.numeric((pmin(year_end, week_end) - year_start + 1)/7),
+           year_end - week_start <= days(6) ~ as.numeric((year_end - pmax(year_start, week_start) + 1)/7),
+           .default = 1),
+         prop_award = week_length/budg_length,
+         budg_per_week = prop_award * adj_fund)
 
 ```
 
@@ -59,10 +148,38 @@ geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
   select(tractid, inst_street_address, inst_name) %>%
   distinct()
 
-nsf_grants %<>% left_join(geo_dict) %>%
+start_date <- as_date("2023-10-01")
+end_date <- as_date("2024-09-30")
+
+dates <- data.frame(
+  week_start = seq(start_date, end_date, by = "weeks"),
+  week = seq(1, 53, by = 1)
+) %>%
+  mutate(week_start = format(week_start, "%m-%d"))
+
+nsf_grants_week <- nsf_grants_week %>%
+  mutate(week_start = 
+           if_else(fisc_year %% 4 != 0, 
+                   if_else(month(week_start) >= 3 & month(week_start) <= 9, 
+                           week_start - days(1), 
+                           week_start), 
+                   week_start),
+         week_start = format(week_start, "%m-%d")) %>%
+  left_join(dates)
+
+nsf_grants_sum <- nsf_grants_week %>% left_join(geo_dict) %>%
   filter(!is.na(tractid)) %>%
-  group_by(tractid, account_name, fund_oblg_fiscal_yr) %>%
-  summarise(raw_funding = sum(adj_fund, na.rm=TRUE))
+  group_by(tractid, fisc_year, week, account_name) %>%
+  summarise(week_sum = sum(budg_per_week, na.rm=TRUE)) %>%
+  ungroup() %>%
+  complete(tractid, fisc_year, account_name, week = seq(1, 53, by = 1),
+           fill = list(week_sum = 0)) %>%
+  left_join(dates) %>%
+  group_by(tractid, fisc_year, account_name) %>%
+  arrange(week) %>%
+  mutate(ytd = cumsum(week_sum)) %>%
+  group_by(tractid, week_start, week, account_name) %>%
+  summarise(avg_ytd = mean(ytd))
 
 # dictionary to map fips codes to state names
 NSF_state_dict <- read.csv("data/state_and_county_fips_master.csv") %>%
@@ -113,13 +230,12 @@ cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
 ```
 
 ```{r}
-#summarize NIH data by FIPS code
-NSF_grants_tract <- expand.grid(tractid = unique(nsf_grants$tractid),
-                                     account_name = unique(nsf_grants$account_name),
-                                     fund_oblg_fiscal_yr = unique(nsf_grants$fund_oblg_fiscal_yr)) %>%
-  left_join(nsf_grants) %>%
-  group_by(tractid, account_name) %>%
-  summarise(raw_funding = mean(raw_funding, na.rm=TRUE))
+# summarize NIH data by FIPS code
+NSF_grants_tract <- nsf_grants_sum %>%
+  ungroup() %>%
+  filter(week == 53) %>%
+  rename(raw_funding = avg_ytd) %>%
+  select(tractid, account_name, raw_funding)
 
 fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad ="0")) %>%
@@ -140,8 +256,9 @@ county_commute_NSF <- merge(county_commute, NSF_grants_tract, by.x = "DESTINATIO
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
   left_join(fips_names) %>%
   left_join(states %>% select(-FIPS)) %>%
-  mutate(econ_impact = raw_funding * 2.25) %>%
-  select(FIPS, name, state, account_name, raw_funding, econ_impact) %>%
+  mutate(econ_impact = raw_funding * 2.64,
+         jobs = raw_funding/72000) %>%
+  select(FIPS, name, state, account_name, raw_funding, econ_impact, jobs) %>%
   filter(FIPS != "00000")
 
 write_csv(county_commute_NSF, "output/baseline_county_nsf.csv")
@@ -159,7 +276,7 @@ county_commute_NSF %>%
   mutate(CBSA_FIPS = ifelse(is.na(CBSA_FIPS), FIPS, CBSA_FIPS)) %>%
   mutate(CBSA_NAME = ifelse(is.na(CBSA_NAME), name, CBSA_NAME)) %>%
   group_by(CBSA_FIPS, CBSA_NAME, account_name) %>%
-  summarise(across(c(raw_funding, econ_impact), ~ sum(.x))) %>%
+  summarise(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
   write_csv("output/baseline_city_nsf.csv")
 
 library(usmap)
@@ -188,20 +305,21 @@ cong_commute_NSF <- merge(cong_commute, NSF_grants_tract, by.x = "DESTINATION", 
   mutate_all(funs(replace(., is.na(.), 0)))  %>%
   mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
   left_join(states) %>%
-  mutate(econ_impact = raw_funding * 2.25) %>%
-  select(GEOID, state, account_name, raw_funding, econ_impact)
+  mutate(econ_impact = raw_funding * 2.64,
+         jobs = raw_funding/72000) %>%
+  select(GEOID, state, account_name, raw_funding, econ_impact, jobs)
 
 write_csv(cong_commute_NSF, "output/baseline_district_nsf.csv")
 
 cong_commute_NSF %>%
   group_by(state, account_name) %>%
-  summarize(across(c(raw_funding, econ_impact), ~ sum(.x))) %>%
+  summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
   write_csv("output/baseline_state_nsf.csv")
 
 plot_usmap(
   data = cong_commute_NSF %>%
   group_by(state) %>%
-  summarize(across(c(raw_funding, econ_impact), ~ sum(.x))),
+  summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))),
   values = "raw_funding",
   regions = "states",
   color = "white",
@@ -210,5 +328,10 @@ plot_usmap(
   scale_fill_viridis_c(trans = "log10",
                        labels = label_dollar(scale_cut = cut_short_scale())) +
   labs(fill = "Baseline funding")
+
+
+cong_commute_NSF %>%
+    ungroup() %>%
+    summarize(raw_funding = sum(raw_funding), econ_impact = sum(econ_impact), jobs = sum(jobs))
 ```
 
