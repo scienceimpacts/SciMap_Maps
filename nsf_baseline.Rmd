@@ -85,55 +85,17 @@ nrow(nsf_grants %>% filter(fund_oblg_fiscal_yr %in% 2020:2024))
 
 
 ```{r}
-get_fisc <- function(date) {
-  if_else(month(date) >= 10, year(date) + 1L, year(date))
-}
-
-fy_start <- function(fy) {
-  as_date(paste0(fy - 1, "-10-01"))
-}
-
 # https://www.usinflationcalculator.com/ 2020-2027 dollars inflation adjusted to 2026 using: https://www.usinflationcalculator.com/ and assumption of 2% inflation from 2026 to 2027 
-inf_adj <- c(1.77, 1.35, 1.33, 1.32, 1.31, 1.28, 1.25, 1.23, 1.21, 1.16, 1.07, 1.03, 1)
+inf_adj <- c(1.21, 1.16, 1.07, 1.03, 1)
 
-inf_by_year <- tibble(inf = inf_adj, fisc_year = c(2001, 2013:2024, 2026))
+inf_by_year <- tibble(inf = inf_adj, fisc_year = 2020:2024)
 
-# calculate losses for each grant
-nsf_grants_week <- nsf_grants %>% 
+# calculate inflation for each grant
+nsf_grants %<>% 
   rename(fisc_year = fund_oblg_fiscal_yr) %>%
-  mutate(fisc_year = get_fisc(awd_eff_date)) %>%
   left_join(inf_by_year) %>%
-  mutate(adj_fund = inf * fund_oblg_amt) %>%
-  rowwise() %>%  # split funding between years
-  mutate(fy_seq = list(seq(fisc_year, get_fisc(awd_exp_date)))) %>%
-  unnest(fy_seq) %>%
-  mutate(fisc_year = fy_seq,
-         fisc_start = fy_start(fisc_year),
-         fisc_end = fy_start(fisc_year + 1) - days(1),
-         year_start = pmax(awd_eff_date, fisc_start),
-         year_end = pmin(awd_exp_date, fisc_end)) %>%
   filter(fisc_year %in% 2020:2024) %>%
-  rowwise() %>%
-  mutate(week_start = list(
-    seq(
-      floor_date(
-        year_start, 
-        unit = "week", 
-        week_start = if_else(wday(fisc_start) == 1, 7, wday(fisc_start) - 1)), 
-      year_end, 
-      by = "weeks")),
-    num_weeks = length(week_start)) %>%
-  unnest(week_start) %>%
-  select(-c(fy_seq, fisc_end)) %>%
-  mutate(week_end = week_start + days(6),
-         budg_length = time_length(difftime(awd_exp_date, awd_eff_date, units = "days"), "weeks") + 1/7,
-         # calculate proportion of week
-         week_length = case_when(
-           week_end - year_start <= days(6) ~ as.numeric((pmin(year_end, week_end) - year_start + 1)/7),
-           year_end - week_start <= days(6) ~ as.numeric((year_end - pmax(year_start, week_start) + 1)/7),
-           .default = 1),
-         prop_award = week_length/budg_length,
-         budg_per_week = prop_award * adj_fund)
+  mutate(adj_fund = inf * fund_oblg_amt)
 
 ```
 
@@ -148,38 +110,10 @@ geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
   select(tractid, inst_street_address, inst_name) %>%
   distinct()
 
-start_date <- as_date("2023-10-01")
-end_date <- as_date("2024-09-30")
-
-dates <- data.frame(
-  week_start = seq(start_date, end_date, by = "weeks"),
-  week = seq(1, 53, by = 1)
-) %>%
-  mutate(week_start = format(week_start, "%m-%d"))
-
-nsf_grants_week <- nsf_grants_week %>%
-  mutate(week_start = 
-           if_else(fisc_year %% 4 != 0, 
-                   if_else(month(week_start) >= 3 & month(week_start) <= 9, 
-                           week_start - days(1), 
-                           week_start), 
-                   week_start),
-         week_start = format(week_start, "%m-%d")) %>%
-  left_join(dates)
-
-nsf_grants_sum <- nsf_grants_week %>% left_join(geo_dict) %>%
+nsf_grants %<>% left_join(geo_dict) %>%
   filter(!is.na(tractid)) %>%
-  group_by(tractid, fisc_year, week, account_name) %>%
-  summarise(week_sum = sum(budg_per_week, na.rm=TRUE)) %>%
-  ungroup() %>%
-  complete(tractid, fisc_year, account_name, week = seq(1, 53, by = 1),
-           fill = list(week_sum = 0)) %>%
-  left_join(dates) %>%
-  group_by(tractid, fisc_year, account_name) %>%
-  arrange(week) %>%
-  mutate(ytd = cumsum(week_sum)) %>%
-  group_by(tractid, week_start, week, account_name) %>%
-  summarise(avg_ytd = mean(ytd))
+  group_by(tractid, account_name, fisc_year) %>%
+  summarise(raw_funding = sum(adj_fund, na.rm=TRUE))
 
 # dictionary to map fips codes to state names
 NSF_state_dict <- read.csv("data/state_and_county_fips_master.csv") %>%
@@ -231,11 +165,12 @@ cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
 
 ```{r}
 # summarize NIH data by FIPS code
-NSF_grants_tract <- nsf_grants_sum %>%
-  ungroup() %>%
-  filter(week == 53) %>%
-  rename(raw_funding = avg_ytd) %>%
-  select(tractid, account_name, raw_funding)
+NSF_grants_tract <- expand.grid(tractid = unique(nsf_grants$tractid),
+                                     account_name = unique(nsf_grants$account_name),
+                                     fisc_year = unique(nsf_grants$fisc_year)) %>%
+  left_join(nsf_grants) %>%
+  group_by(tractid, account_name) %>%
+  summarise(raw_funding = mean(raw_funding, na.rm=TRUE))
 
 fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad ="0")) %>%
