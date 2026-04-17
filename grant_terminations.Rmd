@@ -53,14 +53,19 @@ org_names_corrected <- read.csv("data/org_names_corrected.csv") %>%
 replacements <- c(" Of " = " of ", "At" = "at", " And " = " and ",
                   "Univ " = "University ", "Ctr" = "Center", 
                   "Col " = "College ", "Hlth" = "Health", "Scis" = "Sciences",
-                  "Sci " = "Science ", "Llc" = "LLC",
-                  " The " = " the ", "For" = " for ", "Res " = "Research ", 
+                  "Sci " = "Science ", "Llc" = "LLC", "Assn" = "Association",
+                  " The " = " the ", " For " = " for ", "Res " = "Research ", 
                   "Hosp " = "Hospital ", "Med " = "Medical ",
-                  "Harvard University D/B/A Harvard School of Public Health" = "Harvard School of Public Health",
-                  "Families Against Narcotics, Inc. D/B/A Face Addiction Now" = "Families Against Narcotics, Inc.",
-                  "New York University D/B/A Nyu Long Island School of Medicine" = "New York University Long Island School of Medicine")
+                  " Inst " = " Institute ", " Can " = " Cancer ")
+
+NIH_tracts <- read.csv("data/tract_dictionary.csv") %>%
+  mutate(tractid = str_pad(tractid, 11, pad = "0"),
+         FIPS = str_pad(FIPS, 5, pad = "0"))
 
 terminations_clean <- terminations_raw %>%
+  filter(org_state %in% states$state) %>%
+  left_join(states %>% rename(org_state = state)) %>%
+  left_join(NIH_tracts) %>%
   mutate(org_name = str_to_title(org_name),
          org_city = str_to_title(org_city),
          org_name = str_replace_all(org_name, replacements),
@@ -69,7 +74,7 @@ terminations_clean <- terminations_raw %>%
                             org_name)) %>%
   left_join(org_names_corrected) %>%
   mutate(org_name = if_else(!is.na(corrected_name), corrected_name, org_name),
-         org_name = if_else(str_detect(org_name, "Harvard"), "Harvard University", org_name),
+         org_name = if_else(str_detect(org_name, "Boston University"), "Boston University", org_name),
          org_name = if_else(str_detect(org_name, "New York University"), "New York University", org_name),
          org_name = if_else(str_detect(org_name, "Columbia University"), "Columbia University", org_name),
          org_name = if_else(str_detect(org_name, "University of New Mexico"), "University of New Mexico", org_name),
@@ -82,47 +87,25 @@ terminations_clean <- terminations_raw %>%
          org_name = if_else(str_detect(org_name, "St. Jude Children's Research Hospital"), "St. Jude Children's Research Hospital", org_name),
          org_name = if_else(str_detect(org_name, "Vanderbilt University"), "Vanderbilt University", org_name),
          org_name = if_else(str_detect(org_name, "University of Texas Health Science Center"), "University of Texas San Antonio", org_name)) %>%
-  select(-corrected_name)
+  select(-corrected_name) %>%
+  distinct()
 
+write_csv(terminations_clean, "data/terminations_clean.csv")
+
+# terminated grants in the US since 2/28/25
+start_date <- as_date("2025-02-28")
+
+terminations_clean %>%
+  filter(pmin(frozen_date, termination_date, na.rm = T) >= start_date) %>%
+  nrow()
 ```
 
 ```{r}
-NIH_tracts <- read.csv("data/tract_dictionary.csv")
 states <- read.csv("data/states.csv") %>%
-  mutate(FIPS = str_pad(FIPS, 2, pad = "0"))
+  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
+  select(-FIPS)
 
-fy_start <- function(fy) {
-  as_date(paste0(fy - 1, "-10-01"))
-}
-
-start_date <- as_date("2025-04-01")
-
-dates_04_25 <- data.frame(
-  date = seq(start_date, today(), by = "days"),
-  day_fisc = seq(1, ceiling(time_length(today() - start_date, unit = "days")) + 1, by = 1)) %>%
-  mutate(week = ceiling(day_fisc/7)) %>%
-  group_by(week) %>%
-  mutate(week_start = date[which.min(day_fisc)],
-         week_end = date[which.max(day_fisc)]) %>%
-  select(-date)
-
-terminations <- terminations_raw %>%
-  filter(org_state %in% states$state) %>%
-  left_join(states %>% rename(org_state = state)) %>%
-  rename(state_FIPS = FIPS) %>%
-  left_join(NIH_tracts) %>%
-  mutate(org_name = str_to_title(org_name),
-         org_city = str_to_title(org_city),
-         org_name = str_replace_all(org_name, replacements),
-         org_name = if_else(org_name == "University of Colorado", 
-                            paste(org_name, org_city, sep = "-"),
-                            org_name)) %>%
-  left_join(org_names_corrected) %>%
-  mutate(org_name = if_else(!is.na(corrected_name), corrected_name, org_name),
-         org_name = if_else(str_detect(org_name, "Harvard"), "Harvard University", org_name),
-         org_name = if_else(str_detect(org_name, "New York University"), "New York University", org_name),
-         org_name = if_else(str_detect(org_name, "Columbia University"), "Columbia University", org_name)) %>%
-  select(-corrected_name) %>%
+terminations <- terminations_clean %>%
   mutate(total_loss = total_award - total_estimated_outlays,
          total_loss = ifelse(total_loss < 0, 0, total_loss),
          across(ends_with("loss"), ~ ifelse(is.na(.x), 0, .x)),
@@ -136,23 +119,17 @@ terminations <- terminations_raw %>%
   filter(!is.na(date)) %>%
   mutate(total_loss = if_else(date_status == "date_reinstated", -total_loss, total_loss), # total amount lost at the moment
          total_impacted = if_else(total_loss < 0, 0, total_loss), # total amount ever impacted
-         day_fisc = time_length(date - start_date, unit = "days") + 1,
-         week = ceiling(day_fisc/7))
+         week = floor_date(date, unit = "week", week = if_else(wday(start_date) == 1, 7, wday(start_date) - 1)))
 
-# these grants have very little information about them and aren't included
-missing_org_name <- terminations %>% 
-  filter(is.na(org_name))
-
-current_week <- ceiling(time_length(today() - start_date, unit = "weeks"))
+current_week <- floor_date(today(), unit = "week", week = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))
 
 # organization level
 terminations_org <- terminations %>%
-  complete(org_name, week = seq(1, current_week, by = 1),
+  complete(org_name, week = seq(start_date, today(), by = "weeks"),
            fill = list(total_loss = 0, total_impacted = 0)) %>%
-  left_join(dates_04_25 %>% select(-c(day_fisc)) %>% distinct()) %>%
   select(-c(org_city, org_state)) %>%
   left_join(terminations %>% select(org_name, org_city, org_state) %>% distinct()) %>%
-  group_by(org_name, org_city, org_state, week, week_start, week_end) %>%
+  group_by(org_name, org_city, org_state, week) %>%
   summarize(across(c("total_loss", "total_impacted"), ~ sum(.x))) %>%
   group_by(org_name, org_city, org_state) %>%
   arrange(week) %>%
@@ -185,7 +162,7 @@ terminations_sum_comm <- county_commute %>%
   rename(FIPS = ORIGIN) %>%
   filter(!endsWith(FIPS, "000")) %>%
   ungroup() %>%
-  complete(FIPS, week = seq(1, current_week, by = 1),
+  complete(FIPS, week = seq(start_date, today(), by = "weeks"),
            fill = list(week_loss = 0, week_impacted = 0)) %>%
   group_by(FIPS) %>%
   arrange(week) %>%
@@ -195,20 +172,14 @@ terminations_sum_comm <- county_commute %>%
 # add in state multipliers
 terminations_sum_comm <- terminations_sum_comm %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
-  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  left_join(states) %>%
   mutate(current_econ_loss = current_loss * econ_mult,
          current_job_loss = current_loss * job_val,
          overall_econ_loss = overall_loss * econ_mult,
          overall_job_loss = overall_loss * job_val) %>%
-  left_join(dates_04_25 %>% select(-c(day_fisc)) %>% distinct()) %>%
-  select(FIPS, week, week_start, week_end, starts_with(c("current", "overall")))
+  select(FIPS, week, starts_with(c("current", "overall")))
 
 write_csv(terminations_sum_comm, "output/terminations_county.csv")
-
-terminations_sum_comm %>%
-  group_by(state, week, week_start, week_end) %>%
-  summarise(across(ends_with("loss"), ~ sum(.x))) %>%
-  write_csv("output/terminations_state.csv")
 
 msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
   select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
@@ -217,7 +188,7 @@ msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
          CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
 
 fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
-  mutate(FIPS = str_pad(fips, 5, pad ="0")) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0")) %>%
   select(FIPS, name)
 
 terminations_sum_comm %>%
@@ -225,7 +196,7 @@ terminations_sum_comm %>%
   left_join(fips_names) %>%
   mutate(CBSA_FIPS = ifelse(is.na(CBSA_FIPS), FIPS, CBSA_FIPS)) %>%
   mutate(CBSA_NAME = ifelse(is.na(CBSA_NAME), name, CBSA_NAME)) %>%
-  group_by(CBSA_FIPS, CBSA_NAME, week, week_start, week_end) %>%
+  group_by(CBSA_FIPS, CBSA_NAME, week) %>%
   summarise(across(ends_with("loss"), ~ sum(.x))) %>%
   write_csv("output/terminations_city.csv")
 
@@ -239,9 +210,8 @@ terminations_sum_cong <- cong_commute %>%
   summarize(week_loss = sum(week_loss),
             week_impacted = sum(week_impacted)) %>%
   rename(GEOID = ORIGIN) %>%
-  filter(!endsWith(GEOID, "000")) %>%
   ungroup() %>%
-  complete(GEOID, week = seq(1, current_week, by = 1),
+  complete(GEOID, week = seq(start_date, today(), by = "weeks"),
            fill = list(week_loss = 0, week_impacted = 0)) %>%
   group_by(GEOID) %>%
   arrange(week) %>%
@@ -250,25 +220,105 @@ terminations_sum_cong <- cong_commute %>%
 
 terminations_sum_cong <- terminations_sum_cong %>%
   mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
-  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  left_join(states) %>%
   mutate(current_econ_loss = current_loss * econ_mult,
          current_job_loss = current_loss * job_val,
          overall_econ_loss = overall_loss * econ_mult,
          overall_job_loss = overall_loss * job_val) %>%
-  left_join(dates_04_25 %>% select(-c(day_fisc)) %>% distinct()) %>%
-  select(GEOID, week, week_start, week_end, starts_with(c("current", "overall")))
+  select(GEOID, state, week, starts_with(c("current", "overall")))
 
-write_csv(terminations_sum_cong, "output/terminations_district.csv")
+write_csv(terminations_sum_cong %>% select(-state), "output/terminations_district.csv")
+
+terminations_sum_cong %>%
+  group_by(state, week) %>%
+  summarise(across(ends_with("loss"), ~ sum(.x))) %>%
+  write_csv("output/terminations_state.csv")
 
 # all US terminations
 terminations_sum_comm %>%
-  group_by(week_start) %>%
+  group_by(week) %>%
   summarise(current_loss = sum(current_loss),
             overall_loss = sum(overall_loss)) %>%
   ggplot() +
-  geom_line(aes(x = week_start, y = current_loss)) +
-  geom_line(aes(x = week_start, y = overall_loss))
+  geom_line(aes(x = week, y = current_loss)) +
+  theme_minimal() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(x = "Date", y = "Total funding currently impacted")
 
+terminations_sum_comm %>%
+  group_by(week) %>%
+  summarise(current_loss = sum(current_loss),
+            overall_loss = sum(overall_loss)) %>%
+  ggplot() +
+  geom_line(aes(x = week, y = overall_loss)) +
+  theme_minimal() +
+  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(x = "Date", y = "Total funding ever impacted")
+
+library(usmap)
+plot_usmap(
+  data = terminations_sum_comm %>% 
+    rename(fips = FIPS) %>% 
+    filter(week == max(week)),
+  values = "overall_loss",
+  regions = "counties",
+  color = "white",
+  linewidth = 0.0
+) +
+  scale_fill_viridis_c(trans = "log10",
+                       labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(fill = "Total funding \nimpacted")
+
+plot_usmap(
+  data = terminations_sum_cong %>%
+    filter(week == max(week)) %>%
+    group_by(state) %>%
+    summarise(across(ends_with("loss"), ~ sum(.x, na.rm = T))),
+  values = "overall_loss",
+  regions = "states",
+  color = "white",
+  linewidth = 0.0
+) +
+  scale_fill_viridis_c(trans = "log10",
+                       labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(fill = "Total funding \nimpacted")
+
+# check to see if overall values line up
+terminations_sum_comm %>% 
+    filter(week == max(week)) %>%
+  ungroup() %>%
+  summarize(overall_loss = sum(overall_loss), current_loss = sum(current_loss))
+
+terminations_sum_cong %>% 
+    filter(week == max(week)) %>%
+  ungroup() %>%
+  summarize(overall_loss = sum(overall_loss), current_loss = sum(current_loss))
+
+# pre-commuter flows
+terminations %>%
+  ungroup() %>%
+  summarize(overall_loss = sum(total_impacted), current_loss = sum(total_loss))
 ```
 
+```{r eval=FALSE}
+library(gganimate)
+library(gifski)
+
+# weekly version
+gif_map_week <- plot_usmap(
+  data = terminations_sum_comm %>% rename(fips = FIPS) %>% mutate(current_loss = current_loss + 1),
+  values = "current_loss",
+  regions = "counties",
+  color = "white",
+  linewidth = 0.0
+) +
+  scale_fill_viridis_c(trans = "log10",
+                       labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(fill = "Current funding \nimpacted", title = "{frame_time}") +
+  theme(legend.position = "right")+
+  transition_time(week) +
+  ease_aes("linear")
+
+anim_save("output/current_terminations_weekly.gif", animate(gif_map_week, fps = 5, renderer = gifski_renderer()))
+```
 
