@@ -1,0 +1,145 @@
+---
+title: "NSF_budget_fy27_new"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if (!require('rstudioapi')) BiocManager::install("rstudioapi");library(rstudioapi)
+
+# change working directory to folder with script
+setwd(dirname(rstudioapi::getSourceEditorContext()$path)) 
+
+library(tidyverse)
+library(readxl)
+library(sf)
+library(data.table)
+library(magrittr)
+
+options(scipen=999)
+```
+
+```{r}
+# https://www.usinflationcalculator.com/ 2020-2027 dollars inflation adjusted to 2026 using: https://www.usinflationcalculator.com/ and assumption of 2% inflation from 2026 to 2027 
+inf_adj <- c(1.26, 1.21, 1.12, 1.07, 1.04, 1.02, 1, .98)
+inf_by_year <- tibble(inf = inf_adj, fund_oblg_fiscal_yr = c(2020:2027))
+# df of historic funding in FY2020-2025, proposed for FY2027 via 
+# appropriation tabs (FY2020-FY2024) https://www.nsf.gov/about/budget/all and table (FY2025 and FY2027):  # https://nsf-gov-resources.nsf.gov/files/FY-2027-NSF-Budget-Request-to-Congress.pdf
+# unit is dollars in millions
+budg_tab <- read.csv("nsf_data/nsf_budg_table.csv") %>%
+            filter(!is.na(X)) %>%
+            mutate(across(X2020_budg:X2027_budg, ~as.numeric(.x)))
+
+budg_tab %<>%
+  rowwise() %>%
+  mutate(across(X2020_budg:X2027_budg)*inf_adj) %>%
+  mutate(past_mean = mean(c_across(X2020_budg:X2024_budg), na.rm = TRUE)) %>%
+  mutate(amt_cut = past_mean - X2027_budg,
+         amt_cut = amt_cut * 10^6) %>%
+  ungroup() %>%
+  rename(account_name = X) %>%
+  select(amt_cut, account_name)
+
+# dictionary to map fips codes to state names
+NSF_state_dict <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
+  filter(!endsWith(FIPS, "000")) 
+
+# append state FIPS codes
+NSF_state_dict <- tibble(
+  state_name = c(state.name, "District of Columbia"),
+  state = c(state.abb, "DC")) %>%
+  right_join(NSF_state_dict) %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  arrange(state)
+
+msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
+  select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
+  rename(FIPS = CountyFIPS) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
+         CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
+```
+
+```{r baseline}
+baseline_county <- read.csv("output/baseline_county_nsf.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0"))
+baseline_city <- read.csv("output/baseline_city_nsf.csv") %>%
+  mutate(CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad = "0"))
+baseline_district <- read.csv("output/baseline_district_nsf.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0"))
+baseline_state <- read.csv("output/baseline_state_nsf.csv")
+
+budg_county <- baseline_county %>%
+  group_by(account_name) %>%
+  mutate(prop = raw_funding/sum(raw_funding)) %>%
+  left_join(budg_tab) %>%
+  mutate(budg_loss = prop * amt_cut) %>%
+  select(FIPS, account_name, budg_loss) %>%
+  pivot_wider(names_from = account_name, 
+              names_glue = "budg_{account_name}_cuts",
+              values_from = budg_loss) %>%
+  rowwise() %>%
+  mutate(budg_NSF_cuts = sum(c_across(starts_with("budg")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  right_join(NSF_state_dict) %>%
+  mutate(across(starts_with("budg"), ~ .x * 2.64, .names = "econ_{.col}")) %>%
+  mutate(across(starts_with("budg"), ~ .x / 72000, .names = "jobs_{.col}"))
+
+budg_city <- baseline_city %>%
+  group_by(account_name) %>%
+  mutate(prop = raw_funding/sum(raw_funding)) %>%
+  left_join(budg_tab) %>%
+  mutate(budg_loss = prop * amt_cut) %>%
+  select(CBSA_FIPS, account_name, budg_loss) %>%
+  pivot_wider(names_from = account_name, 
+              names_glue = "budg_{account_name}_cuts",
+              values_from = budg_loss) %>%
+  rowwise() %>%
+  mutate(budg_NSF_cuts = sum(c_across(starts_with("budg")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  right_join(msa %>% distinct(CBSA_FIPS, CBSA_NAME)) %>%
+  mutate(across(starts_with("budg"), ~ .x * 2.64, .names = "econ_{.col}")) %>%
+  mutate(across(starts_with("budg"), ~ .x / 72000, .names = "jobs_{.col}"))
+
+budg_district <- baseline_district %>%
+  group_by(account_name) %>%
+  mutate(prop = raw_funding/sum(raw_funding)) %>%
+  left_join(budg_tab) %>%
+  mutate(budg_loss = prop * amt_cut) %>%
+  select(GEOID, account_name, budg_loss) %>%
+  pivot_wider(names_from = account_name, 
+              names_glue = "budg_{account_name}_cuts",
+              values_from = budg_loss) %>%
+  rowwise() %>%
+  mutate(budg_NSF_cuts = sum(c_across(starts_with("budg")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  mutate(across(starts_with("budg"), ~ .x * 2.64, .names = "econ_{.col}")) %>%
+  mutate(across(starts_with("budg"), ~ .x / 72000, .names = "jobs_{.col}"))
+
+budg_state <- baseline_state %>%
+  group_by(account_name) %>%
+  mutate(prop = raw_funding/sum(raw_funding)) %>%
+  left_join(budg_tab) %>%
+  mutate(budg_loss = prop * amt_cut) %>%
+  select(state, account_name, budg_loss) %>%
+  pivot_wider(names_from = account_name, 
+              names_glue = "budg_{account_name}_cuts",
+              values_from = budg_loss) %>%
+  rowwise() %>%
+  mutate(budg_NSF_cuts = sum(c_across(starts_with("budg")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  mutate(across(starts_with("budg"), ~ .x * 2.64, .names = "econ_{.col}")) %>%
+  mutate(across(starts_with("budg"), ~ .x / 72000, .names = "jobs_{.col}"))
+```
+
+```{r}
+write_csv(budg_county, "output/NSF_budg27_county.csv")
+write_csv(budg_city, "output/NSF_budg27_city.csv")
+write_csv(budg_district, "output/NSF_budg27_district.csv")
+write_csv(budg_state, "output/NSF_budg27_state.csv")
+```
+
