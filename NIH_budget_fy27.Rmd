@@ -27,30 +27,14 @@ inf_adj <- c(1.26, 1.21, 1.12, 1.07, 1.04, 1.02, 1, .98)
 
 # vectors of historic funding in FY2025, proposed for FY2027
 #FY2027 budget: https://www.whitehouse.gov/wp-content/uploads/2026/04/budget_fy2027.pdf
-#historic budget for ICs and NIH: https://officeofbudget.od.nih.gov/pdfs/FY26/br/Overview%20of%20FY%202026%20Supplementary%20Tables.pdf
+#historic budget for ICs and NIH: https://officeofbudget.od.nih.gov/pdfs/FY26/cy/Approp%20History%20by%20IC%20FY%202020%20-%20FY%202025.pdf
 # unit is dollars in millions
-# placeholders for now: IC-specific cuts
-NCI_budg <- c(7221, 7353)
-NIAID_budg <- c(6562, 4751)
-NIA_budg <- c(4512, 4217)
-NIH_budg <- c(46001, 41000)
+NIH_budg <- c(41690-200, 42940.5-200, 45182.99-250, 47683.485-350, 48856.467-350-1500, 48499.808-350-1500, NA, 47501.287-350-1500)
 
-prop_lost <- function(budget_vect){
-  # apply inflation adjustment
-  inf_adj_budget <- budget_vect * c(inf_adj[6],inf_adj[8])
-  
-  # calculate proportion of 2026 budget proposed for 2027
-  prop_2026 <- tail(inf_adj_budget, 1)/head(inf_adj_budget, 1)
-  
-  # return proportion cut
-  return(1 - prop_2026)
-}
+inf_adj_budget <- NIH_budg *  inf_adj
 
-# calculate proportion cut for each IC and the full NIH
-NCI_cut <- prop_lost(NCI_budg)
-NIAID_cut <- prop_lost(NIAID_budg)
-NIA_cut <- prop_lost(NIA_budg)
-NIH_cut <- prop_lost(NIH_budg)
+NIH_cut <- 1- tail(inf_adj_budget, 1)/mean(head(inf_adj_budget, 5), na.rm=TRUE)
+  
 
 # establish baseine by comparison to FY2020-FY2024
 NIH_prior <- read.csv("data/NIH_grants.csv") %>%
@@ -61,35 +45,27 @@ ic_list <- c("NIAID", "NICHD", "NHLBI", "NCI", "OD", "NIDCR", "NINDS", "NIBIB", 
              "NEI", "NIDA", "NIDDK", "NHGRI", "NIAAA", "NCATS", "NIEHS", "NIA", "NIMH",
              "NIAMS", "NLM", "NIMHD", "NIDCD", "NINR", "NCCIH", "FIC")
 
-inf_by_year <- tibble(inf = inf_adj, Fiscal.Year = c(2020:2027))
+
+
+inf_by_year <- tibble(inf = inf_adj, Fiscal.Year = c(2020:2027), NIH_annual_budg = inf_adj_budget)
 
 # calculate losses for total NIH funding
-NIH_total_cuts <- NIH_prior  %>%
+NIH_budget_cuts <- NIH_prior  %>%
   filter(Funding.IC.s. %in% ic_list) %>%
   left_join(inf_by_year) %>%
   mutate(Total.Cost.IC = Total.Cost.IC * inf) %>%
-  group_by(Fiscal.Year, Organization.Name,Latitude, Longitude) %>%
+  group_by(Fiscal.Year, NIH_annual_budg, Organization.Name,Latitude, Longitude) %>%
   summarize(NIH_funding = sum(Total.Cost.IC, na.rm=TRUE)) %>%
+  group_by(Fiscal.Year) %>%
+  mutate(NIH_annual_oblig = sum(NIH_funding, na.rm=TRUE)) %>%
+  mutate(annual_mult = (NIH_annual_budg*10^6)/NIH_annual_oblig) %>%
+  mutate(NIH_funding = NIH_funding * annual_mult) %>%
+  ungroup() %>%
   group_by(Organization.Name, Latitude, Longitude) %>%
-  summarize(IC_funding = mean(NIH_funding, na.rm=TRUE)) %>%
-  mutate(Funding.IC.s. = "NIH_tot")
-
-NIH_budget_cuts <- NIH_prior %>%
-  filter(Funding.IC.s. %in% ic_list) %>%
-  left_join(inf_by_year) %>%
-  mutate(Total.Cost.IC = Total.Cost.IC * inf) %>%
-  group_by(Funding.IC.s., Fiscal.Year, Organization.Name, Latitude, Longitude) %>%
-  summarize(IC_funding = sum(Total.Cost.IC, na.rm=TRUE)) %>%
-  group_by(Funding.IC.s., Organization.Name, Latitude, Longitude) %>%
-  summarize(IC_funding = mean(IC_funding, na.rm=TRUE)) %>%
-  # additionally calculate cuts to a few focal ICs
-  filter(Funding.IC.s. %in% c("NIA", "NIAID", "NCI")) %>%
-  rbind(NIH_total_cuts) %>%
+  summarize(IC_funding = sum(NIH_funding, na.rm=TRUE)/5) %>%
+  mutate(Funding.IC.s. = "NIH_tot") %>%
   pivot_wider(values_from = IC_funding, names_from = Funding.IC.s.) %>%
-  mutate(budg_NIA_cuts = NIA_cut * NIA,
-         budg_NIAID_cuts = NIAID_cut * NIAID,
-         budg_NCI_cuts = NCI_cut * NCI,
-         budg_NIH_cuts = NIH_cut * NIH_tot) %>% 
+  mutate(budg_NIH_cuts = NIH_cut * NIH_tot) %>% 
   rename(lat = Latitude, 
          lon = Longitude,
          org_name = Organization.Name) 
@@ -389,12 +365,17 @@ write.csv(state_commute_NIH_inst, "output/top5inst_budg27_state.csv", row.names=
 ```{r Get Stats Used in Report}
 state_cong$jobs_budg_NIH_cuts %>% sum()
 state_cong$econ_budg_NIH_cuts %>% sum()
+state_cong$budg_NIH_cuts %>% sum()
 
 filter(state_cong, econ_budg_NIH_cuts > 100000000) %>%
   select(state, econ_budg_NIH_cuts) %>%
   arrange(desc(econ_budg_NIH_cuts))
 
 filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 5000000) %>%
+  nrow()
+
+
+filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 50000000) %>%
   nrow()
 
 filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 10000000) %>%
