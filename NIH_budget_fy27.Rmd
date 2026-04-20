@@ -27,11 +27,10 @@ inf_adj <- c(1.26, 1.21, 1.12, 1.07, 1.04, 1.02, 1, .98)
 
 # vectors of historic funding in FY2025, proposed for FY2027
 #FY2027 budget: https://www.whitehouse.gov/wp-content/uploads/2026/04/budget_fy2027.pdf
-#historic budget for ICs and NIH: https://officeofbudget.od.nih.gov/pdfs/FY26/cy/Approp%20History%20by%20IC%20FY%202020%20-%20FY%202025.pdf
-# unit is dollars in millions
-NIH_budg <- c(41690-200, 42940.5-200, 45182.99-250, 47683.485-350, 48856.467-350-1500, 48499.808-350-1500, NA, 47501.287-350-1500)
-
-inf_adj_budget <- NIH_budg *  inf_adj
+#historic budget for ICs and NIH: https://officeofbudget.od.nih.gov/pdfs/FY26/spending_hist/Mechanism%20Detail%20for%20Total%20NIH%20FY%202000%20-%20FY%202025%20(V).pdf
+# unit is dollars in thousands
+NIH_budg <- c(29211207+907010, 29964055+926485, 31316880+967125, 32602214+985017, 32495409+1001239, NA, NA, 29088661+932827)
+inf_adj_budget <- NIH_budg *  inf_adj * 1000
 
 NIH_cut <- 1- tail(inf_adj_budget, 1)/mean(head(inf_adj_budget, 5), na.rm=TRUE)
   
@@ -58,7 +57,7 @@ NIH_budget_cuts <- NIH_prior  %>%
   summarize(NIH_funding = sum(Total.Cost.IC, na.rm=TRUE)) %>%
   group_by(Fiscal.Year) %>%
   mutate(NIH_annual_oblig = sum(NIH_funding, na.rm=TRUE)) %>%
-  mutate(annual_mult = (NIH_annual_budg*10^6)/NIH_annual_oblig) %>%
+  mutate(annual_mult = (NIH_annual_budg)/NIH_annual_oblig) %>%
   mutate(NIH_funding = NIH_funding * annual_mult) %>%
   ungroup() %>%
   group_by(Organization.Name, Latitude, Longitude) %>%
