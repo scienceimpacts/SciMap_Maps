@@ -73,10 +73,11 @@ nsf_grants <- read.csv("nsf_data/nsf_grants.csv") %>%
 dir_incl <- c("BIO", "CSE", "EDU", "ENG", "GEO", "MPS", "SBE", "TIP")
 
 # divisions within office of director to include
-div_incl <- c("OIA", "OISE")
+div_incl <- c("OIA", "OISE", "OPP")
 
 # helper column to put listed account categories together (O/D divisions are split out)
 nsf_grants %<>% mutate(account_name = ifelse(dir_abbr == "O/D", div_abbr, dir_abbr)) %>%
+  mutate(account_name = ifelse(div_abbr=="OPP", "OPP", account_name)) %>%
   filter(account_name %in% c(dir_incl, div_incl))
 
 # number of grants baseline
@@ -110,7 +111,16 @@ geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
   select(tractid, inst_street_address, inst_name) %>%
   distinct()
 
+missing_tractid_orgs <- read.csv("data/missing_tractid_org_fixed.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 11, pad = "0")) %>%
+  rename(tractid = GEOID) %>%
+  select(tractid, inst_street_address, inst_name) %>%
+  distinct()
+
+geo_dict <- rbind(geo_dict, missing_tractid_orgs)
+
 nsf_grants %<>% left_join(geo_dict) %>%
+  filter(inst_state_name %in% c(state.name, "District of Columbia")) %>%
   filter(!is.na(tractid)) %>%
   group_by(tractid, account_name, fisc_year) %>%
   summarise(raw_funding = sum(adj_fund, na.rm=TRUE))
@@ -169,6 +179,7 @@ NSF_grants_tract <- expand.grid(tractid = unique(nsf_grants$tractid),
                                      account_name = unique(nsf_grants$account_name),
                                      fisc_year = unique(nsf_grants$fisc_year)) %>%
   left_join(nsf_grants) %>%
+  mutate(raw_funding = ifelse(is.na(raw_funding), 0, raw_funding)) %>%
   group_by(tractid, account_name) %>%
   summarise(raw_funding = mean(raw_funding, na.rm=TRUE))
 
