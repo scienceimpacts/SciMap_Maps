@@ -26,6 +26,10 @@ nsf_terminations <- read.csv("data/nsf_terminations.csv") %>%
 # read in grant data
 nsf_grants <- read.csv("nsf_data/nsf_grants.csv")
 
+states <- read.csv("data/states.csv") %>%
+  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
+  select(-FIPS)
+
 orgs <- nsf_grants %>% 
   distinct(inst_name, inst_city_name, inst_state_name, inst_street_address) %>% 
   rename(org_name = inst_name, org_city = inst_city_name, state_name = inst_state_name) %>% 
@@ -33,7 +37,7 @@ orgs <- nsf_grants %>%
   mutate(org_name = if_else(org_name == "Carnegie-Mellon University", "Carnegie Mellon University", org_name),
          org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name),
          inst_street_address = if_else(org_name == "University of Miami", "1251 MEMORIAL DR", inst_street_address)) %>%
-  select(-c(state_name, FIPS)) %>%
+  select(-c(state_name)) %>%
   distinct()
 
 missing_orgs_fixed <- read.csv("data/missing_orgs_fixed.csv") %>%
@@ -41,7 +45,7 @@ missing_orgs_fixed <- read.csv("data/missing_orgs_fixed.csv") %>%
          tractid = GEOID) %>%
   mutate(tractid = str_pad(tractid, 11, pad = "0"),
          state_FIPS = str_sub(tractid, 1, 2)) %>%
-  left_join(states %>% mutate(state_FIPS = FIPS)) %>%
+  left_join(states) %>%
   select(tractid, names(orgs))
 
 orgs <- rbind(orgs, missing_orgs_fixed %>% select(-tractid)) %>%
@@ -123,6 +127,10 @@ cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
 ```{r}
 start_date <- as_date("2025-02-28")
 
+nsf_terminations %>%
+  filter(termination_date >= start_date) %>%
+  nrow()
+
 nsf_terminations %<>%
   filter(termination_date >= start_date) %>%
   pivot_longer(c(termination_date, reinstatement_date), names_to = "date_status", values_to = "date") %>% 
@@ -192,7 +200,7 @@ terminations_sum_comm_nsf <- county_commute %>%
 # add in state multipliers
 terminations_sum_comm_nsf <- terminations_sum_comm_nsf %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
-  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  left_join(states) %>%
   mutate(current_econ_loss = current_loss * nsf_econ_mult,
          current_job_loss = current_loss * nsf_job_val,
          overall_econ_loss = overall_loss * nsf_econ_mult,
@@ -245,10 +253,9 @@ terminations_sum_cong_nsf <- cong_commute %>%
   mutate(current_loss = cumsum(week_loss),
          overall_loss = cumsum(week_impacted))
 
-# add in state multipliers
 terminations_sum_cong_nsf <- terminations_sum_cong_nsf %>%
   mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
-  left_join(states %>% rename(state_FIPS = FIPS)) %>%
+  left_join(states) %>%
   mutate(current_econ_loss = current_loss * nsf_econ_mult,
          current_job_loss = current_loss * nsf_job_val,
          overall_econ_loss = overall_loss * nsf_econ_mult,
