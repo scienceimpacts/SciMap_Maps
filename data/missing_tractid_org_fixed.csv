@@ -1,0 +1,225 @@
+inst_name,inst_street_address,inst_city_name,inst_state_name,ZIP,lat,lon,matched_address,GEOID,STUSPS,NAMELSADCO,STATE_NAME
+University of California-Berkeley,119 CALIFORNIA HALL,BERKELEY,California,94720,37.8718862,-122.2603499,"Calfornia Hall, Sather Rd, Berkeley, CA 94709, USA","06001982100",CA,Alameda County,California
+Arizona State University,1475 N SCOTTSDALE RD STE 200,SCOTTSDALE,Arizona,85257,33.4641772,-111.9230963,"1475 N Scottsdale Rd #200, Scottsdale, AZ 85257, USA","04013218200",AZ,Maricopa County,Arizona
+"Board of Regents, NSHE, obo University of Nevada, Reno",1664 N VIRGINIA ST,RENO,Nevada,89557,39.5489717,-119.8140262,"Orvis School of Nursing, William N and Myriam Pennington Medical Education Bldg, 1664 N Virginia St, Reno, NV 89557, USA","32031001504",NV,Washoe County,Nevada
+Michigan State University,426 AUDITORIUM RD RM 360,EAST LANSING,Michigan,48824,42.729666,-84.4815901,"426 Auditorium Rd #360, East Lansing, MI 48824, USA","26065980000",MI,Ingham County,Michigan
+Carnegie Mellon University,5000 FORBES AVE,PITTSBURGH,Pennsylvania,15213,40.4432027,-79.9428499,"5000 Forbes Ave, Pittsburgh, PA 15213, USA","42003140100",PA,Allegheny County,Pennsylvania
+Stonehill College,320 WASHINGTON ST,NORTH EASTON,Massachusetts,2357,42.0582066,-71.074434,"320 Washington St, North Easton, MA 02357, USA","25005985600",MA,Bristol County,Massachusetts
+New York University,70 WASHINGTON SQ S FL 11,NEW YORK,New York,10012,40.7296301,-73.9970777,"70 Washington Square S fl 11, New York, NY 10012, USA","36061006500",NY,New York County,New York
+University of Pennsylvania,3451 WALNUT ST,PHILADELPHIA,Pennsylvania,19104,39.9533837,-75.1938205,"Franklin Building, 3451 Walnut St, Philadelphia, PA 19104, USA","42101036902",PA,Philadelphia County,Pennsylvania
+Oregon Public Broadcasting,7140 S MACADAM AVE,PORTLAND,Oregon,97219,45.4720123,-122.6711173,"7140 S Macadam Ave, Portland, OR 97219, USA","41051005903",OR,Multnomah County,Oregon
+Finger Lakes Community College,3325 MARVIN SANDS DR,CANANDAIGUA,New York,14424,42.8681508,-77.2418897,"3325 Marvin Sands Dr, Canandaigua, NY 14424, USA","36069051200",NY,Ontario County,New York
+Western Carolina University,1 UNIVERSITY DR,CULLOWHEE,North Carolina,28723,35.309138,-83.185697,"1 University Dr, Cullowhee, NC 28723, USA","37099950600",NC,Jackson County,North Carolina
+"OHIO STATE UNIVERSITY, THE",1960 KENNY RD,COLUMBUS,Ohio,43210,39.9994498,-83.0337256,"Research Foundation Bldg, 1960 Kenny Rd, Columbus, OH 43210, USA","39049001122",OH,Franklin County,Ohio
+San Jose State University Foundation,1 WASHINGTON SQ,SAN JOSE,California,95112,37.3360786,-121.8804535,"1 Washington Sq, San Jose, CA 95192, USA","06085500901",CA,Santa Clara County,California
+University of Hawaii System,2444 DOLE ST # 202,HONOLULU,Hawaii,96822,21.2974369,-157.8200819,"Bachman Hall, 2444 Dole St #202, Honolulu, HI 96822, USA","15003002701",HI,Honolulu County,Hawaii
+Mohave Community College,1971 JAGERSON AVE,KINGMAN,Arizona,86409,35.2706115,-114.0302174,"1971 Jagerson Ave, Kingman, AZ 86409, USA","04015950708",AZ,Mohave County,Arizona
+Department of Navy Naval Facilities Engineering Command,,Arlington,Virginia,20350,38.8710071,-77.0559703,"Washington, VA 20350, USA","51013980100",VA,Arlington County,Virginia
+History Colorado,1200 N BROADWAY,DENVER,Colorado,80203,39.7489202,-104.9873656,"1200 N Broadway, Denver, CO 80205, USA","08031002405",CO,Denver County,Colorado
+Detroit Area Pre-College Engineering Program Inc,2111 WOODWARD AVE # 506-1,DETROIT,Michigan,48201,42.337606,-83.0517853,"2111 Woodward Ave 506 1, Detroit, MI 48201, USA","26163520700",MI,Wayne County,Michigan
+"Science Communication Lab, Inc.",125 STONEWALL RD,BERKELEY,California,94705,37.8626454,-122.2435733,"125 Stonewall Rd, Berkeley, CA 94705, USA","06001400100",CA,Alameda County,California
+Towson University,8000 YORK RD BLDG HP6110L,TOWSON,Maryland,21252,39.3949182,-76.6053069,"Prettyman Hall, 8000 York Rd, Towson, MD 21252, USA","24005490605",MD,Baltimore County,Maryland
+Grassroots Indigenous Multimedia,11217 N BLUE HERON LN,HAYWARD,Wisconsin,54843,46.0378765,-91.2526206,"11217 N Blue Heron Ln, Hayward, WI 54843, USA","55113100501",WI,Sawyer County,Wisconsin
+National Federation of the Blind,1800 JOHNSON ST,BALTIMORE,Maryland,21230,39.2690964,-76.609944,"1800 Johnson St, Baltimore, MD 21230, USA","24510240400",MD,Baltimore city,Maryland
+California Association for Research in Astronomy,65-1120 MAMALAHOA HWY,KAMUELA,Hawaii,96743,20.0245272,-155.6653987,"65-1120 Mamalahoa Hwy, Waimea, HI 96743, USA","15001021705",HI,Hawaii County,Hawaii
+"Stocastic, LLC",629 S BELNORD AVE,BALTIMORE,Maryland,21224,39.2845944,-76.5776572,"629 S Belnord Ave, Baltimore, MD 21224, USA","24510010300",MD,Baltimore city,Maryland
+DePaul University,1 E JACKSON BLVD STE 6317,CHICAGO,Illinois,60604,41.8775745,-87.6272174,"1 E Jackson Blvd #6317, Chicago, IL 60604, USA","17031320400",IL,Cook County,Illinois
+National Jewish Health,1400 JACKSON ST,DENVER,Colorado,80206,39.7393692,-104.9421708,"1400 Jackson St, Denver, CO 80206, USA","08031003703",CO,Denver County,Colorado
+Father Flanagan's Boys' Home,14100 CRAWFORD ST,BOYS TOWN,Nebraska,68010,41.2536888,-96.1336615,"14100 Crawford St, Boys Town, NE 68010, USA","31055007473",NE,Douglas County,Nebraska
+Earth Team,1301 S 46TH ST BLDG 155,RICHMOND,California,94804,37.9160247,-122.3350199,"1301 S 46th St bldg 155, Richmond, CA 94804, USA","06013380001",CA,Contra Costa County,California
+Florida Polytechnic University,4700 RESEARCH WAY,LAKELAND,Florida,33805,28.1480016,-81.8483545,"4700 Research Way, Lakeland, FL 33805, USA","12105011606",FL,Polk County,Florida
+Massachusetts Department of Higher Education,75 PLEASANT ST FL 3,MALDEN,Massachusetts,2148,42.4273675,-71.0690513,"75 Pleasant St fl 3, Malden, MA 02148, USA","25017341301",MA,Middlesex County,Massachusetts
+ABIRAM                  PNINA          G,,BELMONT,Massachusetts,2478,42.3958849,-71.1745579,"Belmont, MA 02478, USA","25017357200",MA,Middlesex County,Massachusetts
+Cincinnati Museum Center,1301 WESTERN AVE STE 2253,CINCINNATI,Ohio,45203,39.1100038,-84.5374541,"1301 Western Ave #2253, Cincinnati, OH 45203, USA","39061026300",OH,Hamilton County,Ohio
+Pittsburg State University,1701 S BROADWAY ST,PITTSBURG,Kansas,66762,37.391355,-94.7036607,"Russ Hall, 1701 S Broadway St, Pittsburg, KS 66762, USA","20037957602",KS,Crawford County,Kansas
+San Juan College,4601 COLLEGE BLVD,FARMINGTON,New Mexico,87402,36.7715573,-108.1685671,"Office of Technology Services, 4601 College Blvd, Farmington, NM 87402, USA","35045000202",NM,San Juan County,New Mexico
+Navan Technologies Inc.,733 INDUSTRIAL RD,SAN CARLOS,California,94070,37.5098269,-122.2525071,"733 Industrial Rd, San Carlos, CA 94070, USA","06081609100",CA,San Mateo County,California
+"Jobs for the Future, Inc.",50 MILK ST,BOSTON,Massachusetts,2109,42.3570375,-71.0575264,"50 Milk St, Boston, MA 02109, USA","25025030302",MA,Suffolk County,Massachusetts
+Murray                  Claire,,BALTIMORE,Maryland,21210,39.2579486,-76.7116005,"Nanticoke, Baltimore, MD 21250, USA","24005492500",MD,Baltimore County,Maryland
+Warren                  MacKenzie,,East Lansing,Michigan,48824,42.724305,-84.4796047,"East Lansing, MI 48824, USA","26065980000",MI,Ingham County,Michigan
+Greco                   Johnny         P,,Westerville,Ohio,43082,40.1266689,-82.9318807,"Westerville, OH, USA","39049007020",OH,Franklin County,Ohio
+Leiner                  Emily,,Madison,Wisconsin,53703,43.0833196,-89.3724769,"Madison, WI 53703, USA","55025001804",WI,Dane County,Wisconsin
+Hasselquist             Sten,,Las Cruces,New Mexico,88011,32.3035838,-106.6055534,"Las Cruces, NM 88011, USA","35013001204",NM,Doña Ana County,New Mexico
+Martin                  Emily          C,,Los Angeles,California,90034,34.0324632,-118.395863,"Los Angeles, CA 90034, USA","06037269800",CA,Los Angeles County,California
+Davis                   Kristina       K,,Tempe,Arizona,85282,33.3897576,-111.9343636,"Tempe, AZ 85282, USA","04013319802",AZ,Maricopa County,Arizona
+Maguire                 Ross           R,,Ann Arbor,Michigan,48109,42.3053253,-83.6694169,"Ann Arbor, MI 48109, USA","26161406000",MI,Washtenaw County,Michigan
+Brashier                Nadia          M,,Durham,North Carolina,27707,35.9530958,-78.9571069,"Durham, NC 27707, USA","37063002008",NC,Durham County,North Carolina
+Grebe                   Nicholas,,Chapel Hill,North Carolina,27516,35.9131996,-79.0558445,"Chapel Hill, NC, USA","37135011700",NC,Orange County,North Carolina
+Brady                   William,,Brooklyn,New York,11238,40.6805029,-73.9624327,"Brooklyn, NY 11238, USA","36047020300",NY,Kings County,New York
+Wassink                 Joshua         T,,Durham,North Carolina,27713,35.890231,-78.9175088,"Durham, NC 27713, USA","37063002020",NC,Durham County,North Carolina
+Yu                      MarkVincent    B,,Irvine,California,96912,33.6845673,-117.8265049,"Irvine, CA, USA","06059052521",CA,Orange County,California
+Nourani                 Vesall,,Ithaca,New York,14850,42.4439614,-76.5018807,"Ithaca, NY, USA","36109000800",NY,Tompkins County,New York
+Schnorr                 Stephanie      L,,Tahlequah,Oklahoma,74464,35.91537,-94.969956,"Tahlequah, OK 74464, USA","40021978000",OK,Cherokee County,Oklahoma
+Forsythe                Hannah,,Lansing,Michigan,48912,42.7376689,-84.5169757,"Lansing, MI 48912, USA","26065001000",MI,Ingham County,Michigan
+Carrillo                Ian,,Madison,Wisconsin,53703,43.0833196,-89.3724769,"Madison, WI 53703, USA","55025001804",WI,Dane County,Wisconsin
+Swencionis              Jillian        K,,New York,New York,10024,40.7859464,-73.9741874,"New York, NY 10024, USA","36061016900",NY,New York County,New York
+Damick                  Alison,,Austin,Texas,78751,30.3055711,-97.725376,"Austin, TX 78751, USA","48453000302",TX,Travis County,Texas
+Palmer                  Meredith       S,,Roseville,Minnesota,55113,45.0060767,-93.1566107,"Roseville, MN 55113, USA","27123041800",MN,Ramsey County,Minnesota
+Misiewicz               Tracy          M,,San Jose,California,95112,37.3456227,-121.8847222,"San Jose, CA 95112, USA","06085501000",CA,Santa Clara County,California
+EcoAdapt,649 MOJI LN NW,BAINBRIDGE ISLAND,Washington,98110,47.6310824,-122.5273591,"649 Moji Ln NW, Bainbridge Island, WA 98110, USA","53035090901",WA,Kitsap County,Washington
+Dowdy                   Nicolas        J,,Chandler,Arizona,85286,33.2664407,-111.8210866,"Chandler, AZ 85286, USA","04013812400",AZ,Maricopa County,Arizona
+Tanner                  Jessie         C,,Saint Paul,Minnesota,55104,44.9516643,-93.1629063,"St Paul, MN 55104, USA","27123033400",MN,Ramsey County,Minnesota
+Yohe                    Laurel         R,,East Setauket,New York,11733,40.9509762,-73.0995528,"Setauket- East Setauket, NY 11733, USA","36103158001",NY,Suffolk County,New York
+Marceau                 Joshua         O,,Fayetteville,Arkansas,72703,36.1192532,-94.0388918,"Fayetteville, AR 72703, USA","05143010108",AR,Washington County,Arkansas
+O'Brien                 Devin          M,,Missoula,Montana,59802,46.9539821,-113.9120099,"Missoula, MT 59802, USA","30063001401",MT,Missoula County,Montana
+Speer                   Kelsey         F,,PHILADELPHIA,Pennsylvania,19104,39.9555409,-75.2024608,"4000 Chestnut St, Philadelphia, PA 19104, USA","42101008802",PA,Philadelphia County,Pennsylvania
+Lepak                   Ryan           F,,Madison,Wisconsin,53718,43.0850514,-89.2562239,"Madison, WI 53718, USA","55025011407",WI,Dane County,Wisconsin
+Salcedo                 Mary,,SOMERVILLE,Massachusetts,2144,42.3991718,-71.1240559,"West Somerville, MA 02144, USA","25017350500",MA,Middlesex County,Massachusetts
+Balisi                  Mairin,,Los Angeles,California,90034,34.0324632,-118.395863,"Los Angeles, CA 90034, USA","06037269800",CA,Los Angeles County,California
+Card                    Daren,,Arlington,Texas,76006,32.7722013,-97.0767365,"Arlington, TX 76006, USA","48439113109",TX,Tarrant County,Texas
+Western Illinois University,1 UNIVERSITY CIR,MACOMB,Illinois,61455,40.4667444,-90.6851089,"University Union, 1 University Cir, Macomb, IL 61455, USA","17109980000",IL,McDonough County,Illinois
+Grambling State University,100 FOUNDERS STREET,GRAMBLING,Louisiana,71245,32.5251007,-92.7133005,"Grambling, LA 71245, USA","22061960300",LA,Lincoln Parish,Louisiana
+Organization for Tropical Studies Inc,408 SWIFT AVE,DURHAM,North Carolina,27705,36.001672,-78.9225668,"Organization for Tropical Studies, 408 Swift Ave, Durham, NC 27705, USA","37063000500",NC,Durham County,North Carolina
+California State University-Long Beach Foundation,6300 E STATE UNIVERSITY DR STE 332,LONG BEACH,California,90815,33.7811708,-118.1102798,"Foundation Bldg, 6300 State University Dr #332, Long Beach, CA 90840, USA","06037574602",CA,Los Angeles County,California
+Tidewater Community College,121 COLLEGE PL,NORFOLK,Virginia,23510,36.8497868,-76.2917622,"121 College Pl, Norfolk, VA 23510, USA","51710004900",VA,Norfolk city,Virginia
+HudsonAlpha Institute for Biotechnology,601 GENOME WAY,HUNTSVILLE,Alabama,35806,34.7253195,-86.6908576,"601 Genome Way Northwest, Huntsville, AL 35806, USA","01089001403",AL,Madison County,Alabama
+Department of Education National Center for Education Statistics,1990 K St NW,Washington,District of Columbia,20006,38.9022953,-77.0444858,"1990 K St NW, Washington, DC 20006, USA","11001010700",DC,District of Columbia,District of Columbia
+"Codecraft Works, LLC",2412 IRWIN ST,MELBOURNE,Florida,32901,28.0727753,-80.6008149,"2412 Irwin St, Melbourne, FL 32901, USA","12009064902",FL,Brevard County,Florida
+SoundPipe,1 MORTON DRIVE,CHARLOTTESVILLE,Virginia,22903,38.0554142,-78.4957132,"1 Morton Dr, Charlottesville, VA 22903, USA","51540000700",VA,Charlottesville city,Virginia
+"Imagen Energy, LLC",11745 W BRADLEY RD,MILWAUKEE,Wisconsin,53224,43.1621943,-88.0568718,"11745 W Bradley Rd, Milwaukee, WI 53224, USA","55079000202",WI,Milwaukee County,Wisconsin
+"Applied Biosensors, LLC",2500 S STATE ST # D224,SOUTH SALT LAKE,Utah,84115,40.7155104,-111.8900219,"2500 S State St d224, South Salt Lake, UT 84115, USA","49035111500",UT,Salt Lake County,Utah
+KW Associates LLC,1546 INDUSTRIAL WAY SW,ALBANY,Oregon,97322,44.6254276,-123.1049497,"1546 Industrial Way SW, Albany, OR 97322, USA","41043020801",OR,Linn County,Oregon
+"Adnoviv, Inc.",2800 WOODLAWN DR,HONOLULU,Hawaii,96822,21.3088543,-157.8085734,"2800 Woodlawn Dr, Honolulu, HI 96822, USA","15003002900",HI,Honolulu County,Hawaii
+City of Phoenix,200 W WASHINGTON ST,PHOENIX,Arizona,85003,33.4489367,-112.0772548,"200 W Washington St, Phoenix, AZ 85003, USA","04013114100",AZ,Maricopa County,Arizona
+City of Tempe,31 E 5TH ST,TEMPE,Arizona,85281,33.4248276,-111.938559,"Tempe Municipal Building, 31 E 5th St, Tempe, AZ 85281, USA","04013318700",AZ,Maricopa County,Arizona
+Saint Xavier University,3700 W 103RD ST,CHICAGO,Illinois,60655,41.7090693,-87.7151551,"3700 W 103rd St, Chicago, IL 60655, USA","17031740200",IL,Cook County,Illinois
+City Colleges of Chicago Wilbur Wright College,4300 N NARRAGANSETT AVE,CHICAGO,Illinois,60634,41.9585596,-87.7892449,"4300 N Narragansett Ave, Chicago, IL 60634, USA","17031170100",IL,Cook County,Illinois
+High Rocks Educational Corporation,195 THOMPSON RD,HILLSBORO,West Virginia,24946,38.1838656,-80.1942147,"195 Thompson Rd, Hillsboro, WV 24946, USA","54075960300",WV,Pocahontas County,West Virginia
+Moraine Valley Community College,9000 W COLLEGE PKWY,PALOS HILLS,Illinois,60465,41.6924106,-87.8393005,"9000 College Pkwy, Palos Hills, IL 60465, USA","17031823803",IL,Cook County,Illinois
+University of Oklahoma Health Sciences Center,865 RESEARCH PKWY STE 560,OKLAHOMA CITY,Oklahoma,73104,35.4743253,-97.504675,"865 Research Pkwy #560, Oklahoma City, OK 73104, USA","40109109700",OK,Oklahoma County,Oklahoma
+NATIONAL BUSINESS CENTER INC,1849 C ST NW MS 1210-MIB,WASHINGTON,District of Columbia,20240,38.8937999,-77.0425335,"1849 C St NW #1210, Washington, DC 20240, USA","11001010800",DC,District of Columbia,District of Columbia
+SIENA UNIVERSITY,515 LOUDON RD,LOUDONVILLE,New York,12211,42.7189496,-73.7513323,"515 Loudon Rd, Loudonville, NY 12211, USA","36001013604",NY,Albany County,New York
+"TCarta Marine, LLC",4025 EASLEY RD,GOLDEN,Colorado,80403,39.7717538,-105.1969775,"4025 Easley Rd, Golden, CO 80403, USA","08059009854",CO,Jefferson County,Colorado
+EDADVANCE,355 GOSHEN RD,LITCHFIELD,Connecticut,6759,41.7640343,-73.1984639,"355 Goshen Rd, Litchfield, CT 06759, USA","09160300400",CT,Northwest Hills Planning Region,Connecticut
+"Center for Disease Dynamics, Economics & Policy",301 NASSAU ST # 1,PRINCETON,New Jersey,8540,40.3530673,-74.6476124,"301 Nassau St #1, Princeton, NJ 08540, USA","34021004501",NJ,Mercer County,New Jersey
+Dona Ana Branch Community College,3400 S ESPINA ST 3DA,LAS CRUCES,New Mexico,88003,32.2750826,-106.755145,"Doña Ana Branch C.C. Health and Public Services, 3400 S Espina St #3da, Las Cruces, NM 88003, USA","35013001000",NM,Doña Ana County,New Mexico
+VERIMMUNE INC.,20271 GOLDENROD LN FL 2 STE 2038,GERMANTOWN,Maryland,20876,39.1868751,-77.250387,"Goldrenrod Building, 20271 Goldenrod Ln fl 2 ste 2038, Germantown, MD 20876, USA","24031700830",MD,Montgomery County,Maryland
+FOLIA Materials Inc.,224 CALVARY ST # 230,WALTHAM,Massachusetts,2453,42.3675207,-71.2204399,"224 Calvary St Suite 230, Waltham, MA 02453, USA","25017368700",MA,Middlesex County,Massachusetts
+"Alligant Scientific, LLC",7025 S FULTON ST STE 100,CENTENNIAL,Colorado,80112,39.5903414,-104.8723377,"7025 S Fulton St Suite 100, Centennial, CO 80112, USA","08005006815",CO,Arapahoe County,Colorado
+ADVENT Diamond,7700 S RIVER PKWY STE 2618,TEMPE,Arizona,85284,33.3464612,-111.8987785,"Parking lot, 7700 S River Pkwy #2618, Tempe, AZ 85284, USA","04013319909",AZ,Maricopa County,Arizona
+Federation of Amer Societies For Exper Biology,6120 EXECUTIVE BLVD STE 230,ROCKVILLE,Maryland,20852,39.047715,-77.1273868,"6120 Executive Blvd Suite 230, Rockville, MD 20852, USA","24031701205",MD,Montgomery County,Maryland
+HOUSTON CHRISTIAN UNIVERSITY,7502 FONDREN RD,HOUSTON,Texas,77074,29.6949384,-95.5153952,"7502 Fondren Rd, Houston, TX 77074, USA","48201422800",TX,Harris County,Texas
+"Association for Women in Mathematics, Inc.",201 CHARLES ST,PROVIDENCE,Rhode Island,2904,41.8371711,-71.4124033,"201 Charles St, Providence, RI 02904, USA","44007003100",RI,Providence County,Rhode Island
+CodeVA,228 LISA DR,NEWPORT NEWS,Virginia,23606,37.0918409,-76.5055879,"228 Lisa Dr, Newport News, VA 23606, USA","51700031902",VA,Newport News city,Virginia
+The Baton Rouge Area Foundation,451 FLORIDA ST STE LL 100,BATON ROUGE,Louisiana,70801,30.4495756,-91.1864265,"451 Florida St, Baton Rouge, LA 70801, USA","22033005100",LA,East Baton Rouge Parish,Louisiana
+"GEOLOGICAL SURVEY, UNITED STATES DEPT OF",12201 SUNRISE VALLEY DR MS 100,RESTON,Virginia,20192,38.9473381,-77.3676233,"12201 Sunrise Valley Dr, Reston, VA 20192, USA","51059481202",VA,Fairfax County,Virginia
+Simon's Rock of Bard College,30 SEMINARY DR,BARRYTOWN,New York,12507,42.0033644,-73.92433,"30 Seminary Dr, Barrytown, NY 12507, USA","36027150003",NY,Dutchess County,New York
+"START International, Inc.",1004 SUNSET AVE,FORT COLLINS,Colorado,80521,40.5810866,-105.0941644,"1004 Sunset Ave, Fort Collins, CO 80521, USA","08069000201",CO,Larimer County,Colorado
+SUNY College at Geneseo,1 COLLEGE CIR,GENESEO,New York,14454,42.7966913,-77.8219651,"1 College Cir, Geneseo, NY 14454, USA","36051030500",NY,Livingston County,New York
+Hispanic Association of Colleges and Universities,18618 TUSCANY STONE STE 240,SAN ANTONIO,Texas,78258,29.612311,-98.489853,"18618 Tuscany Stone # 240, San Antonio, TX 78258, USA","48029191818",TX,Bexar County,Texas
+Loggerhead Instruments,5627 COUNTRY WALK LN,SARASOTA,Florida,34233,27.2770266,-82.4582081,"5627 Country Walk Ln, Sarasota, FL 34233, USA","12115001510",FL,Sarasota County,Florida
+MANHATTAN UNIVERSITY,4513 MANHATTAN COLLEGE PKWY,BRONX,New York,10471,40.8900888,-73.9008009,"4513 Manhattan College Pkwy, Bronx, NY 10471, USA","36005035100",NY,Bronx County,New York
+spotLESS Materials Inc.,2440 EARLYSTOWN RD STE 600,CENTRE HALL,Pennsylvania,16828,40.8127434,-77.7049654,"2440 Earlystown Rd #600, Centre Hall, PA 16828, USA","42027010901",PA,Centre County,Pennsylvania
+New England Complex Systems Institute,101 CLAREMONT ST,NEWTON,Massachusetts,2458,42.3483427,-71.1930876,"101 Claremont St, Newton, MA 02458, USA","25017373500",MA,Middlesex County,Massachusetts
+Eduworks Corporation,14300 SE 1ST ST STE 110,VANCOUVER,Washington,98684,45.621623,-122.5255973,"14300 SE 1st St Suite 110, Vancouver, WA 98684, USA","53011041337",WA,Clark County,Washington
+Westat Inc,7501 WISCONSIN AVE STE 1000E,BETHESDA,Maryland,20814,38.9856235,-77.0930886,"7501 Wisconsin Ave #1000e, Bethesda, MD 20814, USA","24031704805",MD,Montgomery County,Maryland
+Society for Personality and Social Psychology,3430 ETHEL CT,ANNANDALE,Virginia,22003,38.8492938,-77.1961167,"3430 Ethel Ct, Annandale, VA 22003, USA","51059450800",VA,Fairfax County,Virginia
+"Center for the Advancement of Science in Space, Inc.",505 ODYSSEY WAY STE 104A,MERRITT ISLAND,Florida,32953,28.5148514,-80.6696025,"Exploration Park, 505 Odyssey Way #104a, Merritt Island, FL 32953, USA","12009069905",FL,Brevard County,Florida
+"RHAEOS, INC",400 N ABERDEEN ST STE 575,CHICAGO,Illinois,60642,41.8891558,-87.6550587,"400 N Aberdeen St #575, Chicago, IL 60642, USA","17031243500",IL,Cook County,Illinois
+HISPANIC FEDERATION INC,55 EXCHANGE PL FL 5,NEW YORK,New York,10005,40.7061957,-74.0105132,"55 Exchange Pl #5, New York, NY 10005, USA","36061000700",NY,New York County,New York
+"Abram Scientific, Inc.",980 O'BRIEN DR,MENLO PARK,California,94025,37.4745856,-122.1519414,"980 O'Brien Dr, Menlo Park, CA 94025, USA","06081611800",CA,San Mateo County,California
+CELLUDOT LLC,3521 E TOWNSHIP ST,FAYETTEVILLE,Arkansas,72703,36.0945433,-94.110983,"3521 E Township St, Fayetteville, AR 72703, USA","05143010108",AR,Washington County,Arkansas
+VIANAIR INC.,6101 PELICAN BAY BLVD PH 2,NAPLES,Florida,34108,26.2223595,-81.8114497,"6101 Pelican Bay Blvd ph 2, Naples, FL 34108, USA","12021010215",FL,Collier County,Florida
+"SOLESTIAL, INC.",1121 W WARNER RD STE 101,TEMPE,Arizona,85284,33.3339386,-111.9575585,"1121 W Warner Rd #101, Tempe, AZ 85284, USA","04013810000",AZ,Maricopa County,Arizona
+"Chow, Bryant",,Fairbanks,Alaska,99775,64.81707,-147.87928,"Fairbanks, AK 99775, USA","02090001000",AK,Fairbanks North Star Borough,Alaska
+Cossatot Technical College,183 COLLEGE DR,DE QUEEN,Arkansas,71832,34.0435105,-94.3677543,"183 College Dr, De Queen, AR 71832, USA","05133080300",AR,Sevier County,Arkansas
+"GREEN SUN MEDICAL, LLC",320 E VINE DR STE 216,FORT COLLINS,Colorado,80524,40.5965168,-105.0719528,"320 E Vine Dr Suite 216, Fort Collins, CO 80524, USA","08069001305",CO,Larimer County,Colorado
+Rollins College,1000 HOLT AVE # 2715,WINTER PARK,Florida,32789,28.5912071,-81.3499838,"1000 Holt Ave #2715, Winter Park, FL 32789, USA","12095016001",FL,Orange County,Florida
+OWL AUTONOMOUS IMAGING INC,470 WILLOWBROOK OFFICE PARK BLDG 400,FAIRPORT,New York,14450,43.037849,-77.4582278,"470 Willowbrook Office Park bldg 400, Fairport, NY 14450, USA","36055011708",NY,Monroe County,New York
+Knology Ltd.,93 WEST ST,GOSHEN,Connecticut,6756,41.8259608,-73.233572,"93 West St, Goshen, CT 06756, USA","09160296100",CT,Northwest Hills Planning Region,Connecticut
+TIBBAR PLASMA TECHNOLOGIES INC.,1227 BIG ROCK LOOP,LOS ALAMOS,New Mexico,87544,35.8875285,-106.2709028,"1227 Big Rock Loop, Los Alamos, NM 87544, USA","35028000100",NM,Los Alamos County,New Mexico
+"BLUEWONDER CREATIVE, LLC",3042 HUMMINGBIRD DR,NASHVILLE,Tennessee,37218,36.2188527,-86.8249663,"3042 Hummingbird Dr, Nashville, TN 37218, USA","47037012801",TN,Davidson County,Tennessee
+GRAIN WEEVIL CORPORATION,10327 CHANDLER CIR STE 200,LA VISTA,Nebraska,68128,41.1823122,-96.0723873,"10327 Chandler Cir #200, La Vista, NE 68128, USA","31153010622",NE,Sarpy County,Nebraska
+ORION LABS LLC,50419 COUNTY ROAD 21,NUNN,Colorado,80648,40.7316788,-104.8690601,"50419 County Rd 21, Nunn, CO 80648, USA","08123002501",CO,Weld County,Colorado
+Howe Industries LLC,16674 N 91ST ST STE 103,SCOTTSDALE,Arizona,85260,33.6385043,-111.8855971,"16674 N 91st St STE 103, Scottsdale, AZ 85260, USA","04013216860",AZ,Maricopa County,Arizona
+"NANOIONIX, LLC",400 FARMINGTON AVE,FARMINGTON,Connecticut,6032,41.7317707,-72.7997819,"Cell & Genome Science Building, 1717, 400 Farmington Ave, Farmington, CT 06032, USA","09110460202",CT,Capitol Planning Region,Connecticut
+DISTRIBUTED SPECTRUM LLC,300 W END AVE # 12A,NEW YORK,New York,10023,40.781186,-73.983078,"300 West End Ave # 12a, New York, NY 10023, USA","36061016300",NY,New York County,New York
+"PSYONIC, Inc.",10939 TECHNOLOGY PL,SAN DIEGO,California,92127,33.008681,-117.0944934,"10939 Technology Pl, San Diego, CA 92127, USA","06073017071",CA,San Diego County,California
+BLUE MARBLE SPACE,716 SEWELL BRANCH RD,CLAYTON,Delaware,19938,39.2419411,-75.7460534,"716 Sewell Branch Rd, Clayton, DE 19938, USA","10001040100",DE,Kent County,Delaware
+TEVERRA LLC,1161 BROOKGATE WAY NE,BROOKHAVEN,Georgia,30319,33.8661256,-84.3416709,"1161 Brookgate Way NE, Atlanta, GA 30319, USA","13089021104",GA,DeKalb County,Georgia
+OMICSCRAFT LLC,1305 30TH ST NW UNIT 105,WASHINGTON,District of Columbia,20007,38.906991,-77.059004,"1305 30th St NW Unit 105, Washington, DC 20007, USA","11001000102",DC,District of Columbia,District of Columbia
+"CAPIENDA BIOTECH, LLC",13225 SUNDANCE AVE,SAN DIEGO,California,92129,32.96049,-117.1297556,"13225 Sundance Ave, San Diego, CA 92129, USA","06073008337",CA,San Diego County,California
+RAPID RADICALS TECHNOLOGY LLC,247 W FRESHWATER WAY STE 528,MILWAUKEE,Wisconsin,53204,43.0292038,-87.9138422,"247 W Freshwater Way #528, Milwaukee, WI 53204, USA","55079187400",WI,Milwaukee County,Wisconsin
+"ASPERO MEDICAL, INC.",10835 DOVER ST STE 800,WESTMINSTER,Colorado,80021,39.8931412,-105.094423,"10835 N Dover St Ste. 800, Westminster, CO 80021, USA","08059060501",CO,Jefferson County,Colorado
+Evergreen Valley College,40 S MARKET ST,SAN JOSE,California,95113,37.3348447,-121.8913163,"40 S Market St, San Jose, CA 95113, USA","06085500800",CA,Santa Clara County,California
+"DNALITE THERAPEUTICS, INC.",2350 E ALLUVIAL AVE APT 222,FRESNO,California,93720,36.8459683,-119.7413003,"2350 E Alluvial Ave Apt 222, Fresno, CA 93720, USA","06019005509",CA,Fresno County,California
+"CANOMIKS, INC.",221 1ST AVE SW STE 600,ROCHESTER,Minnesota,55902,44.0208525,-92.4649735,"Minnesota BioBusiness Center, 221 1st Ave SW Suite 600, Rochester, MN 55902, USA","27109000100",MN,Olmsted County,Minnesota
+"PRECIENT TECHNOLOGIES, LLC",101 W 5TH ST APT 4006,TEMPE,Arizona,85281,33.425225,-111.9415336,"101 W 5th St #4006, Tempe, AZ 85281, USA","04013318700",AZ,Maricopa County,Arizona
+ORGANIC ROBOTICS CORPORATION,529 MAIN ST STE 1M17,CHARLESTOWN,Massachusetts,2129,42.3847796,-71.071412,"529 Main St Suite #1M17, Boston, MA 02129, USA","25025040600",MA,Suffolk County,Massachusetts
+"HEROWEAR, LLC",2513 PERIMETER PLACE DR,NASHVILLE,Tennessee,37214,36.1491009,-86.6763442,"2513 Perimeter Pl Dr, Nashville, TN 37214, USA","47037015100",TN,Davidson County,Tennessee
+Texas Wesleyan University,1201 WESLEYAN ST,FORT WORTH,Texas,76105,32.7331261,-97.2796183,"1201 Wesleyan St, Fort Worth, TX 76105, USA","48439103500",TX,Tarrant County,Texas
+"MFNS TECH, INC.",1801 MAPLE AVE STE 1203,EVANSTON,Illinois,60201,42.0502798,-87.684323,"1801 Maple Ave #1203, Evanston, IL 60201, USA","17031809402",IL,Cook County,Illinois
+"RENERVA, LLC",2403 SIDNEY ST STE 280,PITTSBURGH,Pennsylvania,15203,40.4299126,-79.9697768,"2403 Sidney St #280, Pittsburgh, PA 15203, USA","42003160900",PA,Allegheny County,Pennsylvania
+AXILEA LLC,26945 AMHEARST CIR APT 305,BEACHWOOD,Ohio,44122,41.4948338,-81.4902973,"26945 Amhearst Cir #305, Beachwood, OH 44122, USA","39035131104",OH,Cuyahoga County,Ohio
+SUNCHEM LLC,2300 4TH ST,BERKELEY,California,94710,37.8627823,-122.2986273,"2300 Fourth St, Berkeley, CA 94710, USA","06001422000",CA,Alameda County,California
+IMPACT ALLIES INC,1013 OLDE DOUBLOON DR,VERO BEACH,Florida,32963,27.620414,-80.3479809,"1013 Olde Doubloon Dr, Vero Beach, FL 32963, USA","12061050508",FL,Indian River County,Florida
+"Mouillé, Lawrence",,Houston,Texas,77025,29.824901,-95.4786905,"Nan St, Houston, TX 77092, USA","48201520501",TX,Harris County,Texas
+"Martínez-Gómez, Jesús",,Ithaca,New York,14850,42.4439614,-76.5018807,"Ithaca, NY, USA","36109000800",NY,Tompkins County,New York
+Carnegie Learning,436 7TH AVE STE 200,PITTSBURGH,Pennsylvania,15219,40.4420849,-79.9956257,"436 Seventh Ave #200, Pittsburgh, PA 15219, USA","42003020100",PA,Allegheny County,Pennsylvania
+GRAVEL CAPITAL LLC,1800 N AMERICAN ST # E101,PHILADELPHIA,Pennsylvania,19122,39.9785513,-75.1396563,"1800 N American St e101, Philadelphia, PA 19122, USA","42101015600",PA,Philadelphia County,Pennsylvania
+THE ALLEN INSTITUTE FOR ARTIFICIAL INTELLIGENCE,3800 LATONA AVE NE STE 300,SEATTLE,Washington,98105,47.6540563,-122.3254131,"3800 Latona Ave NE Suite 300, Seattle, WA 98105, USA","53033005201",WA,King County,Washington
+Society for In Vitro Biology,1520 LOCHABER CT,GLEN BURNIE,Maryland,21061,39.189076,-76.6252673,"1520 Lochaber Ct, Glen Burnie, MD 21061, USA","24003750804",MD,Anne Arundel County,Maryland
+TEXAS A&M UNIVERSITY - VICTORIA,3007 N BEN WILSON ST,VICTORIA,Texas,77901,28.8162849,-96.9790685,"3007 N Ben Wilson St, Victoria, TX 77901, USA","48469000602",TX,Victoria County,Texas
+The Methodist Hospital Research Institute,6565 FANNIN ST STE D200,HOUSTON,Texas,77030,29.7099079,-95.3997225,"6565 Fannin St d200, Houston, TX 77030, USA","48201313102",TX,Harris County,Texas
+TERRAGIA BIOFUEL INC,16 CAVENDISH CT,LEBANON,New Hampshire,3766,43.6788456,-72.2561297,"16 Cavendish Ct, Lebanon, NH 03766, USA","33009961701",NH,Grafton County,New Hampshire
+"GNU COMPANY, LLC",22 HANCOCK ST,WINCHESTER,Massachusetts,1890,42.4572106,-71.1282414,"22 Hancock St, Winchester, MA 01890, USA","25017338500",MA,Middlesex County,Massachusetts
+"Heliobiosys, Inc",16363 SKYLINE BLVD,WOODSIDE,California,94062,37.3918022,-122.282823,"16363 Skyline Blvd, Woodside, CA 94062, USA","06081613400",CA,San Mateo County,California
+MICROPURE GENOMICS INC.,11526 SORRENTO VALLEY RD STE D1,SAN DIEGO,California,92121,32.9119412,-117.2332934,"11526 Sorrento Valley Rd STE D-1, San Diego, CA 92121, USA","06073008339",CA,San Diego County,California
+Resuture Inc.,21045 N 9TH PL STE 203,PHOENIX,Arizona,85024,33.6769929,-112.0609954,"21045 N 9th Pl STE 203, Phoenix, AZ 85024, USA","04013614900",AZ,Maricopa County,Arizona
+GUARDIANSAT LLC,3802 SPECTRUM BLVD STE 112F,TAMPA,Florida,33612,28.0562444,-82.4150923,"Business Partnership Building, 3802 Spectrum Blvd # 112F, Tampa, FL 33612, USA","12057010900",FL,Hillsborough County,Florida
+EXOPOWER INC.,2591 LEGACY WAY,GRAND JUNCTION,Colorado,81503,39.0405106,-108.5723223,"2591 Legacy Way, Grand Junction, CO 81503, USA","08077001303",CO,Mesa County,Colorado
+LATERAL.SYSTEMS LLC,1982 PARK FOREST AVE,LAKE OSWEGO,Oregon,97034,45.4032298,-122.6967728,"1982 Park Forest Ave, Lake Oswego, OR 97034, USA","41005020404",OR,Clackamas County,Oregon
+LUMENASTRA,4126 AREZZO DR,LONGMONT,Colorado,80503,40.1395005,-105.1570494,"4126 Arezzo Dr, Longmont, CO 80503, USA","08013013214",CO,Boulder County,Colorado
+Society for Advancement of Chicanos & Native Americans in Sci,1155 16TH ST NW STE 1123,WASHINGTON,District of Columbia,20036,38.9052361,-77.0360453,"1155 16th St NW #1123, Washington, DC 20036, USA","11001010100",DC,District of Columbia,District of Columbia
+FRIA INC.,1705 MADALINE DR,AVENEL,New Jersey,7001,40.572963,-74.2798401,"1705 Madaline Dr, Avenel, NJ 07001, USA","34023002703",NJ,Middlesex County,New Jersey
+Cuesta College,3000 EDUCATION DR,SAN LUIS OBISPO,California,93405,35.3313257,-120.7422648,"3000 Education Dr, San Luis Obispo, CA 93405, USA","06079011505",CA,San Luis Obispo County,California
+UNSPACE LLC,6501 NAVIGATION BLVD STE A3,HOUSTON,Texas,77011,29.750522,-95.3066086,"6501 Navigation Blvd Suite A3, Houston, TX 77011, USA","48201310500",TX,Harris County,Texas
+The Forsyth Institute,100 CHESTNUT ST FL 4,SOMERVILLE,Massachusetts,2143,42.376362,-71.084436,"100 Chestnut St fl 4, Somerville, MA 02143, USA","25017351500",MA,Middlesex County,Massachusetts
+BIOINDUSTRIAL MANUFACTURING AND DESIGN ECOSYSTEM,1900 POWELL ST STE 1200,EMERYVILLE,California,94608,37.838498,-122.2998186,"1900 Powell St #1200, Emeryville, CA 94608, USA","06001425101",CA,Alameda County,California
+CAMBRIDGE TERAHERTZ INC,3235 KIFER RD STE 150,SANTA CLARA,California,95051,37.3745312,-121.9855356,"3235 Kifer Rd #150, Santa Clara, CA 95051, USA","06085505202",CA,Santa Clara County,California
+UNITARY FUND,365 TERHUNE RD,PRINCETON,New Jersey,8540,40.3659776,-74.6530348,"365 Terhune Rd, Princeton, NJ 08540, USA","34021004205",NJ,Mercer County,New Jersey
+OPEN MOLECULAR SOFTWARE FOUNDATION,833 BANCROFT WAY STE A,BERKELEY,California,94710,37.8637547,-122.2960684,"833 Bancroft Way a, Berkeley, CA 94710, USA","06001423200",CA,Alameda County,California
+"VSORTS, INC",24 VETERANS SQ STE 154,MEDIA,Pennsylvania,19063,39.9185125,-75.3921303,"24 Veterans Sq. #154, Media, PA 19063, USA","42045407502",PA,Delaware County,Pennsylvania
+NOMI MATERIALS CORP,500 WHITE PLAINS RD STE 500,TARRYTOWN,New York,10591,41.0610006,-73.8411765,"500 White Plains Rd #500, Tarrytown, NY 10591, USA","36119011101",NY,Westchester County,New York
+"L-Infinity Labs, Inc.",378 EDMANDS RD,FRAMINGHAM,Massachusetts,1701,42.3327273,-71.4516713,"378 Edmands Rd, Framingham, MA 01701, USA","25017383902",MA,Middlesex County,Massachusetts
+"ADEPT MATERIALS, INC",109 HAZARD AVE,PROVIDENCE,Rhode Island,2906,41.8381354,-71.3932438,"109 Hazard Ave, Providence, RI 02906, USA","44007003400",RI,Providence County,Rhode Island
+"QUANTIVLY, INC.",48 GROVE ST STE 301,SOMERVILLE,Massachusetts,2144,42.3965212,-71.1205835,"48 Grove St #301, Somerville, MA 02144, USA","25017350400",MA,Middlesex County,Massachusetts
+SHAMRCK SOCIAL IMPACT CORP,630 ELLIS ST STE 1-A,AUGUSTA,Georgia,30901,33.4731497,-81.9634353,"630 Ellis St Suite 1-A, Augusta, GA 30901, USA","13245011000",GA,Richmond County,Georgia
+"Pensievision, Inc.",13963 DENTATA LN,SAN DIEGO,California,92130,32.9685958,-117.1706942,"13963 Dentata Ln, San Diego, CA 92130, USA","06073021502",CA,San Diego County,California
+SPADXTECH LLC,260 CEDAR HILL ST,MARLBOROUGH,Massachusetts,1752,42.3180892,-71.5876806,"260 Cedar Hill St, Marlborough, MA 01752, USA","25017321400",MA,Middlesex County,Massachusetts
+Susquehanna University,514 UNIVERSITY AVE,SELINSGROVE,Pennsylvania,17870,40.7970002,-76.8775569,"514 University Ave, Selinsgrove, PA 17870, USA","42109980705",PA,Snyder County,Pennsylvania
+SMART GIRLS HQ LLC,301 E 9TH ST # 310,CHARLOTTE,North Carolina,28202,35.2291916,-80.8349244,"301 E 9th St #310, Charlotte, NC 28202, USA","37119000600",NC,Mecklenburg County,North Carolina
+"VECTECH, LLC",3600 CLIPPER MILL RD STE 401,BALTIMORE,Maryland,21211,39.3305581,-76.6422541,"3600 Clipper Mill Rd Suite 401, Baltimore, MD 21211, USA","24510130806",MD,Baltimore city,Maryland
+"BRAVE VIRTUAL WORLDS, INC.",6806 OLD CHESTERBROOK RD,MCLEAN,Virginia,22101,38.9263422,-77.1792341,"6806 Old Chesterbrook Rd, McLean, VA 22101, USA","51059470700",VA,Fairfax County,Virginia
+Onai Inc.,10056 ORANGE AVE,CUPERTINO,California,95014,37.322111,-122.055395,"10056 Orange Ave, Cupertino, CA 95014, USA","06085507701",CA,Santa Clara County,California
+Air Force Institute of Tech,AF BPN NO MLSBLS PROC CP9372556720,WRIGHT PATTERSON AFB,Ohio,45433,39.8137298,-84.0537448,"WPAFB, OH 45433, USA","39057280300",OH,Greene County,Ohio
+IMMERGO LLC,2495 HOSPITAL DR STE 300,MOUNTAIN VIEW,California,94040,37.3698273,-122.0823261,"2495 Hospital Dr Suite 300, Mountain View, CA 94040, USA","06085509901",CA,Santa Clara County,California
+"SAMARA AEROSPACE, INC.",901 MINNESOTA ST,SAN FRANCISCO,California,94107,37.7594233,-122.3901121,"901 Minnesota St, San Francisco, CA 94107, USA","06075022600",CA,San Francisco County,California
+"SPACERAKE, INC.",311 ARSENAL ST STE 101,WATERTOWN,Massachusetts,2472,42.3633557,-71.1670387,"311 Arsenal St #101, Watertown, MA 02472, USA","25017370302",MA,Middlesex County,Massachusetts
+CHASCII INC,340 S ORANGE GROVE BLVD,PASADENA,California,91105,34.1398969,-118.1586654,"340 S Orange Grove Blvd, Pasadena, CA 91105, USA","06037463700",CA,Los Angeles County,California
+"MELLICELL, INC.",17 UNION ST,WATERTOWN,Massachusetts,2472,42.3628858,-71.1868474,"17 Union St, Watertown, MA 02472, USA","25017370403",MA,Middlesex County,Massachusetts
+"RAVEN SPACE SYSTEMS, INC.",830 HOYT ST STE 100,BROOMFIELD,Colorado,80020,39.9277973,-105.1013057,"830 Hoyt St #100, Broomfield, CO 80020, USA","08014031202",CO,Broomfield County,Colorado
+IAMBIC INC.,92 ELIZABETH ST APT 4B,NEW YORK,New York,10013,40.7183147,-73.9955717,"92 Elizabeth St #4b, New York, NY 10013, USA","36061004100",NY,New York County,New York
+XHEME INC.,100 CARLSON AVE,NEWTON CENTER,Massachusetts,2459,42.2938451,-71.1931231,"100 Carlson Ave, Newton, MA 02459, USA","25017374000",MA,Middlesex County,Massachusetts
+TIAMI LLC,801 K ST STE 900,SACRAMENTO,California,95814,38.5800818,-121.4960478,"801 K St #900, Sacramento, CA 95814, USA","06067001103",CA,Sacramento County,California
+OSO SEMICONDUCTOR INC.,148 CASTRO ST STE B1,MOUNTAIN VIEW,California,94041,37.3945218,-122.0787811,"148 Castro St Ste B1, Mountain View, CA 94041, USA","06085509600",CA,Santa Clara County,California
+"RESILIENT LIFESCIENCE, INC",100 S COMMONS STE 102,PITTSBURGH,Pennsylvania,15212,40.450935,-80.0044448,"100 S Commons #102, Pittsburgh, PA 15212, USA","42003562700",PA,Allegheny County,Pennsylvania
+"AUDIOT, INC.",687A 37TH AVE,SANTA CRUZ,California,95062,36.9621748,-121.9687678,"687 37th Ave, Santa Cruz, CA 95062, USA","06087121601",CA,Santa Cruz County,California
+"COMMUNITY & TECHNICAL COLLEGES, WASHINGTION STATE BOARD FOR",1500 JEFFERSON ST SE,OLYMPIA,Washington,98501,47.0347057,-122.8947954,"1500 Jefferson St SE, Olympia, WA 98501, USA","53067010100",WA,Thurston County,Washington
+PLATFORM TECHNOLOGY VENTURES LLC,16 ELIOT ST,WELLESLEY,Massachusetts,2482,42.2935799,-71.2881673,"16 Eliot St, Wellesley, MA 02482, USA","25021404400",MA,Norfolk County,Massachusetts
+ANTA BIOTECHNOLOGIES CORPORATION,9276 SCRANTON RD STE 500,SAN DIEGO,California,92121,32.8919772,-117.2025228,"9276 Scranton Rd Suite 500, San Diego, CA 92121, USA","06073008346",CA,San Diego County,California
+Metropolitan College of New York,463 EAST 149TH ST,BRONX,New York,10455,40.8152847,-73.9153979,"463 E 149th St, Bronx, NY 10455, USA","36005007100",NY,Bronx County,New York
+Institute for Global Environmental Strategies,11516 HEMINGWAY DR,RESTON,Virginia,20194,38.9765823,-77.3420844,"11516 Hemingway Dr, Reston, VA 20194, USA","51059482002",VA,Fairfax County,Virginia
+CRYPTO ASSET TECHNOLOGY LABS INC,1010 S FEDERAL HWY STE 1400,HALLANDALE BEACH,Florida,33009,25.9964047,-80.1424016,"1010 S Federal Hwy Suite 1400, Hallandale Beach, FL 33009, USA","12011100204",FL,Broward County,Florida
+CHITOVATE LLC,21631 HIGHWAY 45 N,ABERDEEN,Mississippi,39730,33.8274187,-88.5864474,"21631 US-45, Aberdeen, MS 39730, USA","28095950700",MS,Monroe County,Mississippi
+"Farrant, Damien Nākoa",,Goleta,California,93117,34.4358294,-119.8276389,"Goleta, CA, USA","06083003001",CA,Santa Barbara County,California
+ENVISION HEALTH TECHNOLOGIES INC,301 S BROAD ST UNIT 3402,PHILADELPHIA,Pennsylvania,19107,39.946516,-75.164446,"301 S Broad St Unit 3402, Philadelphia, PA 19107, USA","42101001101",PA,Philadelphia County,Pennsylvania
+JUNO PROPULSION INC.,802 INDUSTRY DR,TUKWILA,Washington,98188,47.4516285,-122.247992,"802 Industry Dr, Tukwila, WA 98188, USA","53033026200",WA,King County,Washington
+SMARTCHARTS INC.,210 S DESPLAINES ST APT 1405,CHICAGO,Illinois,60661,41.8789262,-87.6445351,"210 S Desplaines St APT 1405, Chicago, IL 60661, USA","17031281900",IL,Cook County,Illinois
+"MVMNT-X, INC.",2143 CEDAR ST,BERKELEY,California,94709,37.8788627,-122.267383,"2143 Cedar St, Berkeley, CA 94709, USA","06001421700",CA,Alameda County,California
+OBLIVIOUS LABS INC.,128 N CRAIG ST UNIT 714,PITTSBURGH,Pennsylvania,15213,40.448119,-79.9485424,"128 N Craig St APT 714, Pittsburgh, PA 15213, USA","42003040400",PA,Allegheny County,Pennsylvania
+Saginaw Chippewa Tribal College,5805 E PICKARD ST,MOUNT PLEASANT,Michigan,48858,43.6121427,-84.7309305,"5805 E Pickard St, Mt Pleasant, MI 48858, USA","26073940300",MI,Isabella County,Michigan
+"AMERICAN PRIME SUSTAINABLE SOLUTIONS, INC.",1000 S MAIN ST STE B,NOBLE,Oklahoma,73068,35.1276937,-97.3899029,"1000 Main St b, Noble, OK 73068, USA","40027202501",OK,Cleveland County,Oklahoma
+NEUROBIONICS INC,444 SOMERVILLE AVE,SOMERVILLE,Massachusetts,2143,42.3817342,-71.1027831,"444 Somerville Ave, Somerville, MA 02143, USA","25017351204",MA,Middlesex County,Massachusetts
+STEM NEXT OPPORTUNITY FUND,3111 DUMAS ST,SAN DIEGO,California,92106,32.7400769,-117.2180981,"3111 Dumas St, San Diego, CA 92106, USA","06073006900",CA,San Diego County,California
+"Elsevier, Inc.",3251 RIVERPORT LN,MARYLAND HEIGHTS,Missouri,63043,38.751609,-90.4671432,"3251 Riverport Ln, Maryland Heights, MO 63043, USA","29189215143",MO,St. Louis County,Missouri
