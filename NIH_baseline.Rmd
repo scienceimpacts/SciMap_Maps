@@ -102,7 +102,7 @@ NIH_budget_cuts_loc$org_name[NIH_budget_cuts_loc$org_name %in% c("BATTELLE MEMOR
 
 ```{r State-level info}
 # read in multiplier info
-state_mult_2026 <- read.csv("data/state_mult_2026.csv") %>% 
+state_mult_2025 <- read.csv("data/state_mult_2025.csv") %>% 
                 rename(tot_fund = 2, 
                        econ_act = 8,
                        state_name= 1,
@@ -122,7 +122,7 @@ state_mult_2026 <- read.csv("data/state_mult_2026.csv") %>%
 NIH_state_dict <- read.csv("data/state_and_county_fips_master.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
   filter(!endsWith(FIPS, "000")) %>%
-  left_join(state_mult_2026)
+  left_join(state_mult_2025)
 
 # append state FIPS codes
 NIH_state_dict <- tibble(
