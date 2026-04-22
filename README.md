@@ -87,9 +87,9 @@ NSF\_addresses\_US\_tract\_county\_cong119.csv: maps NSF grants to census tracts
 nsf\_grants.csv: formatted dataframe of historical NSF grants
 
 ### from OSF (accessed remotely and not in repository):
+The following two files are too large to post to Github and are therefore stored on OSF
 
 home\_119\_workTR: commuter flows with Congressional District Cong\_ORIGIN and census tract Cong\_DESTINATION
 
 NIH\_raw: large file of active NIH grants for fiscal year 2024 downloaded from RePORTER
-
 
