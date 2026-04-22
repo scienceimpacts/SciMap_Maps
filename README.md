@@ -20,7 +20,6 @@ All output files are stored in the output folder.
 │   ├── city_pop_2024.csv
 │   ├── county_pop.csv
 │   ├── geoid_dictionary.csv
-│   ├── geoid_dictionary_july4.csv
 │   ├── geoid_pop.csv
 │   ├── nsf_budg_table.csv   
 │   ├── nsf_terminations.csv
@@ -67,6 +66,7 @@ nsf\_budg\_table: annual budget for NSF by office/directorate and year
 nsf\_terminations: the latest pull of Grant Witness' NSF terminations data, used to generate the corresponding output file
 
 nih\_terminations: the latest pull of Grant Witness' NIH terminations data, used to generate the corresponding output file
+geoid\_dictionary.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each district
 
 org\_names\_corrected.csv: helper file to clean organization names from Grant Witness
 
@@ -93,9 +93,9 @@ NSF\_addresses\_US\_tract\_county\_cong119.csv: maps NSF grants to census tracts
 nsf\_grants.csv: formatted dataframe of historical NSF grants
 
 ### from OSF (accessed remotely and not in repository):
+The following two files are too large to post to Github and are therefore stored on OSF
 
 home\_119\_workTR: commuter flows with Congressional District Cong\_ORIGIN and census tract Cong\_DESTINATION
 
 NIH\_raw: large file of active NIH grants for fiscal year 2024 downloaded from RePORTER
-
 
