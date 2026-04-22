@@ -1,6 +1,6 @@
-# SciMap\_Maps
+# SCIMaP maps
 
-Code to generate the maps for the Science \& Community Impacts Mapping Project website (link).
+Code to generate the maps for the Science \& Community Impacts Mapping Project website ([https://scienceimpacts.org]([url](https://scienceimpacts.org/))).
 
 The scripts are used to calculate the following for both the NIH and NSF:
 
