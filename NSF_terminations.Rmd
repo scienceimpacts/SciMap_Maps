@@ -38,17 +38,7 @@ orgs <- nsf_grants %>%
          org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name),
          inst_street_address = if_else(org_name == "University of Miami", "1251 MEMORIAL DR", inst_street_address)) %>%
   select(-c(state_name)) %>%
-  distinct()
-
-missing_orgs_fixed <- read.csv("data/missing_orgs_fixed.csv") %>%
-  rename(inst_street_address = matched_address,
-         tractid = GEOID) %>%
-  mutate(tractid = str_pad(tractid, 11, pad = "0"),
-         state_FIPS = str_sub(tractid, 1, 2)) %>%
-  left_join(states) %>%
-  select(tractid, names(orgs))
-
-orgs <- rbind(orgs, missing_orgs_fixed %>% select(-tractid)) %>%
+  distinct() %>%
   mutate(org_city = str_to_upper(org_city))
 
 nsf_terminations <- nsf_terminations %>%
