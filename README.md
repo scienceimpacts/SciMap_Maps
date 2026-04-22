@@ -20,7 +20,6 @@ All output files are stored in the output folder.
 │   ├── city_pop_2024.csv
 │   ├── county_pop.csv
 │   ├── geoid_dictionary.csv
-│   ├── geoid_dictionary_july4.csv
 │   ├── geoid_pop.csv
 │   ├── nsf_budg_table.csv
 │   ├── nsf_terminations.csv
@@ -61,7 +60,7 @@ city\_pop\_2024.csv: population size for CBSAs
 
 county\_pop.csv: population size for counties
 
-geoid\_dictionary\_july4.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each district
+geoid\_dictionary.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each district
 
 org\_names\_corrected.csv: helper file to clean organization names from Grant Witness
 
