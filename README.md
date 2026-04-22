@@ -72,9 +72,9 @@ org\_names\_corrected.csv: helper file to clean organization names from Grant Wi
 
 orgs.csv: dictionary of organization name, city, and state
 
-state-multiplier-urm.csv: contains economic and job loss multipliers for FY2025 (used for IDC calculation), calculated by United for Medical Research
-
 state\_and\_county\_fips\_master: dictionary that maps county FIPS codes to county names and states
+
+state\_mult\_2025.csv: contains economic and job loss multipliers for FY2025 (used for IDC calculation), calculated by United for Medical Research
 
 state\_mult\_2026.csv: contains economic and job loss multipliers for FY2026 (used for all NIH calculations except for IDC calculation), calculated by United for Medical Research
 
