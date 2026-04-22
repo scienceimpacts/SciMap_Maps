@@ -31,7 +31,6 @@ All output files are stored in the output folder.
 │   ├── state_mult_2026.csv
 │   ├── state_pop.csv
 │   ├── states.csv
-│   ├── terminations_clean.csv
 │   ├── tract_dictionary.csv
 │   └── us_representatives_119th_congress.csv
 ├── nsf_data/                                  # Raw data for NSF
