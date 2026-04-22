@@ -50,7 +50,7 @@ All output files are stored in the output folder.
 ```
 ## Data
 
-###### \\data files
+### \\data files
 
 budg\_table: annual budget for NSF by office/directorate and year
 
@@ -82,17 +82,16 @@ tract\_dictionary.csv: maps NIH lat/lon coordinates to census tract and county F
 
 us\_representatives\_119th\_congress.csv: dictionary with information about Congressional Districts
 
-###### \\nsf\_data files:
+### \\nsf\_data files:
 
 NSF\_addresses\_US\_tract\_county\_cong119.csv: maps NSF grants to census tracts
 
 nsf\_grants.csv: formatted dataframe of historical NSF grants
 
-###### from OSF (accessed remotely and not in repository):
+### from OSF (accessed remotely and not in repository):
 
 home\_119\_workTR: commuter flows with Congressional District Cong\_ORIGIN and census tract Cong\_DESTINATION
 
 NIH\_raw: large file of active NIH grants for fiscal year 2024 downloaded from RePORTER
 
-## 
 
