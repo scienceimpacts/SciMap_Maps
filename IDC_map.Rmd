@@ -50,7 +50,7 @@ NIH_idc <- NIH_clean %>%
 
 ```{r geo data}
 # old state multipliers since we're trying to match with the paper
-state_mult <- read.csv("data/state_mult_2025.csv") %>% 
+state_mult <- read.csv("data/state_mult_2024.csv") %>% 
                 rename(tot_fund = 2, 
                        econ_act = 9,
                        state.name= 1,
