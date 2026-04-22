@@ -27,8 +27,8 @@ All output files are stored in the output folder.
 │   ├── org_names_corrected.csv
 │   ├── orgs.csv
 │   ├── state_and_county_fips_master.csv
+│   ├── state_mult_2024.csv
 │   ├── state_mult_2025.csv
-│   ├── state_mult_2026.csv
 │   ├── state_pop.csv
 │   ├── states.csv
 │   ├── tract_dictionary.csv
@@ -73,9 +73,9 @@ orgs.csv: dictionary of organization name, city, and state
 
 state\_and\_county\_fips\_master: dictionary that maps county FIPS codes to county names and states
 
-state\_mult\_2025.csv: contains economic and job loss multipliers for FY2025 (used for IDC calculation), calculated by United for Medical Research
+state\_mult\_2024.csv: contains economic and job loss multipliers for FY2024 (used for IDC calculation), calculated by United for Medical Research
 
-state\_mult\_2026.csv: contains economic and job loss multipliers for FY2026 (used for all NIH calculations except for IDC calculation), calculated by United for Medical Research
+state\_mult\_2025.csv: contains economic and job loss multipliers for FY2025 (used for all NIH calculations except for IDC calculation), calculated by United for Medical Research
 
 state\_pop.csv: the population size of states
 
