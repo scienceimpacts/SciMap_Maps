@@ -12,6 +12,8 @@ library(data.table)
 terminations_raw <- read_csv("https://files.grant-witness.us/nih_terminations.csv") %>%
   mutate(across(ends_with("date"), ~ as_date(.x)))
 
+write.csv(terminations_raw, "data/nih_terminations.csv")
+
 county_commute <- read.csv("data/county_commute_NIH.csv") %>%
   select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
   mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
