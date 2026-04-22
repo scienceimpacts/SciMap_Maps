@@ -158,11 +158,6 @@ idc_commute <- county_commute %>%
   rename(FIPS = ORIGIN) %>%
   filter(!endsWith(FIPS, "000"))
 
-# idc_orig <- read.csv("~/Desktop/Weitz_Group/SciMap-Methods/output/static_vs_commuter_IDC_FIPS.csv") %>%
-#   mutate(FIPS = str_pad(FIPS, 5, pad = "0"))
-# idc_commute %>% 
-#   right_join(idc_orig, by = "FIPS")
-
 idc_commute %>% 
   left_join(NIH_state_fips %>% select(FIPS, name)) %>%
   select(FIPS, name, IDC_loss, IDC_econ_loss, IDC_job_loss) %>%
