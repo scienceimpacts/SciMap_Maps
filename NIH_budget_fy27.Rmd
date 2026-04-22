@@ -210,7 +210,7 @@ write.csv(city_commute_NIH_sum, "output/NIH_budget27_city.csv", row.names=FALSE)
 # Congressional Districts
 
 ```{r Prep District Commuter Flows}
-cong_commute <- fread("data/home_119_workTR.csv") %>%
+cong_commute <- fread("https://osf.io/m5kb6/download") %>%
   mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
          Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
   rename(commuters = commutes) %>%
