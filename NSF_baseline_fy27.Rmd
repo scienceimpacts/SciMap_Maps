@@ -1,0 +1,270 @@
+---
+  title: "nsf_baseline"
+output: html_document
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if (!require('rstudioapi')) BiocManager::install("rstudioapi");library(rstudioapi)
+
+# change working directory to folder with script
+setwd(dirname(rstudioapi::getSourceEditorContext()$path)) 
+
+library(tidyverse)
+library(readxl)
+library(sf)
+library(data.table)
+library(magrittr)
+
+options(scipen=999)
+```
+
+```{r combine-files, eval=FALSE}
+library(jsonlite)
+library(purrr)
+library(dplyr)
+library(readr)
+
+# get path for NSF grants
+json_folder <- "NSF_Grants"
+json_files <- list.files(json_folder, pattern = "\\.json$", full.names = TRUE, recursive = TRUE)
+
+extract_fields <- function(grant) {
+  
+  data.frame(fund_oblg_fiscal_yr = grant$oblg_fy$fund_oblg_fiscal_yr,
+             fund_oblg_amt = grant$oblg_fy$fund_oblg_amt) %>%
+    mutate(awd_id = grant$awd_id %||% NA,
+           agcy_id = grant$agcy_id %||% NA,
+           tran_type = grant$tran_type %||% NA,
+           awd_inst_txt = grant$awd_istr_txt %||% NA,
+           cfda_num = grant$cfda_num %||% NA,
+           awd_eff_date = grant$awd_eff_date %||% NA,
+           awd_exp_date = grant$awd_exp_date %||% NA,
+           tot_intn_awd_amt = grant$tot_intn_awd_amt %||% NA,
+           awd_amount = grant$awd_amount %||% NA,
+           awd_min_amd_letter_date = grant$awd_min_amd_letter_date %||% NA,
+           awd_max_amd_letter_date = grant$awd_max_amd_letter_date %||% NA,
+           dir_abbr = grant$dir_abbr %||% NA,
+           div_abbr = grant$div_abbr %||% NA,
+           inst_name = grant$inst$inst_name %||% NA,
+           inst_street_address = grant$inst$inst_street_address %||% NA,
+           inst_city_name = grant$inst$inst_city_name %||% NA,
+           inst_state_name = grant$inst$inst_state_name %||% NA,
+           inst_zip  = grant$inst$inst_zip_code %||% NA,
+           awd_instr = grant$awd_istr_txt %||% NA)
+}
+
+
+# Apply extraction to each record
+all_data <- map_dfr(json_files, function(file) {
+  fromJSON(file) %>% extract_fields()
+})
+
+library(data.table)
+
+fwrite(all_data, "nsf_data/nsf_grants.csv")
+```
+
+```{r clean-grants}
+nsf_grants <- read.csv("nsf_data/nsf_grants.csv") %>%
+  mutate(across(ends_with("date"), ~ as_date(.x)))
+
+#directorates to include
+dir_incl <- c("BIO", "CSE", "EDU", "ENG", "GEO", "MPS", "SBE", "TIP")
+
+# divisions within office of director to include
+div_incl <- c("OIA", "OISE", "OPP")
+
+# helper column to put listed account categories together (O/D divisions are split out)
+nsf_grants %<>% mutate(account_name = ifelse(dir_abbr == "O/D", div_abbr, dir_abbr)) %>%
+  mutate(account_name = ifelse(div_abbr=="OPP", "OPP", account_name)) %>%
+  filter(account_name %in% c(dir_incl, div_incl))
+
+# number of grants baseline
+nrow(nsf_grants %>% filter(fund_oblg_fiscal_yr %in% 2020:2024))
+```
+
+
+```{r}
+# https://www.usinflationcalculator.com/ 2020-2027 dollars inflation adjusted to 2026 using: https://www.usinflationcalculator.com/ and assumption of 2% inflation from 2026 to 2027 
+inf_adj <- c(1.26, 1.21, 1.12, 1.07, 1.04, 1.02, 1, .98)
+inf_by_year <- tibble(inf = inf_adj, fisc_year = c(2020:2027))
+# df of historic funding in FY2020-2025, proposed for FY2027 via 
+# appropriation tabs (FY2020-FY2024) https://www.nsf.gov/about/budget/all and table (FY2025 and FY2027):  # https://nsf-gov-resources.nsf.gov/files/FY-2027-NSF-Budget-Request-to-Congress.pdf
+# unit is dollars in millions
+budg_tab <- read.csv("data/nsf_budg_table.csv") %>%
+            filter(!is.na(X)) %>%
+            mutate(across(X2020_budg:X2027_budg, ~as.numeric(.x)))
+
+budg_tab %<>%
+  rowwise() %>%
+  mutate(across(X2020_budg:X2027_budg)*inf_adj) %>%
+  ungroup() %>%
+  rename(account_name = X) %>%
+  pivot_longer(
+    cols = starts_with("X"),
+    names_to = "fund_oblg_fiscal_yr",
+    values_to = "budg_sum",
+    names_pattern = "X(\\d+)_budg"
+  ) %>%
+  mutate(fund_oblg_fiscal_yr = as.numeric(fund_oblg_fiscal_yr),
+         budg_sum = budg_sum*10^6) 
+
+# calculate inflation for each grant
+nsf_grants %<>% 
+  rename(fisc_year = fund_oblg_fiscal_yr) %>%
+  left_join(inf_by_year) %>%
+  filter(fisc_year %in% 2020:2024) %>%
+  mutate(adj_fund = inf * fund_oblg_amt) %>%
+  filter(! (account_name=="TIP" & fisc_year < 2022)) %>%
+  left_join(budg_tab) %>%
+  filter(!is.na(budg_sum)) %>%
+  group_by(account_name, fisc_year) %>%
+  mutate(oblg_sum = sum(adj_fund, na.rm=TRUE)) %>%
+  ungroup() %>%
+  mutate(oblg_mult = budg_sum / oblg_sum) %>%
+  mutate(adj_fund = adj_fund * oblg_mult) 
+
+```
+
+```{r}
+geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
+  distinct() %>%
+  mutate(FIPS = str_pad(CountyFIPS_str, 5, pad = "0"),
+         GEOID = str_pad(CongFIPS, 4, pad="0"),
+         tractid = str_pad(TractFIPS_Str, 11, pad="0"),
+         inst_street_address = inst_stree) %>%
+  filter(! StateName %in% c("American Samoa", "Guam", "Commonwealth of the Northern Mariana Islands", "Puerto Rico")) %>%
+  select(tractid, inst_street_address, inst_name) %>%
+  distinct()
+
+nsf_grants %<>% left_join(geo_dict) %>%
+  filter(inst_state_name %in% c(state.name, "District of Columbia")) %>%
+  filter(!is.na(tractid)) %>%
+  group_by(tractid, account_name, fisc_year) %>%
+  summarise(raw_funding = sum(adj_fund, na.rm=TRUE))
+
+# dictionary to map fips codes to state names
+NSF_state_dict <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
+  filter(!endsWith(FIPS, "000")) 
+
+# append state FIPS codes
+NSF_state_dict <- tibble(
+  state_name = c(state.name, "District of Columbia"),
+  state = c(state.abb, "DC")) %>%
+  right_join(NSF_state_dict) %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  arrange(state) 
+```
+
+```{r Commuter Weighting}
+county_commute <- read.csv("data/county_commute_NIH.csv") %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
+  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+
+cong_commute <- fread("https://osf.io/m5kb6/download") %>%
+  mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
+         Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
+  rename(commuters = commutes) %>%
+  filter(!is.na(Cong_ORIGIN))
+
+cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
+  select(GEOID, STATE_NAME, NAME, PARTY) %>%
+  rename(state = STATE_NAME,
+         pol_party = PARTY,
+         rep_name = NAME)
+
+# get total workers per cong district
+cong_commute_sum <- cong_commute %>%
+  group_by(Cong_DESTINATION) %>%
+  summarise(total_workers = sum(commuters, na.rm=TRUE))
+
+# merge in total workers
+cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
+  select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
+  rename(DESTINATION = Cong_DESTINATION,
+         ORIGIN = Cong_ORIGIN)
+
+# calculate proportion of workers who work in district X who live in district Y
+cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+```
+
+```{r}
+# summarize NIH data by FIPS code
+NSF_grants_tract <- expand.grid(tractid = unique(nsf_grants$tractid),
+                                account_name = unique(nsf_grants$account_name),
+                                fisc_year = unique(nsf_grants$fisc_year)) %>%
+  left_join(nsf_grants) %>%
+  filter(! (account_name=="TIP" & fisc_year < 2022)) %>%
+  mutate(raw_funding = ifelse(is.na(raw_funding), 0, raw_funding)) %>%
+  group_by(tractid, account_name) %>%
+  summarise(raw_funding = mean(raw_funding, na.rm=TRUE))
+
+fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0")) %>%
+  select(FIPS, name)
+
+states <- read.csv("data/states.csv") %>%
+  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0"))
+
+#combine commuter data with NSF data
+county_commute_NSF <- merge(county_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
+  filter(!is.na(account_name)) %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  mutate(raw_funding = raw_funding * proportion) %>%
+  rename(FIPS = ORIGIN) %>%
+  group_by(FIPS, account_name) %>%
+  summarize(raw_funding = sum(raw_funding, na.rm=TRUE)) %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  left_join(fips_names) %>%
+  left_join(states %>% select(-FIPS)) %>%
+  mutate(econ_impact = raw_funding * 2.64,
+         jobs = raw_funding/72000) %>%
+  select(FIPS, name, state, account_name, raw_funding, econ_impact, jobs) %>%
+  filter(FIPS != "00000")
+
+write_csv(county_commute_NSF, "output/baseline_county_nsf.csv")
+
+msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
+  select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
+  rename(FIPS = CountyFIPS) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad ="0"),
+         CBSA_FIPS = str_pad(CBSA_FIPS, 5, pad ="0"))
+
+# city level
+county_commute_NSF %>%
+  left_join(msa) %>%
+  left_join(fips_names) %>%
+  mutate(CBSA_FIPS = ifelse(is.na(CBSA_FIPS), FIPS, CBSA_FIPS)) %>%
+  mutate(CBSA_NAME = ifelse(is.na(CBSA_NAME), name, CBSA_NAME)) %>%
+  group_by(CBSA_FIPS, CBSA_NAME, account_name) %>%
+  summarise(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
+  write_csv("output/baseline_city_nsf.csv")
+```
+
+```{r}
+cong_commute_NSF <- merge(cong_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
+  filter(!is.na(account_name)) %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  mutate(raw_funding = raw_funding * proportion) %>%
+  rename(GEOID = ORIGIN) %>%
+  group_by(GEOID, account_name) %>%
+  summarize(raw_funding = sum(raw_funding, na.rm=TRUE)) %>%
+  mutate_all(funs(replace(., is.na(.), 0)))  %>%
+  mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
+  left_join(states) %>%
+  mutate(econ_impact = raw_funding * 2.64,
+         jobs = raw_funding/72000) %>%
+  select(GEOID, state, account_name, raw_funding, econ_impact, jobs)
+
+write_csv(cong_commute_NSF, "output/baseline_district_nsf.csv")
+
+cong_commute_NSF %>%
+  group_by(state, account_name) %>%
+  summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
+  write_csv("output/baseline_state_nsf.csv")
+```

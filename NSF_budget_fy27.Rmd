@@ -301,7 +301,8 @@ NSF_inst_tract <- nsf_grants_inst %>%
   ungroup() %>%
   filter(! (account_name=="TIP" & fund_oblg_fiscal_yr < 2022)) %>%
   group_by(tractid, inst_name, account_name) %>%
-  summarise(budg_loss = sum(budg_loss, na.rm=TRUE)/ifelse(account_name=="TIP", 3, 5))
+  summarise(budg_loss = sum(budg_loss, na.rm=TRUE)/ifelse(account_name=="TIP", 3, 5)) %>%
+  distinct()
 
 
 #combine commuter data with NIH data
@@ -353,7 +354,8 @@ NSF_inst_tract <- nsf_grants_inst %>%
   ungroup() %>%
   filter(! (account_name=="TIP" & fund_oblg_fiscal_yr < 2022)) %>%
   group_by(tractid, inst_name, account_name) %>%
-  summarise(budg_loss = sum(budg_loss, na.rm=TRUE)/ifelse(account_name=="TIP", 3, 5))
+  summarise(budg_loss = sum(budg_loss, na.rm=TRUE)/ifelse(account_name=="TIP", 3, 5)) %>%
+  distinct()
 
 
 #combine commuter data with NIH data
