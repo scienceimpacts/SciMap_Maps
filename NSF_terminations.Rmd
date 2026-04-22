@@ -20,7 +20,7 @@ options(scipen=999)
 ```
 
 ```{r}
-nsf_terminations <- read.csv("data/nsf_terminations.csv") %>%
+nsf_terminations <- read_csv("https://files.grant-witness.us/nsf_terminations.csv") %>%
   mutate(across(ends_with("date"), ~ as_date(.x)))
 
 # read in grant data
