@@ -14,19 +14,20 @@ All output files are stored in the output folder.
 
 ## Project Structure
 ```
-├── data/                                      # Raw data
+├── data/                               # Raw data
 │   ├── CD_pop2024.csv
 │   ├── cbsa2fipsxw_2023.csv
 │   ├── city_pop_2024.csv
 │   ├── county_pop.csv
 │   ├── geoid_dictionary.csv
 │   ├── geoid_pop.csv
-│   ├── nsf_budg_table.csv
+│   ├── nsf_budg_table.csv   
 │   ├── nsf_terminations.csv
+│   ├── nih_terminations.csv
 │   ├── org_names_corrected.csv
 │   ├── orgs.csv
-│   ├── state-multiplier-urm.csv
 │   ├── state_and_county_fips_master.csv
+│   ├── state_mult_2025.csv
 │   ├── state_mult_2026.csv
 │   ├── state_pop.csv
 │   ├── states.csv
@@ -50,8 +51,6 @@ All output files are stored in the output folder.
 
 ### \\data files
 
-budg\_table: annual budget for NSF by office/directorate and year
-
 CD\_pop2024.csv: population size for each district
 
 cbsa2fipsxw\_2023.csv: dictionary mapping counties (CountyFIPS) to metro- and micropolitan areas (CBSA\_FIPS)
@@ -60,15 +59,22 @@ city\_pop\_2024.csv: population size for CBSAs
 
 county\_pop.csv: population size for counties
 
+geoid\_dictionary\_july4.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each 
+
+nsf\_budg\_table: annual budget for NSF by office/directorate and year
+
+nsf\_terminations: the latest pull of Grant Witness' NSF terminations data, used to generate the corresponding output file
+
+nih\_terminations: the latest pull of Grant Witness' NIH terminations data, used to generate the corresponding output file
 geoid\_dictionary.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each district
 
 org\_names\_corrected.csv: helper file to clean organization names from Grant Witness
 
 orgs.csv: dictionary of organization name, city, and state
 
-state-multiplier-urm.csv: contains economic and job loss multipliers for FY2025 (used for IDC calculation), calculated by United for Medical Research
-
 state\_and\_county\_fips\_master: dictionary that maps county FIPS codes to county names and states
+
+state\_mult\_2025.csv: contains economic and job loss multipliers for FY2025 (used for IDC calculation), calculated by United for Medical Research
 
 state\_mult\_2026.csv: contains economic and job loss multipliers for FY2026 (used for all NIH calculations except for IDC calculation), calculated by United for Medical Research
 
