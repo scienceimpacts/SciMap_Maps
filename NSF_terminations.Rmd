@@ -1,5 +1,5 @@
 ---
-title: "nsf_terminations"
+title: "NSF_terminations"
 output: html_document
 ---
 
@@ -36,6 +36,8 @@ orgs <- nsf_grants %>%
   left_join(states %>% rename(org_state = state)) %>% 
   mutate(org_name = if_else(org_name == "Carnegie-Mellon University", "Carnegie Mellon University", org_name),
          org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name),
+         org_name = if_else(org_name == "OHIO STATE UNIVERSITY, THE", "Ohio State University", org_name),
+         org_city = if_else(org_name == "Arizona State University", "TEMPE", org_city),
          inst_street_address = if_else(org_name == "University of Miami", "1251 MEMORIAL DR", inst_street_address)) %>%
   select(-c(state_name)) %>%
   distinct() %>%
@@ -69,15 +71,27 @@ geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
          GEOID = str_pad(CongFIPS, 4, pad="0"),
          tractid = str_pad(TractFIPS_Str, 11, pad="0"),
          inst_street_address = inst_stree) %>%
+  rename(lat = Lat, lon = Lon) %>%
   filter(! StateName %in% c("American Samoa", "Guam", "Commonwealth of the Northern Mariana Islands", "Puerto Rico")) %>%
-  select(tractid, inst_street_address, inst_name) %>%
+  select(tractid, inst_street_address, inst_name, lat, lon) %>%
   distinct() %>%
   rename(org_name = inst_name) %>% 
   mutate(org_name = if_else(org_name == "Carnegie-Mellon University", "Carnegie Mellon University", org_name),
-         org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name)) %>%
-  rbind(missing_orgs_fixed %>% select(tractid, inst_street_address, org_name))
+         org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name))
+
+missing_tractid_orgs <- read.csv("data/missing_tractid_org_fixed.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 11, pad = "0")) %>%
+  rename(tractid = GEOID,
+         org_name = inst_name) %>%
+  select(tractid, inst_street_address, org_name, lat, lon) %>%
+  distinct()
+
+geo_dict <- rbind(geo_dict, missing_tractid_orgs)
 
 nsf_terminations %<>% left_join(geo_dict)
+
+nsf_terminations %>% filter(is.na(tractid))
+nsf_terminations %>% filter(is.na(lat) | is.na(lon))
 ```
 
 ```{r}
@@ -117,6 +131,7 @@ cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
 ```{r}
 start_date <- as_date("2025-02-28")
 
+# number of terminated grants NSF
 nsf_terminations %>%
   filter(termination_date >= start_date) %>%
   nrow()
@@ -133,21 +148,17 @@ nsf_terminations %<>%
                            unit = "week", 
                            week_start = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))) 
 
-current_week <- floor_date(today(), 
-                           unit = "week", 
-                           week_start = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))
 nsf_econ_mult <- 2.64
 nsf_job_val <- 1/72000
 
 # organization level
 terminations_org_nsf <- nsf_terminations %>%
-  complete(org_name, week = seq(start_date, today(), by = "weeks"),
+  complete(nesting(org_name, org_city, org_state, lat, lon), 
+           week = seq(start_date, today(), by = "weeks"),
            fill = list(total_loss = 0, total_impacted = 0)) %>%
-  select(-c(org_city, org_state)) %>%
-  left_join(nsf_terminations %>% distinct(org_name, org_city, org_state)) %>%
-  group_by(org_name, org_city, org_state, week) %>%
+  group_by(org_name, org_city, org_state, lat, lon, week) %>%
   summarize(across(c("total_loss", "total_impacted"), ~ sum(.x))) %>%
-  group_by(org_name, org_city, org_state) %>%
+  group_by(org_name, org_city, org_state, lat, lon) %>%
   arrange(week) %>%
   mutate(across(c("total_loss", "total_impacted"), ~ cumsum(.x))) %>%
   rename(current_loss = total_loss,
@@ -157,7 +168,7 @@ terminations_org_nsf <- nsf_terminations %>%
          current_job_loss = current_loss * nsf_job_val,
          overall_econ_loss = overall_loss * nsf_econ_mult,
          overall_job_loss = overall_loss * nsf_job_val) %>%
-  select(org_name, org_city, org_state, starts_with(c("week", "current", "overall")))
+  select(org_name, org_city, org_state, lat, lon, starts_with(c("week", "current", "overall")))
 
 write_csv(terminations_org_nsf, "output/terminations_org_nsf.csv")
 ```

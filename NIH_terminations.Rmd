@@ -1,5 +1,5 @@
 ---
-title: "grant_terminations"
+title: "NIH_terminations"
 output: html_document
 ---
 
@@ -85,8 +85,7 @@ terminations_clean <- terminations_raw %>%
          org_name = if_else(str_detect(org_name, "University of Miami"), "University of Miami", org_name),
          org_name = if_else(str_detect(org_name, "Michigan State University"), "Michigan State University", org_name),
          org_name = if_else(str_detect(org_name, "St. Jude Children's Research Hospital"), "St. Jude Children's Research Hospital", org_name),
-         org_name = if_else(str_detect(org_name, "Vanderbilt University"), "Vanderbilt University", org_name),
-         org_name = if_else(str_detect(org_name, "University of Texas Health Science Center"), "University of Texas San Antonio", org_name)) %>%
+         org_name = if_else(str_detect(org_name, "Vanderbilt University"), "Vanderbilt University", org_name)) %>%
   select(-corrected_name) %>%
   distinct()
 
@@ -119,17 +118,14 @@ terminations <- terminations_clean %>%
          total_impacted = if_else(total_loss < 0, 0, total_loss), # total amount ever impacted
          week = floor_date(date, unit = "week", week = if_else(wday(start_date) == 1, 7, wday(start_date) - 1)))
 
-current_week <- floor_date(today(), unit = "week", week = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))
-
 # organization level
 terminations_org <- terminations %>%
-  complete(org_name, week = seq(start_date, today(), by = "weeks"),
+  complete(nesting(org_name, org_city, org_state, lat, lon), 
+           week = seq(start_date, today(), by = "weeks"),
            fill = list(total_loss = 0, total_impacted = 0)) %>%
-  select(-c(org_city, org_state)) %>%
-  left_join(terminations %>% select(org_name, org_city, org_state) %>% distinct()) %>%
-  group_by(org_name, org_city, org_state, week) %>%
+  group_by(org_name, org_city, org_state, lat, lon, week) %>%
   summarize(across(c("total_loss", "total_impacted"), ~ sum(.x))) %>%
-  group_by(org_name, org_city, org_state) %>%
+  group_by(org_name, org_city, org_state, lat, lon) %>%
   arrange(week) %>%
   mutate(across(c("total_loss", "total_impacted"), ~ cumsum(.x))) %>%
   rename(current_loss = total_loss,
@@ -139,7 +135,7 @@ terminations_org <- terminations %>%
          current_job_loss = current_loss * job_val,
          overall_econ_loss = overall_loss * econ_mult,
          overall_job_loss = overall_loss * job_val) %>%
-  select(org_name, org_city, org_state, starts_with(c("week", "current", "overall")))
+  select(org_name, org_city, org_state, lat, lon, starts_with(c("week", "current", "overall")))
 
 write_csv(terminations_org, "output/terminations_org.csv")
 
@@ -233,6 +229,7 @@ terminations_sum_cong %>%
   write_csv("output/terminations_state.csv")
 
 # all US terminations
+library(scales)
 terminations_sum_comm %>%
   group_by(week) %>%
   summarise(current_loss = sum(current_loss),
@@ -290,7 +287,12 @@ terminations_sum_comm %>%
 terminations_sum_cong %>% 
     filter(week == max(week)) %>%
   ungroup() %>%
-  summarize(overall_loss = sum(overall_loss), current_loss = sum(current_loss))
+  summarize(overall_loss = sum(overall_loss), 
+            overall_econ_loss = sum(overall_econ_loss),
+            overall_job_loss = sum(overall_job_loss),
+            current_loss = sum(current_loss),
+            current_econ_loss = sum(current_econ_loss),
+            current_job_loss = sum(current_job_loss))
 
 # pre-commuter flows
 terminations %>%
