@@ -14,8 +14,7 @@ All output files are stored in the output folder.
 
 ## Project Structure
 ```
-├── data/
-│   ├── budg_table.csv                                  # Raw data
+├── data/                               # Raw data
 │   ├── CD_pop2024.csv
 │   ├── cbsa2fipsxw_2023.csv
 │   ├── city_pop_2024.csv
@@ -23,6 +22,7 @@ All output files are stored in the output folder.
 │   ├── geoid_dictionary.csv
 │   ├── geoid_dictionary_july4.csv
 │   ├── geoid_pop.csv
+│   ├── nsf_budg_table.csv   
 │   ├── nsf_terminations.csv
 │   ├── nih_terminations.csv
 │   ├── org_names_corrected.csv
@@ -52,8 +52,6 @@ All output files are stored in the output folder.
 
 ### \\data files
 
-budg\_table: annual budget for NSF by office/directorate and year
-
 CD\_pop2024.csv: population size for each district
 
 cbsa2fipsxw\_2023.csv: dictionary mapping counties (CountyFIPS) to metro- and micropolitan areas (CBSA\_FIPS)
@@ -62,7 +60,13 @@ city\_pop\_2024.csv: population size for CBSAs
 
 county\_pop.csv: population size for counties
 
-geoid\_dictionary\_july4.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each district
+geoid\_dictionary\_july4.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each 
+
+nsf\_budg\_table: annual budget for NSF by office/directorate and year
+
+nsf\_terminations: the latest pull of Grant Witness' NSF terminations data, used to generate the corresponding output file
+
+nih\_terminations: the latest pull of Grant Witness' NIH terminations data, used to generate the corresponding output file
 
 org\_names\_corrected.csv: helper file to clean organization names from Grant Witness
 
