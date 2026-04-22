@@ -90,8 +90,6 @@ terminations_clean <- terminations_raw %>%
   select(-corrected_name) %>%
   distinct()
 
-write_csv(terminations_clean, "data/terminations_clean.csv")
-
 # terminated grants in the US since 2/28/25
 start_date <- as_date("2025-02-28")
 
