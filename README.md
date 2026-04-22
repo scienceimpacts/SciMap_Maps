@@ -22,7 +22,6 @@ All output files are stored in the output folder.
 │   ├── geoid_dictionary.csv
 │   ├── geoid_dictionary_july4.csv
 │   ├── geoid_pop.csv
-
 │   ├── nsf_budg_table.csv
 │   ├── nsf_terminations.csv
 │   ├── org_names_corrected.csv
