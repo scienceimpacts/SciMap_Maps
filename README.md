@@ -15,37 +15,37 @@ All output files are stored in the output folder.
 ## Project Structure
 ```
 ├── data/                                      # Raw data
-│   ├── CD\_pop2024.csv
-│   ├── cbsa2fipsxw\_2023.csv
-│   ├── city\_pop\_2024.csv
-│   ├── county\_pop.csv
-│   ├── geoid\_dictionary.csv
-│   ├── geoid\_dictionary\_july4.csv
-│   ├── geoid\_pop.csv
+│   ├── CD_pop2024.csv
+│   ├── cbsa2fipsxw_2023.csv
+│   ├── city_pop_2024.csv
+│   ├── county_pop.csv
+│   ├── geoid_dictionary.csv
+│   ├── geoid_dictionary_july4.csv
+│   ├── geoid_pop.csv
 
-│   ├── nsf\_budg\_table.csv
-│   ├── nsf\_terminations.csv
-│   ├── org\_names\_corrected.csv
+│   ├── nsf_budg_table.csv
+│   ├── nsf_terminations.csv
+│   ├── org_names_corrected.csv
 │   ├── orgs.csv
 │   ├── state-multiplier-urm.csv
-│   ├── state\_and\_county\_fips\_master.csv
-│   ├── state\_mult\_2026.csv
-│   ├── state\_pop.csv
+│   ├── state_and_county_fips_master.csv
+│   ├── state_mult_2026.csv
+│   ├── state_pop.csv
 │   ├── states.csv
-│   ├── terminations\_clean.csv
-│   ├── tract\_dictionary.csv
-│   └── us\_representatives\_119th\_congress.csv
-├── nsf\_data/                                  # Raw data for NSF
-│   ├── NSF\_addresses\_US\_tract\_county\_cong119.csv
-│   └── nsf\_grants.csv
-├── IDC\_map.Rmd                                # Generate figures and tables
-├── NIH\_baseline.Rmd                           # Baseline funding NIH
-├── NIH\_budget\_fy27.Rmd                        # FY27 budget impact NIH
-├── NIH\_terminations.Rmd                       # Grant terminations NIH
-├── NSF\_baseline.Rmd                           # Baseline funding NSF
-├── NSF\_baseline\_fy27.Rmd                      # Baseline funding NSF
-├── NSF\_budget\_fy27.Rmd                        # FY27 budget impact NSF
-├── NSF\_terminations.Rmd                       # Grant terminations NSF
+│   ├── terminations_clean.csv
+│   ├── tract_dictionary.csv
+│   └── us_representatives_119th_congress.csv
+├── nsf_data/                                  # Raw data for NSF
+│   ├── NSF_addresses_US_tract_county_cong119.csv
+│   └── nsf_grants.csv
+├── IDC_map.Rmd                                # Generate figures and tables
+├── NIH_baseline.Rmd                           # Baseline funding NIH
+├── NIH_budget_fy27.Rmd                        # FY27 budget impact NIH
+├── NIH_terminations.Rmd                       # Grant terminations NIH
+├── NSF_baseline.Rmd                           # Baseline funding NSF
+├── NSF_baseline_fy27.Rmd                      # Baseline funding NSF
+├── NSF_budget_fy27.Rmd                        # FY27 budget impact NSF
+├── NSF_terminations.Rmd                       # Grant terminations NSF
 └── README.md
 ```
 ## Data
