@@ -13,7 +13,7 @@ In addition, the IDC\_map script calculates the loss projected from the proposed
 All output files are stored in the output folder.
 
 ## Project Structure
-
+```
 ├── data/                                      # Raw data
 │   ├── CD\_pop2024.csv
 │   ├── cbsa2fipsxw\_2023.csv
@@ -47,7 +47,7 @@ All output files are stored in the output folder.
 ├── NSF\_budget\_fy27.Rmd                        # FY27 budget impact NSF
 ├── NSF\_terminations.Rmd                       # Grant terminations NSF
 └── README.md
-
+```
 ## Data
 
 ###### \\data files
