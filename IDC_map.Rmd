@@ -66,9 +66,8 @@ state_mult <- read.csv("data/state-multiplier-urm.csv") %>%
                 filter(!is.na(state))
 
 NIH_state_fips <- read.csv("data/state_and_county_fips_master.csv") %>%
-  mutate(fips = str_pad(fips, 5, pad = "0")) %>%
-  filter(!endsWith(fips, "000")) %>%
-  rename(FIPS = fips) %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
+  filter(!endsWith(FIPS, "000")) %>%
   left_join(state_mult)
 
 states <- tibble(
@@ -100,6 +99,14 @@ geoid_fips <- NIH_tract_fips %>%
   left_join(NIH_geoid) %>%
   left_join(NIH_state_fips) %>%
   select(tractid, GEOID, name_geoid, state, FIPS)
+
+cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
+  select(GEOID, STATE_NAME, NAME, PARTY) %>%
+  rename(state = STATE_NAME,
+         pol_party = PARTY,
+         rep_name = NAME)
+
 ```
 	
 ```{r}
@@ -163,15 +170,6 @@ idc_commute %>%
   select(FIPS, name, IDC_loss, IDC_econ_loss, IDC_job_loss) %>%
   write_csv("output/IDC_county.csv")
 
-idc_commute %>%
-  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
-  left_join(states %>% rename(state_FIPS = FIPS)) %>%
-  group_by(state) %>%
-  summarise(IDC_loss = sum(IDC_loss),
-            IDC_econ_loss = sum(IDC_econ_loss),
-            IDC_job_loss = sum(IDC_job_loss)) %>%
-  write_csv("output/IDC_state.csv")
-
 msa <- read.csv("data/cbsa2fipsxw_2023.csv") %>%
   select(CountyFIPS, CBSA_NAME, CBSA_FIPS) %>%
   rename(FIPS = CountyFIPS) %>%
@@ -186,17 +184,6 @@ idc_commute %>%
             IDC_job_loss = sum(IDC_job_loss)) %>%
   write_csv("output/IDC_city.csv")
   
-library(usmap)
-library(scales)
-plot_usmap(
-  data = idc_commute %>% rename(fips = FIPS),
-  values = "IDC_econ_loss",
-  regions = "counties",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale()))
 ```
 
 ```{r}
@@ -205,12 +192,20 @@ idc_commute_cong <- cong_commute %>%
   right_join(NIH_idc_comm) %>%
   mutate(across(starts_with("IDC"), ~ .x * proportion)) %>%
   group_by(ORIGIN) %>%
-  summarize(IDC_loss = sum(IDC_loss),
+  summarize(IDC_loss = sum(IDC_loss, na.rm=TRUE),
             IDC_econ_loss = sum(IDC_econ_loss, na.rm = T),
             IDC_job_loss = sum(IDC_job_loss, na.rm = T)) %>%
   rename(FIPS = ORIGIN) %>%
-  filter(!endsWith(FIPS, "000"))
+  left_join(cong_info %>% rename(state_name=state, FIPS=GEOID)) %>%
+  filter(!is.na(state_name))
 
 idc_commute_cong %>% write_csv("output/IDC_district.csv")
-```
 
+idc_commute_cong %>%
+  group_by(state_name) %>%
+  summarize(IDC_loss = sum(IDC_loss, na.rm=TRUE),
+            IDC_econ_loss = sum(IDC_econ_loss, na.rm = T),
+            IDC_job_loss = sum(IDC_job_loss, na.rm = T)) %>%
+  rename(state=state_name) %>%
+  write.csv("output/IDC_state.csv")
+```
