@@ -3,7 +3,7 @@
 output: html_document
 ---
   
-  ```{r setup, include=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 if (!require('rstudioapi')) BiocManager::install("rstudioapi");library(rstudioapi)
 
@@ -117,7 +117,7 @@ nsf_grants %<>%
   filter(fisc_year %in% 2020:2024) %>%
   mutate(adj_fund = inf * fund_oblg_amt) %>%
   filter(! (account_name=="TIP" & fisc_year < 2022)) %>%
-  left_join(budg_tab) %>%
+  left_join(budg_tab %>% rename(fisc_year = fund_oblg_fiscal_yr)) %>%
   filter(!is.na(budg_sum)) %>%
   group_by(account_name, fisc_year) %>%
   mutate(oblg_sum = sum(adj_fund, na.rm=TRUE)) %>%
@@ -134,12 +134,33 @@ geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
          GEOID = str_pad(CongFIPS, 4, pad="0"),
          tractid = str_pad(TractFIPS_Str, 11, pad="0"),
          inst_street_address = inst_stree) %>%
-  filter(! StateName %in% c("American Samoa", "Guam", "Commonwealth of the Northern Mariana Islands", "Puerto Rico")) %>%
   select(tractid, inst_street_address, inst_name) %>%
   distinct()
 
-nsf_grants %<>% left_join(geo_dict) %>%
-  filter(inst_state_name %in% c(state.name, "District of Columbia")) %>%
+nsf_grants <- nsf_grants %>% 
+  left_join(geo_dict) %>%
+  filter(inst_state_name %in% c(state.name, "District of Columbia", "American Samoa", "Guam", "Northern Mariana Isl", "Puerto Rico")) %>%
+  mutate(inst_state_name = if_else(inst_state_name == "Northern Mariana Isl", "Northern Mariana Islands", inst_state_name))
+
+# check total pre-commuters
+nsf_grants %>% 
+  group_by(account_name) %>% 
+  summarise(tot = sum(adj_fund, na.rm = TRUE)) %>%
+  mutate(avg = if_else(account_name == "TIP", tot/3, tot/5)) %>%
+  ungroup() %>%
+  summarise(tot = sum(avg))
+
+territory_fips <- nsf_grants %>%
+  filter(inst_state_name %in% c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico")) %>%
+  mutate(FIPS = str_sub(tractid, 1, 5)) %>%
+  mutate(name = NA) %>%
+  left_join(tibble(
+    inst_state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico"),
+    state = c("AS", "GU", "MP", "PR"))) %>%
+  distinct(FIPS, name, state) %>%
+  filter(FIPS != "08051")
+
+nsf_grants <- nsf_grants  %>%
   filter(!is.na(tractid)) %>%
   group_by(tractid, account_name, fisc_year) %>%
   summarise(raw_funding = sum(adj_fund, na.rm=TRUE))
@@ -147,12 +168,13 @@ nsf_grants %<>% left_join(geo_dict) %>%
 # dictionary to map fips codes to state names
 NSF_state_dict <- read.csv("data/state_and_county_fips_master.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
-  filter(!endsWith(FIPS, "000")) 
+  filter(!endsWith(FIPS, "000")) %>%
+  rbind(territory_fips)
 
 # append state FIPS codes
 NSF_state_dict <- tibble(
-  state_name = c(state.name, "District of Columbia"),
-  state = c(state.abb, "DC")) %>%
+  state_name = c(state.name, "District of Columbia", "American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico"),
+  state = c(state.abb, "DC", "AS", "GU", "MP", "PR")) %>%
   right_join(NSF_state_dict) %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
   arrange(state) 
@@ -162,7 +184,18 @@ NSF_state_dict <- tibble(
 county_commute <- read.csv("data/county_commute_NIH.csv") %>%
   select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
   mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
-         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0")) %>%
+  add_row(DESTINATION = "30005940100", DESTINATION_total_workers = 0, Commuters = 0, ORIGIN = "30005", proportion = 1)
+
+county_commute_territory <- county_commute %>%
+  filter(str_sub(DESTINATION, 1, 5) %in% territory_fips$FIPS) %>%
+  mutate(proportion = 1,
+         ORIGIN = str_sub(DESTINATION, 1, 5)) %>%
+  distinct()
+
+county_commute <- county_commute %>%
+  filter(! str_sub(DESTINATION, 1, 5) %in% territory_fips$FIPS) %>%
+  rbind(county_commute_territory)
 
 cong_commute <- fread("https://osf.io/m5kb6/download") %>%
   mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
@@ -190,10 +223,16 @@ cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
 
 # calculate proportion of workers who work in district X who live in district Y
 cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+
+cong_commute <- cong_commute %>%
+  add_row(DESTINATION = "30005940100", ORIGIN = "3002", commuters = 0, total_workers = 0, proportion = 1) %>%
+  mutate(proportion = if_else(str_sub(DESTINATION, 1, 5) %in% territory_fips$FIPS, 1, proportion),
+         ORIGIN = if_else(str_sub(DESTINATION, 1, 5) %in% territory_fips$FIPS, paste0(str_sub(DESTINATION, 1, 2), "00"), ORIGIN)) %>%
+  distinct()
 ```
 
 ```{r}
-# summarize NIH data by FIPS code
+# summarize NSF data by FIPS code
 NSF_grants_tract <- expand.grid(tractid = unique(nsf_grants$tractid),
                                 account_name = unique(nsf_grants$account_name),
                                 fisc_year = unique(nsf_grants$fisc_year)) %>%
@@ -208,7 +247,12 @@ fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
   select(FIPS, name)
 
 states <- read.csv("data/states.csv") %>%
-  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0"))
+  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
+  select(state_name, state, state_FIPS) %>%
+  rbind(tibble(
+    state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico"),
+    state = c("AS", "GU", "MP", "PR"),
+    state_FIPS = c("60", "66", "69", "72")))
 
 #combine commuter data with NSF data
 county_commute_NSF <- merge(county_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
@@ -221,11 +265,11 @@ county_commute_NSF <- merge(county_commute, NSF_grants_tract, by.x = "DESTINATIO
   mutate_all(funs(replace(., is.na(.), 0))) %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
   left_join(fips_names) %>%
-  left_join(states %>% select(-FIPS)) %>%
+  left_join(states) %>%
   mutate(econ_impact = raw_funding * 2.64,
          jobs = raw_funding/72000) %>%
   select(FIPS, name, state, account_name, raw_funding, econ_impact, jobs) %>%
-  filter(FIPS != "00000")
+  filter(!endsWith(FIPS, "000"))
 
 write_csv(county_commute_NSF, "output/baseline_county_nsf.csv")
 
@@ -263,8 +307,62 @@ cong_commute_NSF <- merge(cong_commute, NSF_grants_tract, by.x = "DESTINATION", 
 
 write_csv(cong_commute_NSF, "output/baseline_district_nsf.csv")
 
+territory_baseline <- county_commute_NSF %>%
+  filter(! state %in% c(state.abb, "DC")) %>%
+  group_by(state, account_name) %>%
+  summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x)))
+
+cong_commute_NSF %>%
+  group_by(state, account_name) %>%
+  summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
+  rbind(territory_baseline) %>%
+  write_csv("output/baseline_state_nsf.csv")
+```
+
+
+```{r}
+cong_commute_NSF <- merge(cong_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
+  filter(!is.na(account_name)) %>%
+  mutate_all(funs(replace(., is.na(.), 0))) %>%
+  mutate(raw_funding = raw_funding * proportion) %>%
+  rename(GEOID = ORIGIN) %>%
+  group_by(GEOID, account_name) %>%
+  summarize(raw_funding = sum(raw_funding, na.rm=TRUE)) %>%
+  mutate_all(funs(replace(., is.na(.), 0)))  %>%
+  mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
+  left_join(states) %>%
+  mutate(econ_impact = raw_funding * 2.64,
+         jobs = raw_funding/72000) %>%
+  select(GEOID, state, account_name, raw_funding, econ_impact, jobs)
+
+write_csv(cong_commute_NSF, "output/baseline_district_nsf.csv")
+
 cong_commute_NSF %>%
   group_by(state, account_name) %>%
   summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
   write_csv("output/baseline_state_nsf.csv")
+
+library(scales)
+plot_usmap(
+  data = cong_commute_NSF %>%
+  group_by(state) %>%
+  summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))),
+  values = "raw_funding",
+  regions = "states",
+  color = "white",
+  linewidth = 0.0
+) +
+  scale_fill_viridis_c(trans = "log10",
+                       labels = label_dollar(scale_cut = cut_short_scale())) +
+  labs(fill = "Baseline funding")
+
+
+cong_commute_NSF %>%
+    ungroup() %>%
+    summarize(raw_funding = sum(raw_funding), econ_impact = sum(econ_impact), jobs = sum(jobs))
+
+county_commute_NSF %>%
+    ungroup() %>%
+    summarize(raw_funding = sum(raw_funding, na.rm = TRUE), econ_impact = sum(econ_impact, na.rm = TRUE), jobs = sum(jobs, na.rm = TRUE))
+
 ```
