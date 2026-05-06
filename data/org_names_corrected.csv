@@ -1,6 +1,6 @@
 org_name,corrected_name
 University of Texas Medical Br Galveston,University of Texas Medical Branch Galveston
-University of Tx Md anderson Can Center,University of Texas MD Anderson Cancer Center
+University of Tx Md Anderson Can Center,University of Texas MD Anderson Cancer Center
 Florida Agricultural and Mechanical Univ,Florida A&M University
 Ut Southwestern Medical Center,University of Texas Southwestern Medical Center
 Clark atlanta University,Clark Atlanta University
@@ -19,7 +19,7 @@ Weill Medical Coll of Cornell Univ,Weill Medical College of Cornell University
 Graduate School of Public Health and Health Policy,Columbia University Graduate School of Public Health and Health Policy
 "New York State Psychiatric Institute Dba Research Foundation for Mental Hygiene, Inc","The Research Foundation for Mental Hygiene, Inc."
 fordham University,Fordham University
-"Pennsylvania State University, the",Pennsylvania State University
+"Pennsylvania State University, The",Pennsylvania State University
 "Butler Hospital (Providence, Ri)",Butler Hospital
 University of Massachusetts Medical Sch Worcester,University of Massachusetts Medical School Worcester
 Rosalind Franklin University of Medicine & Sci,Rosalind Franklin University of Medicine & Science
@@ -54,7 +54,7 @@ San Diego State University,
 Medical University of South Carolina,
 La Jolla Institute for Immunology,
 "University of California, San Diego",
-"Scripps Research Institute, the",
+"Scripps Research Institute, The",Scripps Research Institute
 Arizona State University-Tempe Campus,
 Center for Innovative Public Health Research,
 Banner Health,
@@ -183,7 +183,7 @@ Endeavor Health Clinical Operations,
 Eastern Michigan University,
 University of Michigan at Ann Arbor,
 "Harvard Pilgrim Health Care, Inc.",
-Harvard School of Public Health,
+Harvard School of Public Health,Harvard University
 Brigham and Women's Hospital,
 Boston Medical Center,
 Boston College,
@@ -281,7 +281,7 @@ Georgetown University,
 Howard University,
 Academic Pediatric Association,
 University of Missouri-Columbia,
-American Gastroenterological Assn/Inst,American Gastroenterological Association Institute
+American Gastroenterological Association/Inst,American Gastroenterological Association Institute
 Delaware State University,
 University of Maryland Baltimore County,
 Rowan University,
@@ -305,7 +305,7 @@ University of Hartford,
 Northwestern University,
 Worcester Polytechnic Institute,
 University of Massachusetts Boston,
-Harvard Medical School,
+Harvard Medical School,Harvard University
 Wayne State University,
 Mgh Institute of Health Professions,MGH Institute of Health Professions
 Mclean Hospital,McLean Hospital
@@ -399,7 +399,7 @@ New York Medical College,
 State University of New York at Albany,
 Winifred Masterson Burke Medical Research Inst,Winifred Masterson Burke Medical Research Institute
 Hebrew Home for the Aged at Riverdale,
-Loyola University Chicago,
+Loyola University Chicago,Loyola University Medical Center
 "Ochin, Inc.",
 Sanford Burnham Prebys Medical Discovery Institute,Sanford Burnham Prebys
 Prairie View\xa0A&M\xa0University\xa0 ,Prairie View A&M University
@@ -791,6 +791,8 @@ National Medical Association,
 Dana-Farber Cancer Inst,Dana-Farber Cancer Institute
 American Society for Bone & Mineral Res,American Society for Bone & Mineral Research
 Cleveland Clinic Lerner Com-Cwru,Cleveland Clinic Lerner College of Medicine - Case Western Reserve University
-Harvard University D/B/A Harvard School of Public Health,Harvard School of Public Health
+Harvard University D/B/A Harvard School of Public Health,Harvard University
 "Families Against Narcotics, Inc. D/B/A Face Addiction Now","Families Against Narcotics, Inc."
 New York University D/B/A Nyu Long Island School of Medicine,New York University Long Island School of Medicine
+"State University of Ny,Binghamton","State University of New York, Binghamton"
+Utah State Higher Education System--University of Utah,University of Utah
