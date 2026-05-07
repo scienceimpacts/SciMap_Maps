@@ -142,14 +142,6 @@ nsf_grants <- nsf_grants %>%
   filter(inst_state_name %in% c(state.name, "District of Columbia", "American Samoa", "Guam", "Northern Mariana Isl", "Puerto Rico")) %>%
   mutate(inst_state_name = if_else(inst_state_name == "Northern Mariana Isl", "Northern Mariana Islands", inst_state_name))
 
-# check total pre-commuters
-nsf_grants %>% 
-  group_by(account_name) %>% 
-  summarise(tot = sum(adj_fund, na.rm = TRUE)) %>%
-  mutate(avg = if_else(account_name == "TIP", tot/3, tot/5)) %>%
-  ungroup() %>%
-  summarise(tot = sum(avg))
-
 territory_fips <- nsf_grants %>%
   filter(inst_state_name %in% c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico")) %>%
   mutate(FIPS = str_sub(tractid, 1, 5)) %>%
@@ -158,7 +150,7 @@ territory_fips <- nsf_grants %>%
     inst_state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico"),
     state = c("AS", "GU", "MP", "PR"))) %>%
   distinct(FIPS, name, state) %>%
-  filter(FIPS != "08051")
+  filter(FIPS != "08051" & !is.na(FIPS))
 
 nsf_grants <- nsf_grants  %>%
   filter(!is.na(tractid)) %>%
@@ -203,6 +195,11 @@ cong_commute <- fread("https://osf.io/m5kb6/download") %>%
   rename(commuters = commutes) %>%
   filter(!is.na(Cong_ORIGIN))
 
+cong_commute_territory <- county_commute_territory %>%
+  mutate(ORIGIN = paste0(str_sub(ORIGIN, 1, 2), "98")) %>%
+  rename(total_workers = DESTINATION_total_workers,
+         commuters = Commuters)
+
 cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
   mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
   select(GEOID, STATE_NAME, NAME, PARTY) %>%
@@ -226,9 +223,7 @@ cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
 
 cong_commute <- cong_commute %>%
   add_row(DESTINATION = "30005940100", ORIGIN = "3002", commuters = 0, total_workers = 0, proportion = 1) %>%
-  mutate(proportion = if_else(str_sub(DESTINATION, 1, 5) %in% territory_fips$FIPS, 1, proportion),
-         ORIGIN = if_else(str_sub(DESTINATION, 1, 5) %in% territory_fips$FIPS, paste0(str_sub(DESTINATION, 1, 2), "00"), ORIGIN)) %>%
-  distinct()
+  bind_rows(cong_commute_territory)
 ```
 
 ```{r}
@@ -250,9 +245,9 @@ states <- read.csv("data/states.csv") %>%
   mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
   select(state_name, state, state_FIPS) %>%
   rbind(tibble(
-    state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico"),
-    state = c("AS", "GU", "MP", "PR"),
-    state_FIPS = c("60", "66", "69", "72")))
+    state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "Virgin Islands"),
+    state = c("AS", "GU", "MP", "PR", "VI"),
+    state_FIPS = c("60", "66", "69", "72", "78")))
 
 #combine commuter data with NSF data
 county_commute_NSF <- merge(county_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
@@ -315,7 +310,7 @@ territory_baseline <- county_commute_NSF %>%
 cong_commute_NSF %>%
   group_by(state, account_name) %>%
   summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
-  rbind(territory_baseline) %>%
+  # rbind(territory_baseline) %>%
   write_csv("output/baseline_state_nsf.csv")
 ```
 
@@ -342,21 +337,7 @@ cong_commute_NSF %>%
   summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
   write_csv("output/baseline_state_nsf.csv")
 
-library(scales)
-plot_usmap(
-  data = cong_commute_NSF %>%
-  group_by(state) %>%
-  summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))),
-  values = "raw_funding",
-  regions = "states",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale())) +
-  labs(fill = "Baseline funding")
-
-
+# doesn't include territories
 cong_commute_NSF %>%
     ungroup() %>%
     summarize(raw_funding = sum(raw_funding), econ_impact = sum(econ_impact), jobs = sum(jobs))
@@ -365,4 +346,5 @@ county_commute_NSF %>%
     ungroup() %>%
     summarize(raw_funding = sum(raw_funding, na.rm = TRUE), econ_impact = sum(econ_impact, na.rm = TRUE), jobs = sum(jobs, na.rm = TRUE))
 
+sum(NSF_grants_tract$raw_funding)
 ```

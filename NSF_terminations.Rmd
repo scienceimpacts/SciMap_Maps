@@ -32,9 +32,20 @@ states <- read.csv("data/states.csv") %>%
   mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
   select(-FIPS)
 
+state_dict_territories <- read.csv("data/state_dict_territories.csv") %>%
+  mutate(FIPS = as.character(FIPS),
+         state_FIPS = as.character(state_FIPS)) %>%
+  select(names(states)) %>%
+  distinct()
+
+states <- rbind(states, state_dict_territories) %>%
+  arrange(state)
+
 orgs <- nsf_grants %>% 
   distinct(inst_name, inst_city_name, inst_state_name, inst_street_address) %>% 
-  rename(org_name = inst_name, org_city = inst_city_name, state_name = inst_state_name) %>% 
+  rename(org_name = inst_name, 
+         org_city = inst_city_name, 
+         state_name = inst_state_name) %>% 
   left_join(states %>% rename(org_state = state)) %>% 
   mutate(org_name = if_else(org_name == "Carnegie-Mellon University", "Carnegie Mellon University", org_name),
          org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name),
@@ -54,7 +65,7 @@ nsf_terminations <- nsf_terminations %>%
          org_city = if_else(org_name == "Arizona State University", "TEMPE", org_city),
          org_city = str_to_upper(org_city)) %>%
   left_join(orgs) %>% 
-  filter(org_state %in% c(state.abb, "DC"))
+  filter(org_state %in% c(state.abb, "DC", "AS", "GU", "MP", "PR", "VI"))
 
 #directorates to include
 dir_incl <- c("BIO", "CSE", "EDU", "ENG", "GEO", "MPS", "SBE", "TIP")
@@ -74,7 +85,6 @@ geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
          tractid = str_pad(TractFIPS_Str, 11, pad="0"),
          inst_street_address = inst_stree) %>%
   rename(lat = Lat, lon = Lon) %>%
-  filter(! StateName %in% c("American Samoa", "Guam", "Commonwealth of the Northern Mariana Islands", "Puerto Rico")) %>%
   select(tractid, inst_street_address, inst_name, lat, lon) %>%
   distinct() %>%
   rename(org_name = inst_name) %>% 
@@ -93,20 +103,40 @@ geo_dict <- rbind(geo_dict, missing_tractid_orgs)
 nsf_terminations %<>% left_join(geo_dict)
 
 nsf_terminations %>% filter(is.na(tractid))
-nsf_terminations %>% filter(is.na(lat) | is.na(lon))
 ```
 
 ```{r}
 county_commute <- read.csv("data/county_commute_NIH.csv") %>%
   select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
   mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
-         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0")) %>%
+  add_row(DESTINATION = "30005940100", DESTINATION_total_workers = 0, Commuters = 0, ORIGIN = "30005", proportion = 1)
+
+county_commute_territory <- nsf_terminations %>%
+  filter(as.numeric(str_sub(tractid, 1, 2)) > 56) %>%
+  mutate(ORIGIN = str_sub(tractid, 1, 5)) %>%
+  rename(DESTINATION = tractid) %>%
+  mutate(DESTINATION_total_workers = 0,
+         Commuters = 0,
+         proportion = 1) %>%
+  ungroup() %>%
+  distinct(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion)
+
+county_commute <- county_commute %>%
+  filter(as.numeric(str_sub(DESTINATION, 1, 2)) <= 56) %>%
+  rbind(county_commute_territory)
 
 cong_commute <- fread("https://osf.io/m5kb6/download") %>%
   mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
          Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
   rename(commuters = commutes) %>%
   filter(!is.na(Cong_ORIGIN))
+
+cong_commute_territory <- county_commute_territory %>%
+  mutate(ORIGIN = paste0(str_sub(ORIGIN, 1, 2), "98")) %>%
+  rename(total_workers = DESTINATION_total_workers,
+         commuters = Commuters) %>%
+  distinct()
 
 cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
   mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
@@ -128,6 +158,10 @@ cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
 
 # calculate proportion of workers who work in district X who live in district Y
 cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+
+cong_commute <- cong_commute %>%
+  add_row(DESTINATION = "30005940100", ORIGIN = "3002", commuters = 0, total_workers = 0, proportion = 1) %>%
+  bind_rows(cong_commute_territory)
 ```
 
 ```{r}
@@ -146,25 +180,66 @@ nsf_terminations %<>%
          total_loss = if_else(total_loss < 0, 0, total_loss), 
          total_loss = if_else(date_status == "reinstatement_date", -total_loss, total_loss), # total amount lost at the moment
          total_impacted = if_else(total_loss < 0, 0, total_loss), # total amount ever impacted
+         grant_loss = if_else(date_status == "termination_date", 1, -1),
+         grants_impacted = if_else(grant_loss < 0, 0, grant_loss),
          week = floor_date(date, 
                            unit = "week", 
-                           week_start = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))) 
+                           week_start = if_else(wday(start_date) == 1, 7, wday(start_date) - 1)))
 
 nsf_econ_mult <- 2.64
 nsf_job_val <- 1/72000
 
+replacements <- c(" Of " = " of ", " At " = " at ", " And " = " and ", " In " = " in ",
+                  "Univ " = "University ", "Ctr" = "Center", " Inc$" = " Inc.",
+                  "Col " = "College ", "Hlth" = "Health", "Scis" = "Sciences",
+                  "Sci " = "Science ", "Llc" = "LLC", "Assn" = "Association",
+                  " The " = " the ", " For " = " for ", "Res " = "Research ", 
+                  "Hosp " = "Hospital ", "Med " = "Medical ", " Inst " = " Institute ", 
+                  " Can " = " Cancer ", "Cuny" = "CUNY", "Suny" = "SUNY")
+
+names_corrected <- read.csv("data/nsf_names_corrected.csv")
+
+nsf_terminations_clean <- nsf_terminations %>%
+  mutate(org_name = str_to_title(org_name),
+         org_city = str_to_title(org_city),
+         org_name = str_replace_all(org_name, replacements)) %>%
+  left_join(names_corrected) %>%
+  mutate(org_name = if_else(!is.na(corrected_name), corrected_name, org_name),
+         lat = round(lat, 5),
+         lon = round(lon, 5))
+
+org_dict <- read.csv("data/org_dict.csv") %>%
+  mutate(org_name.nsf = str_replace_all(org_name.nsf, replacements)) %>%
+  left_join(names_corrected %>% rename(org_name.nsf = org_name)) %>%
+  mutate(org_name.nsf = if_else(!is.na(corrected_name), corrected_name, org_name.nsf),
+         across(c(starts_with("lat"), starts_with("lon")), ~ round(.x, 5)))
+
+nsf_terminations_clean <- nsf_terminations_clean %>%
+  rename_with(~ paste0(.x, ".nsf", recycle0 = TRUE), c("org_name", "org_state", "org_city", "lat", "lon")) %>%
+  left_join(org_dict %>% select(-ends_with(".nih"), -c(lat.nsf, lon.nsf, corrected_name)) %>% distinct()) %>% 
+  mutate(org_name = if_else(is.na(org_name), org_name.nsf, org_name),
+         org_city = if_else(is.na(org_city), org_city.nsf, org_city),
+         org_state = if_else(is.na(org_state), org_state.nsf, org_state),
+         lat = if_else(is.na(lat), lat.nsf, lat),
+         lon = if_else(is.na(lon), lon.nsf, lon)) %>%
+  select(-ends_with(".nih"), ends_with(".nsf")) %>%
+  mutate(lat = if_else(org_name == "Rutgers University Newark", 40.74054, lat),
+         lon = if_else(org_name == "Rutgers University Newark", -74.17268, lon))
+
 # organization level
-terminations_org_nsf <- nsf_terminations %>%
+terminations_org_nsf <- nsf_terminations_clean %>%
   complete(nesting(org_name, org_city, org_state, lat, lon), 
            week = seq(start_date, today(), by = "weeks"),
-           fill = list(total_loss = 0, total_impacted = 0)) %>%
+           fill = list(total_loss = 0, total_impacted = 0, grant_loss = 0, grants_impacted = 0)) %>%
   group_by(org_name, org_city, org_state, lat, lon, week) %>%
-  summarize(across(c("total_loss", "total_impacted"), ~ sum(.x))) %>%
+  summarize(across(c(total_loss, total_impacted, grant_loss, grants_impacted), ~ sum(.x))) %>%
   group_by(org_name, org_city, org_state, lat, lon) %>%
   arrange(week) %>%
-  mutate(across(c("total_loss", "total_impacted"), ~ cumsum(.x))) %>%
+  mutate(across(c(total_loss, total_impacted, grant_loss, grants_impacted), ~ cumsum(.x))) %>%
   rename(current_loss = total_loss,
-         overall_loss = total_impacted) %>%
+         overall_loss = total_impacted,
+         current_grant_loss = grant_loss,
+         overall_grant_loss = grants_impacted) %>%
   left_join(states %>% rename(org_state = state)) %>%
   mutate(current_econ_loss = current_loss * nsf_econ_mult,
          current_job_loss = current_loss * nsf_job_val,
@@ -173,6 +248,7 @@ terminations_org_nsf <- nsf_terminations %>%
   select(org_name, org_city, org_state, lat, lon, starts_with(c("week", "current", "overall")))
 
 write_csv(terminations_org_nsf, "output/terminations_org_nsf.csv")
+
 ```
 
 ```{r}
@@ -287,42 +363,18 @@ terminations_sum_cong_nsf %>%
             job_loss_current = sum(current_job_loss))
 ```
 
-```{r}
-# plots to check values
-terminations_sum_comm_nsf %>%
-  group_by(week) %>%
-  summarise(current_loss = sum(current_loss),
-            overall_loss = sum(overall_loss)) %>%
-  ggplot() +
-  geom_line(aes(x = week, y = current_loss), color = "red") +
-  geom_line(aes(x = week, y = overall_loss), color = "blue") +
-  theme_minimal() +
-  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
-  labs(x = "Date", y = "Total funding currently impacted")
+```{r check values}
+county_tot <- terminations_sum_comm_nsf %>%
+  filter(week == max(week))
+cong_tot <- terminations_sum_cong_nsf %>%
+  filter(week == max(week))
 
-library(usmap)
-plot_usmap(
-  data = terminations_sum_comm_nsf %>% rename(fips = FIPS) %>% filter(week == max(week)),
-  values = "overall_loss",
-  regions = "counties",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale())) +
-  labs(fill = "Total funding \nimpacted")
+sum(nsf_terminations$total_loss)
+sum(county_tot$current_loss)
+sum(cong_tot$current_loss)
 
-plot_usmap(
-  data = terminations_sum_cong_nsf %>%
-  group_by(state, week) %>%
-  summarise(across(ends_with("loss"), ~ sum(.x))) %>% filter(week == max(week)),
-  values = "overall_loss",
-  regions = "states",
-  color = "white",
-  linewidth = 0.0
-) +
-  labs(fill = "Total funding \nimpacted") +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale()))
+sum(nsf_terminations$total_impacted)
+sum(county_tot$overall_loss)
+sum(cong_tot$overall_loss)
 ```
 

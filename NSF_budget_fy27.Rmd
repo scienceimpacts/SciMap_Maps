@@ -67,7 +67,8 @@ fwrite(all_data, "nsf_grants.csv")
 
 
 ```{r clean-grants}
-nsf_grants <- read.csv("nsf_data/nsf_grants.csv")
+nsf_grants <- read.csv("nsf_data/nsf_grants.csv") %>%
+  mutate(across(ends_with("date"), ~ as_date(.x)))
 
 #directorates to include
 dir_incl <- c("BIO", "CSE", "EDU", "ENG", "GEO", "MPS", "SBE", "TIP")
@@ -129,24 +130,34 @@ nsf_grants %<>%
 
 
 ```{r Get FIPS Codes}
-
 geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
   distinct() %>%
   mutate(FIPS = str_pad(CountyFIPS_str, 5, pad = "0"),
          GEOID = str_pad(CongFIPS, 4, pad="0"),
          tractid = str_pad(TractFIPS_Str, 11, pad="0"),
          inst_street_address = inst_stree) %>%
-  filter(inst_state %in% c(state.name, "District of Columbia")) %>%
   select(tractid, inst_street_address, inst_name) %>%
   distinct()
 
+PR_tracts <- read.csv("data/PR_tracts.csv") %>%
+  rename(inst_name = org_name,
+         tractid = GEOID) %>%
+  mutate(tractid = str_pad(tractid, 11, pad = "0")) %>%
+  select(tractid, inst_street_address, inst_name)
+
+geo_dict <- rbind(geo_dict, PR_tracts) %>%
+  distinct()
+
+nsf_grants %<>% left_join(geo_dict) %>%
+  filter(inst_state_name %in% c(state.name, "District of Columbia", "American Samoa", "Guam", "Northern Mariana Isl", "Puerto Rico")) %>%
+  mutate(inst_state_name = if_else(inst_state_name == "Northern Mariana Isl", "Northern Mariana Islands", inst_state_name))
+
 nsf_grants_inst <- nsf_grants %>%
-  left_join(geo_dict) %>%
   group_by(tractid, account_name, inst_name, fund_oblg_fiscal_yr) %>%
   summarise(budg_loss = sum(cut_amt, na.rm=TRUE),
             budg_tot = sum(adj_fund, na.rm=TRUE)) 
 
-nsf_grants %<>% left_join(geo_dict) %>%
+nsf_grants %<>% 
   group_by(tractid, account_name, fund_oblg_fiscal_yr) %>%
   summarise(budg_loss = sum(cut_amt, na.rm=TRUE),
             budg_tot = sum(adj_fund, na.rm=TRUE)) 
@@ -154,7 +165,11 @@ nsf_grants %<>% left_join(geo_dict) %>%
 # dictionary to map fips codes to state names
 NSF_state_dict <- read.csv("data/state_and_county_fips_master.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
-  filter(!endsWith(FIPS, "000")) 
+  filter(!endsWith(FIPS, "000"))
+
+state_dict_territories <- read.csv("data/state_dict_territories.csv") %>%
+  mutate(FIPS = as.character(FIPS),
+         state_FIPS = as.character(state_FIPS))
 
 # append state FIPS codes
 NSF_state_dict <- tibble(
@@ -162,25 +177,35 @@ NSF_state_dict <- tibble(
   state = c(state.abb, "DC")) %>%
   right_join(NSF_state_dict) %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
-  arrange(state) 
+  bind_rows(state_dict_territories) %>%
+  arrange(state) %>%
+  select(-c(econ_mult, job_val))
 
 ```
 
 ```{r Commuter Weighting}
-# commute is a dataframe derived from 2016 Census data with the following columns
-# ORIGIN: is the FIPS code for the county of residence
-# proportion: is the proportion of people working in a given DESTINATION who live in a specific ORIGIN
-
-# IMPORTANT: some FIPS codes have leading zeros
-commute <- fread("data/county_commute_NIH.csv") %>%
+county_commute <- read.csv("data/county_commute_NIH.csv") %>%
   select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
   mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
-         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0")) %>%
+  add_row(DESTINATION = "30005940100", DESTINATION_total_workers = 0, Commuters = 0, ORIGIN = "30005", proportion = 1)
 
+county_commute_territory <- nsf_grants %>%
+  filter(as.numeric(str_sub(tractid, 1, 2)) > 56) %>%
+  rename(DESTINATION = tractid) %>%
+  mutate(DESTINATION_total_workers = 0,
+         Commuters = 0,
+         ORIGIN = str_sub(DESTINATION, 1, 5),
+         proportion = 1) %>%
+  ungroup() %>%
+  distinct(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion)
+
+county_commute <- county_commute %>%
+  filter(! str_sub(DESTINATION, 1, 5) %in% territory_fips$FIPS) %>%
+  rbind(county_commute_territory)
 ```
 
 ```{r County Calculations}
-
 #summarize NIH data by FIPS code
 NSF_budget_cuts_tract <- nsf_grants %>%
   ungroup() %>%
@@ -190,7 +215,7 @@ NSF_budget_cuts_tract <- nsf_grants %>%
   summarise(budg_loss = mean(budg_loss, na.rm=TRUE))
 
 #combine commuter data with NSF data
-county_commute_NSF <- merge(commute, NSF_budget_cuts_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
+county_commute_NSF <- merge(county_commute, NSF_budget_cuts_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
   filter(!is.na(account_name)) %>%
   mutate_all(funs(replace(., is.na(.), 0))) %>%
   mutate(budg_loss = budg_loss * proportion) %>%
@@ -207,7 +232,8 @@ county_commute_NSF <- merge(commute, NSF_budget_cuts_tract, by.x = "DESTINATION"
   mutate_all(funs(replace(., is.na(.), 0)))  %>%
   right_join(NSF_state_dict) %>%
   mutate(across(starts_with("budg"), ~ .x * 2.64, .names = "econ_{.col}")) %>%
-  mutate(across(starts_with("budg"), ~ .x / 72000, .names = "jobs_{.col}"))
+  mutate(across(starts_with("budg"), ~ .x / 72000, .names = "jobs_{.col}")) %>%
+  filter(!is.na(budg_NSF_cuts))
 
 print(nrow(county_commute_NSF))
 
@@ -242,6 +268,11 @@ cong_commute <- fread("https://osf.io/m5kb6/download") %>%
   rename(commuters = commutes) %>%
   filter(!is.na(Cong_ORIGIN))
 
+cong_commute_territory <- county_commute_territory %>%
+  mutate(ORIGIN = paste0(str_sub(ORIGIN, 1, 2), "98")) %>%
+  rename(total_workers = DESTINATION_total_workers,
+         commuters = Commuters)
+
 cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
   mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
   select(GEOID, STATE_NAME, NAME, PARTY) %>%
@@ -249,19 +280,23 @@ cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
          pol_party = PARTY,
          rep_name = NAME)
 
-#get total workers per cong district
+# get total workers per cong district
 cong_commute_sum <- cong_commute %>%
   group_by(Cong_DESTINATION) %>%
   summarise(total_workers = sum(commuters, na.rm=TRUE))
 
-#merge in total workers
+# merge in total workers
 cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
   select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
   rename(DESTINATION = Cong_DESTINATION,
-         ORIGIN = Cong_ORIGIN) 
+         ORIGIN = Cong_ORIGIN)
 
-#calculate proportion of workers who work in district X who live in district Y
+# calculate proportion of workers who work in district X who live in district Y
 cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+
+cong_commute <- cong_commute %>%
+  add_row(DESTINATION = "30005940100", ORIGIN = "3002", commuters = 0, total_workers = 0, proportion = 1) %>%
+  bind_rows(cong_commute_territory)
 ```
 
 
@@ -301,7 +336,8 @@ NSF_inst_tract <- nsf_grants_inst %>%
   ungroup() %>%
   filter(! (account_name=="TIP" & fund_oblg_fiscal_yr < 2022)) %>%
   group_by(tractid, inst_name, account_name) %>%
-  summarise(budg_loss = sum(budg_loss, na.rm=TRUE)/ifelse(account_name=="TIP", 3, 5)) %>%
+  summarise(budg_loss = sum(budg_loss, na.rm=TRUE)) %>%
+  mutate(budg_loss = budg_loss/ifelse(account_name=="TIP", 3, 5)) %>%
   distinct()
 
 
@@ -350,14 +386,6 @@ write.csv(state_cong, file="output/NSF_budget27_state.csv", row.names=FALSE)
 
 ```
 ```{r state inst}
-NSF_inst_tract <- nsf_grants_inst %>%
-  ungroup() %>%
-  filter(! (account_name=="TIP" & fund_oblg_fiscal_yr < 2022)) %>%
-  group_by(tractid, inst_name, account_name) %>%
-  summarise(budg_loss = sum(budg_loss, na.rm=TRUE)/ifelse(account_name=="TIP", 3, 5)) %>%
-  distinct()
-
-
 #combine commuter data with NIH data
 state_commute_NSF_inst <- merge(cong_commute, NSF_inst_tract, by.x = "DESTINATION", by.y = "tractid", all = TRUE, allow.cartesian=TRUE) %>%
   filter(!is.na(account_name)) %>%
@@ -406,4 +434,10 @@ budg_tab %>% select(account_name, prop_cut) %>% distinct()
 budg_tab %>% filter(account_name == "EDU" & fund_oblg_fiscal_yr==2027)
 budg_tab %>% filter(account_name == "SBE" & fund_oblg_fiscal_yr==2027)
 
+read.csv("output/NSF_budget27_state.csv") %>% filter(state == "PA") %>% select(contains("SBE"))
+read.csv("output/baseline_state_nsf.csv") %>% filter(state == "PA" & account_name == "SBE")
+
+sum(NSF_budget_cuts_tract$budg_loss)
+sum(county_commute_NSF$budg_NSF_cuts)
+sum(cong_commute_NSF$budg_NSF_cuts)
 ```

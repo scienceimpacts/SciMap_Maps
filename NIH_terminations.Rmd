@@ -13,38 +13,6 @@ terminations_raw <- read_csv("https://files.grant-witness.us/nih_terminations.cs
   mutate(across(ends_with("date"), ~ as_date(.x)))
 
 write.csv(terminations_raw, "data/nih_terminations.csv")
-
-county_commute <- read.csv("data/county_commute_NIH.csv") %>%
-  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
-  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
-         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
-
-cong_commute <- fread("https://osf.io/m5kb6/download") %>%
-  mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
-         Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
-  rename(commuters = commutes) %>%
-  filter(!is.na(Cong_ORIGIN))
-
-cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
-  mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
-  select(GEOID, STATE_NAME, NAME, PARTY) %>%
-  rename(state = STATE_NAME,
-         pol_party = PARTY,
-         rep_name = NAME)
-
-# get total workers per cong district
-cong_commute_sum <- cong_commute %>%
-  group_by(Cong_DESTINATION) %>%
-  summarise(total_workers = sum(commuters, na.rm=TRUE))
-
-# merge in total workers
-cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
-  select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
-  rename(DESTINATION = Cong_DESTINATION,
-         ORIGIN = Cong_ORIGIN)
-
-# calculate proportion of workers who work in district X who live in district Y
-cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
 ```
 
 ```{r fix org names}
@@ -65,7 +33,8 @@ NIH_tracts <- read.csv("data/tract_dictionary.csv") %>%
          FIPS = str_pad(FIPS, 5, pad = "0"))
 
 terminations_clean <- terminations_raw %>%
-  filter(org_state %in% states$state) %>%
+  filter(!is.na(org_state)) %>%
+  filter(!org_state %in% c("ON", "BC")) %>%
   left_join(states %>% rename(org_state = state)) %>%
   left_join(NIH_tracts) %>%
   mutate(org_name = str_to_title(org_name),
@@ -104,34 +73,57 @@ states <- read.csv("data/states.csv") %>%
   mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
   select(-FIPS)
 
+territories <- tibble(
+  state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "Virgin Islands"),
+  state = c("AS", "GU", "MP", "PR", "VI"),
+  econ_mult = rep(2.57, 5),
+  job_val = rep(8.9 * 10^(-6), 5),
+  state_FIPS = c("60", "66", "69", "72", "78"))
+
+states <- states %>%
+  rbind(territories)
+
+# append state FIPS codes
+NIH_state_dict <- tibble(
+  state_name = c(state.name, "District of Columbia"),
+  state = c(state.abb, "DC")) %>%
+  right_join(NIH_state_dict) %>%
+  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
+  arrange(state) %>%
+  rbind(state_dict_territories)
+
 terminations <- terminations_clean %>%
   mutate(total_loss = total_award - total_estimated_outlays,
-         total_loss = ifelse(total_loss < 0, 0, total_loss),
          across(ends_with("loss"), ~ ifelse(is.na(.x), 0, .x)),
          date_impacted = pmin(frozen_date, termination_date, na.rm = T),
          date_reinstated = pmax(unfrozen_date, reinstated_est_date, na.rm = T),
          tractid = ifelse(tractid == "00NOT_FOUND", NA, tractid)) %>%
   filter(!is.na(tractid)) %>%
+  filter(total_loss > 0) %>%
   filter(date_impacted >= start_date) %>%
-  # track reinstated grants as negative loss
+  # reinstated grants are counted as negative loss
   pivot_longer(c(date_impacted, date_reinstated), names_to = "date_status", values_to = "date") %>% 
   filter(!is.na(date)) %>%
   mutate(total_loss = if_else(date_status == "date_reinstated", -total_loss, total_loss), # total amount lost at the moment
          total_impacted = if_else(total_loss < 0, 0, total_loss), # total amount ever impacted
+         grant_loss = if_else(date_status == "date_impacted", 1, -1),
+         grants_impacted = if_else(grant_loss < 0, 0, grant_loss),
          week = floor_date(date, unit = "week", week = if_else(wday(start_date) == 1, 7, wday(start_date) - 1)))
 
 # organization level
 terminations_org <- terminations %>%
   complete(nesting(org_name, org_city, org_state, lat, lon), 
            week = seq(start_date, today(), by = "weeks"),
-           fill = list(total_loss = 0, total_impacted = 0)) %>%
+           fill = list(total_loss = 0, total_impacted = 0, grant_loss = 0, grants_impacted = 0)) %>%
   group_by(org_name, org_city, org_state, lat, lon, week) %>%
-  summarize(across(c("total_loss", "total_impacted"), ~ sum(.x))) %>%
+  summarize(across(c(total_loss, total_impacted, grant_loss, grants_impacted), ~ sum(.x))) %>%
   group_by(org_name, org_city, org_state, lat, lon) %>%
   arrange(week) %>%
-  mutate(across(c("total_loss", "total_impacted"), ~ cumsum(.x))) %>%
+  mutate(across(c(total_loss, total_impacted, grant_loss, grants_impacted), ~ cumsum(.x))) %>%
   rename(current_loss = total_loss,
-         overall_loss = total_impacted) %>%
+         overall_loss = total_impacted,
+         current_grant_loss = grant_loss,
+         overall_grant_loss = grants_impacted) %>%
   left_join(states %>% rename(org_state = state)) %>%
   mutate(current_econ_loss = current_loss * econ_mult,
          current_job_loss = current_loss * job_val,
@@ -145,7 +137,83 @@ terminations_sum <- terminations %>%
   group_by(tractid, week) %>%
   summarise(week_loss = sum(total_loss),
             week_impacted = sum(total_impacted))
+```
 
+```{r commutes}
+county_commute <- fread("data/county_commute_NIH.csv") %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
+  mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0")) %>%
+  add_row(DESTINATION = "30005940100", DESTINATION_total_workers = 0, Commuters = 0, ORIGIN = "30005", proportion = 1)
+
+county_commute_territory <- terminations %>%
+  filter(as.numeric(str_sub(FIPS, 1, 2)) > 56) %>%
+  rename(DESTINATION = tractid,
+         ORIGIN = FIPS) %>%
+  mutate(DESTINATION_total_workers = 0,
+         Commuters = 0,
+         proportion = 1) %>%
+  ungroup() %>%
+  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>%
+  distinct()
+
+county_commute <- county_commute %>%
+  filter(ORIGIN != "00000") %>%
+  rbind(county_commute_territory)
+
+# Quality check: all destination weights should sum to 1
+county_commute %>% 
+  group_by(DESTINATION) %>% 
+  summarize(sum = round(sum(proportion), digits=5)) %>% 
+  filter(sum < 1) %>%
+  nrow() 
+
+
+# district level
+cong_commute <- fread("https://osf.io/m5kb6/download") %>%
+  mutate(Cong_DESTINATION = str_pad(w_tract, 11, pad = "0"),
+         Cong_ORIGIN = str_pad(h_cd119, 4, pad = "0")) %>%
+  rename(commuters = commutes) %>%
+  filter(!is.na(Cong_ORIGIN))
+
+cong_commute_territory <- terminations %>%
+  filter(as.numeric(str_sub(FIPS, 1, 2)) > 56) %>%
+  rename(DESTINATION = tractid) %>%
+  mutate(ORIGIN = paste0(str_sub(DESTINATION, 1, 2), "98"),
+         total_workers = 0,
+         commuters = 0,
+         proportion = 1) %>%
+  ungroup() %>%
+  select(DESTINATION, total_workers, commuters, ORIGIN, proportion) %>%
+  distinct()
+
+cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0")) %>%
+  select(GEOID, STATE_NAME, NAME, PARTY) %>%
+  rename(state = STATE_NAME,
+         pol_party = PARTY,
+         rep_name = NAME)
+
+# get total workers per cong district
+cong_commute_sum <- cong_commute %>%
+  group_by(Cong_DESTINATION) %>%
+  summarise(total_workers = sum(commuters, na.rm=TRUE))
+
+# merge in total workers
+cong_commute <- left_join(cong_commute, cong_commute_sum) %>%
+  select(Cong_DESTINATION, Cong_ORIGIN, commuters, total_workers) %>%
+  rename(DESTINATION = Cong_DESTINATION,
+         ORIGIN = Cong_ORIGIN)
+
+# calculate proportion of workers who work in district X who live in district Y
+cong_commute$proportion <- cong_commute$commuters / cong_commute$total_workers
+
+cong_commute <- cong_commute %>%
+  add_row(DESTINATION = "30005940100", ORIGIN = "3002", commuters = 0, total_workers = 0, proportion = 1) %>%
+  bind_rows(cong_commute_territory)
+```
+
+```{r}
 # add in commutes
 terminations_sum_comm <- county_commute %>%
   rename(tractid = DESTINATION) %>%
@@ -229,58 +297,11 @@ terminations_sum_cong %>%
   group_by(state, week) %>%
   summarise(across(ends_with("loss"), ~ sum(.x))) %>%
   write_csv("output/terminations_state.csv")
+```
 
-# all US terminations
-library(scales)
-terminations_sum_comm %>%
-  group_by(week) %>%
-  summarise(current_loss = sum(current_loss),
-            overall_loss = sum(overall_loss)) %>%
-  ggplot() +
-  geom_line(aes(x = week, y = current_loss)) +
-  theme_minimal() +
-  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
-  labs(x = "Date", y = "Total funding currently impacted")
+```{r check values}
 
-terminations_sum_comm %>%
-  group_by(week) %>%
-  summarise(current_loss = sum(current_loss),
-            overall_loss = sum(overall_loss)) %>%
-  ggplot() +
-  geom_line(aes(x = week, y = overall_loss)) +
-  theme_minimal() +
-  scale_y_continuous(labels = label_dollar(scale_cut = cut_short_scale())) +
-  labs(x = "Date", y = "Total funding ever impacted")
-
-library(usmap)
-plot_usmap(
-  data = terminations_sum_comm %>% 
-    rename(fips = FIPS) %>% 
-    filter(week == max(week)),
-  values = "overall_loss",
-  regions = "counties",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale())) +
-  labs(fill = "Total funding \nimpacted")
-
-plot_usmap(
-  data = terminations_sum_cong %>%
-    filter(week == max(week)) %>%
-    group_by(state) %>%
-    summarise(across(ends_with("loss"), ~ sum(.x, na.rm = T))),
-  values = "overall_loss",
-  regions = "states",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale())) +
-  labs(fill = "Total funding \nimpacted")
-
-# check to see if overall values line up
+# check to see if values line up
 terminations_sum_comm %>% 
     filter(week == max(week)) %>%
   ungroup() %>%
@@ -289,12 +310,8 @@ terminations_sum_comm %>%
 terminations_sum_cong %>% 
     filter(week == max(week)) %>%
   ungroup() %>%
-  summarize(overall_loss = sum(overall_loss), 
-            overall_econ_loss = sum(overall_econ_loss),
-            overall_job_loss = sum(overall_job_loss),
-            current_loss = sum(current_loss),
-            current_econ_loss = sum(current_econ_loss),
-            current_job_loss = sum(current_job_loss))
+  summarize(overall_loss = sum(overall_loss),
+            current_loss = sum(current_loss))
 
 # pre-commuter flows
 terminations %>%
@@ -305,6 +322,8 @@ terminations %>%
 ```{r eval=FALSE}
 library(gganimate)
 library(gifski)
+library(usmap)
+library(scales)
 
 # weekly version
 gif_map_week <- plot_usmap(
