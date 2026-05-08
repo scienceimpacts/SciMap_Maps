@@ -66,6 +66,11 @@ start_date <- as_date("2025-02-28")
 terminations_clean %>%
   filter(pmin(frozen_date, termination_date, na.rm = T) >= start_date) %>%
   nrow()
+
+terminations_clean %>% 
+  filter(as.numeric(state_FIPS) > 56) %>% 
+  distinct(org_name, org_city, org_state, lat, lon) %>% 
+  write_csv("data/NIH_term_org_territories.csv")
 ```
 
 ```{r}
@@ -82,15 +87,6 @@ territories <- tibble(
 
 states <- states %>%
   rbind(territories)
-
-# append state FIPS codes
-NIH_state_dict <- tibble(
-  state_name = c(state.name, "District of Columbia"),
-  state = c(state.abb, "DC")) %>%
-  right_join(NIH_state_dict) %>%
-  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
-  arrange(state) %>%
-  rbind(state_dict_territories)
 
 terminations <- terminations_clean %>%
   mutate(total_loss = total_award - total_estimated_outlays,
@@ -109,6 +105,22 @@ terminations <- terminations_clean %>%
          grant_loss = if_else(date_status == "date_impacted", 1, -1),
          grants_impacted = if_else(grant_loss < 0, 0, grant_loss),
          week = floor_date(date, unit = "week", week = if_else(wday(start_date) == 1, 7, wday(start_date) - 1)))
+
+org_dict <- read.csv("data/org_dict.csv") %>%
+  mutate(org_name.nih = str_replace_all(org_name.nih, replacements)) %>%
+  left_join(org_names_corrected %>% rename(org_name.nih = org_name)) %>%
+  mutate(org_name.nih = if_else(!is.na(corrected_name), corrected_name, org_name.nih),
+         across(c(starts_with("lat"), starts_with("lon")), ~ round(.x, 5)))
+
+terminations <- terminations %>%
+  rename_with(~ paste0(.x, ".nih", recycle0 = TRUE), c("org_name", "org_state", "org_city", "lat", "lon")) %>%
+  left_join(org_dict %>% select(-ends_with(".nsf"), -c(lat.nih, lon.nih)) %>% distinct()) %>% 
+  mutate(org_name = if_else(is.na(org_name), org_name.nih, org_name),
+         org_city = if_else(is.na(org_city), org_city.nih, org_city),
+         org_state = if_else(is.na(org_state), org_state.nih, org_state),
+         lat = if_else(is.na(lat), lat.nih, lat),
+         lon = if_else(is.na(lon), lon.nih, lon)) %>%
+  select(-ends_with(".nih"), ends_with(".nsf"))
 
 # organization level
 terminations_org <- terminations %>%

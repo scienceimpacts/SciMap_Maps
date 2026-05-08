@@ -103,6 +103,11 @@ geo_dict <- rbind(geo_dict, missing_tractid_orgs)
 nsf_terminations %<>% left_join(geo_dict)
 
 nsf_terminations %>% filter(is.na(tractid))
+
+nsf_terminations %>% 
+  filter(as.numeric(state_FIPS) > 56) %>% 
+  distinct(org_name, org_city, org_state, lat, lon) %>% 
+  write_csv("data/NSF_term_org_territories.csv")
 ```
 
 ```{r}
@@ -209,7 +214,8 @@ nsf_terminations_clean <- nsf_terminations %>%
          lon = round(lon, 5))
 
 org_dict <- read.csv("data/org_dict.csv") %>%
-  mutate(org_name.nsf = str_replace_all(org_name.nsf, replacements)) %>%
+  mutate(org_name.nsf = str_replace_all(org_name.nsf, replacements),
+         org_city.nsf = str_to_title(org_city.nsf)) %>%
   left_join(names_corrected %>% rename(org_name.nsf = org_name)) %>%
   mutate(org_name.nsf = if_else(!is.na(corrected_name), corrected_name, org_name.nsf),
          across(c(starts_with("lat"), starts_with("lon")), ~ round(.x, 5)))
