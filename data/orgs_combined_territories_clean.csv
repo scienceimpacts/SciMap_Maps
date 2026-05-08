@@ -1,0 +1,17 @@
+org_name.x,org_city.x,org_state.x,lat.x,lon.x,org_name.y,org_city.y,org_state.y,lat.y,lon.y,org_name.dist,org_state.dist,org_name,org_city,org_state,lat,lon
+University of Puerto Rico Medical Sciences,San Juan,PR,18.41048,-66.06561,University of Puerto Rico Medical Sciences Campus,SAN JUAN,PR,18.4499141,-66.0603497,0.047619048,5.55E-17,University of Puerto Rico Medical Sciences,San Juan,PR,18.41048,-66.06561
+University of Puerto Rico Rio Piedras,San Juan,PR,18.40983,-66.06296,University of Puerto Rico-Rio Piedras,SAN JUAN,PR,18.4327248,-66.0595632,0.036536537,5.55E-17,University of Puerto Rico Rio Piedras,San Juan,PR,18.40983,-66.06296
+University of Puerto Rico,Cayey,PR,18.11828,-66.16103,University of Puerto Rico,SAN JUAN,PR,38.7945952,-106.5348379,5.55E-17,5.55E-17,NA,NA,NA,NA,NA
+University of Puerto Rico,Cayey,PR,18.11828,-66.16103,University of Puerto Rico Mayaguez,MAYAGUEZ,PR,18.2085987,-67.1400142,0.088235294,5.55E-17,NA,NA,NA,NA,NA
+University of Puerto Rico Ponce,Ponce,PR,18.03611,-66.61143,University of Puerto Rico,SAN JUAN,PR,38.7945952,-106.5348379,0.064516129,5.55E-17,NA,NA,NA,NA,NA
+University of the Virgin Islands,St. Thomas,VI,18.3419,-64.9307,University of The Virgin Islands,CHARLOTTE AMALIE,VI,38.7945952,-106.5348379,0.020833333,5.55E-17,University of the Virgin Islands,Charlotte Amalie,VI,18.3419,-64.9307
+Ponce School of Medicine,Ponce,PR,18.01462,-66.61475,NA,NA,NA,NA,NA,NA,NA,Ponce School of Medicine,Ponce,PR,18.01462,-66.61475
+Grupo Nexos Inc.,San Juan,PR,18.42056,-66.05387,NA,NA,NA,NA,NA,NA,NA,Grupo Nexos Inc.,San Juan,PR,18.42056,-66.05387
+University of Puerto Rico Comprehensive Cancer Center,San Juan,PR,18.38881,-66.0733,NA,NA,NA,NA,NA,NA,NA,University of Puerto Rico Comprehensive Cancer Center,San Juan,PR,18.38881,-66.0733
+University of Puerto Rico at Humacao,Humacao,PR,18.1545,-65.82076,NA,NA,NA,NA,NA,NA,NA,University of Puerto Rico Humacao,Humacao,PR,18.1545,-65.82076
+NA,NA,NA,NA,NA,University of Puerto Rico-Arecibo Campus,ARECIBO,PR,18.4641626,-66.7513456,NA,NA,University of Puerto Rico Arecibo,Arecibo,PR,18.4641626,-66.7513456
+NA,NA,NA,NA,NA,University of Puerto Rico at Carolina,CAROLINA,PR,38.7945952,-106.5348379,NA,NA,University of Puerto Rico Carolina,Carolina,PR,38.7945952,-106.5348379
+NA,NA,NA,NA,NA,University of Guam,MANGILAO,GU,13.433887,144.8049191,NA,NA,University of Guam,Mangilao,GU,13.433887,144.8049191
+University of Puerto Rico,Cayey,PR,18.11828,-66.16103,NA,NA,NA,NA,NA,NA,NA,University of Puerto Rico Cayey,Cayey,PR,18.11828,-66.16103
+NA,NA,NA,NA,NA,University of Puerto Rico,SAN JUAN,PR,38.7945952,-106.5348379,NA,NA,University of Puerto Rico Rio Piedras,San Juan,PR,38.7945952,-106.5348379
+NA,NA,NA,NA,NA,University of Puerto Rico Mayaguez,MAYAGUEZ,PR,18.2085987,-67.1400142,NA,NA,University of Puerto Rico Mayaguez,Mayaguez,PR,18.2085987,-67.1400142
