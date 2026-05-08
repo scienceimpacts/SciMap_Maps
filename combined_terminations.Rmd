@@ -1,0 +1,38 @@
+---
+title: "combined_terminations"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+terminations_org_nsf <- read.csv("output/terminations_org_nsf.csv") %>%
+  mutate(lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  rename_with(~ paste0(.x, ".nsf", recycle0 = TRUE), c(ends_with("loss")))
+
+terminations_org_nih <- read.csv("output/terminations_org.csv") %>%
+  mutate(lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  rename_with(~ paste0(.x, ".nih", recycle0 = TRUE), c(ends_with("loss")))
+
+terminations_org_combined <- full_join(terminations_org_nih, terminations_org_nsf) %>%
+  mutate(week = as_date(week),
+         across(current_loss.nih:overall_job_loss.nsf, ~ if_else(is.na(.x), 0, .x))) %>%
+  filter(week <= as_date("2026-04-17")) %>%
+  rowwise() %>%
+  mutate(current_loss.combined = current_loss.nih + current_loss.nsf,
+         current_grant_loss.combined = current_grant_loss.nih + current_grant_loss.nsf,
+         current_econ_loss.combined = current_econ_loss.nih + current_econ_loss.nsf,
+         current_job_loss.combined = current_job_loss.nih + current_job_loss.nsf,
+         overall_loss.combined = overall_loss.nih + overall_loss.nsf,
+         overall_grant_loss.combined = overall_grant_loss.nih + overall_grant_loss.nsf,
+         overall_econ_loss.combined = overall_econ_loss.nih + overall_econ_loss.nsf,
+         overall_job_loss.combined = overall_job_loss.nih + overall_job_loss.nsf)
+
+write_csv(terminations_org_combined, "output/terminations_org_combined.csv")
+
+```
+
