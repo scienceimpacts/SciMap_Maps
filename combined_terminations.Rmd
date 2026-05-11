@@ -21,7 +21,6 @@ terminations_org_nih <- read.csv("output/terminations_org.csv") %>%
 terminations_org_combined <- full_join(terminations_org_nih, terminations_org_nsf) %>%
   mutate(week = as_date(week),
          across(current_loss.nih:overall_job_loss.nsf, ~ if_else(is.na(.x), 0, .x))) %>%
-  filter(week <= as_date("2026-04-17")) %>%
   rowwise() %>%
   mutate(current_loss.combined = current_loss.nih + current_loss.nsf,
          current_grant_loss.combined = current_grant_loss.nih + current_grant_loss.nsf,
