@@ -9,10 +9,8 @@ library(data.table)
 ```
 
 ```{r}
-terminations_raw <- read_csv("https://files.grant-witness.us/nih_terminations.csv") %>%
-  mutate(across(ends_with("date"), ~ as_date(.x)))
-
-write.csv(terminations_raw, "data/nih_terminations.csv")
+terminations_raw_new <- read.csv("data/nih_v3_terminations.csv") %>%
+  mutate(across(latest_disruption_date:project_end, ~ as_date(.x)))
 ```
 
 ```{r fix org names}
@@ -32,10 +30,34 @@ NIH_tracts <- read.csv("data/tract_dictionary.csv") %>%
   mutate(tractid = str_pad(tractid, 11, pad = "0"),
          FIPS = str_pad(FIPS, 5, pad = "0"))
 
-terminations_clean <- terminations_raw %>%
+states <- read.csv("data/states.csv") %>%
+  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
+  select(-FIPS)
+
+territories <- tibble(
+  state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "Virgin Islands"),
+  state = c("AS", "GU", "MP", "PR", "VI"),
+  econ_mult = rep(2.57, 5),
+  job_val = rep(8.9 * 10^(-6), 5),
+  state_FIPS = c("60", "66", "69", "72", "78"))
+
+states <- states %>%
+  rbind(territories)
+
+names_fixed <- read.csv("data/new_names_fixed.csv")
+
+terminations_clean <- terminations_raw_new %>%
   filter(!is.na(org_state)) %>%
   filter(!org_state %in% c("ON", "BC")) %>%
+  filter(org_country == "UNITED STATES") %>%
+  group_by(grant_id) %>%
+  filter(is.na(subgrant_id) | !any(is.na(subgrant_id))) %>% # filter out subgrants unless no parent award is present
+  ungroup() %>%
+  mutate(org_state = str_sub(org_state, 1, 2)) %>%
   left_join(states %>% rename(org_state = state)) %>%
+  left_join(names_fixed) %>%
+  mutate(org_name = if_else(!is.na(org_name_fixed), org_name_fixed, org_name)) %>%
+  select(-org_name_fixed) %>%
   left_join(NIH_tracts) %>%
   mutate(org_name = str_to_title(org_name),
          org_city = str_to_title(org_city),
@@ -57,15 +79,10 @@ terminations_clean <- terminations_raw %>%
          org_name = if_else(str_detect(org_name, "Michigan State University"), "Michigan State University", org_name),
          org_name = if_else(str_detect(org_name, "St. Jude Children's Research Hospital"), "St. Jude Children's Research Hospital", org_name),
          org_name = if_else(str_detect(org_name, "Vanderbilt University"), "Vanderbilt University", org_name)) %>%
-  select(-corrected_name) %>%
-  distinct()
+  select(-corrected_name)
 
 # terminated grants in the US since 2/28/25
 start_date <- as_date("2025-02-28")
-
-terminations_clean %>%
-  filter(pmin(frozen_date, termination_date, na.rm = T) >= start_date) %>%
-  nrow()
 
 terminations_clean %>% 
   filter(as.numeric(state_FIPS) > 56) %>% 
@@ -74,29 +91,18 @@ terminations_clean %>%
 ```
 
 ```{r}
-states <- read.csv("data/states.csv") %>%
-  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
-  select(-FIPS)
-
-territories <- tibble(
-  state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "Virgin Islands"),
-  state = c("AS", "GU", "MP", "PR", "VI"),
-  econ_mult = rep(2.57, 5),
-  job_val = rep(8.9 * 10^(-6), 5),
-  state_FIPS = c("60", "66", "69", "72", "78"))
-
-states <- states %>%
-  rbind(territories)
-
 terminations <- terminations_clean %>%
-  mutate(total_loss = total_award - total_estimated_outlays,
+  mutate(total_loss = ifelse(award_value >= award_outlaid, award_value - award_outlaid, 0),
          across(ends_with("loss"), ~ ifelse(is.na(.x), 0, .x)),
-         date_impacted = pmin(frozen_date, termination_date, na.rm = T),
-         date_reinstated = pmax(unfrozen_date, reinstated_est_date, na.rm = T),
+         date_impacted = pmin(latest_disruption_date, first_termination_date, frozen_date, na.rm = T),
+         date_reinstated = pmax(latest_restoration_date, latest_reinstatement_date, unfrozen_date, na.rm = T),
          tractid = ifelse(tractid == "00NOT_FOUND", NA, tractid)) %>%
   filter(!is.na(tractid)) %>%
-  filter(total_loss > 0) %>%
-  filter(date_impacted >= start_date) %>%
+  filter(date_impacted >= start_date)
+
+nrow(terminations)
+
+terminations <- terminations %>%
   # reinstated grants are counted as negative loss
   pivot_longer(c(date_impacted, date_reinstated), names_to = "date_status", values_to = "date") %>% 
   filter(!is.na(date)) %>%
