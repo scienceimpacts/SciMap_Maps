@@ -242,12 +242,8 @@ fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
   select(FIPS, name)
 
 states <- read.csv("data/states.csv") %>%
-  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
-  select(state_name, state, state_FIPS) %>%
-  rbind(tibble(
-    state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "Virgin Islands"),
-    state = c("AS", "GU", "MP", "PR", "VI"),
-    state_FIPS = c("60", "66", "69", "72", "78")))
+  mutate(state_FIPS = str_pad(state_FIPS, 2, pad = "0")) %>%
+  select(state_name, state, state_FIPS)
 
 #combine commuter data with NSF data
 county_commute_NSF <- merge(county_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
