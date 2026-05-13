@@ -9,8 +9,10 @@ library(data.table)
 ```
 
 ```{r}
-terminations_raw <- read.csv("data/nih_v3_terminations.csv") %>%
-  mutate(across(latest_disruption_date:project_end, ~ as_date(.x)))
+terminations_raw <- read_csv("https://files.grant-witness.us/nih_v3_terminations.csv") %>%
+  mutate(across(ends_with("date"), ~ as_date(.x)))
+
+write.csv(terminations_raw, "data/nih_v3_terminations.csv")
 ```
 
 ```{r fix org names}
@@ -33,7 +35,7 @@ NIH_tracts <- read.csv("data/tract_dictionary.csv") %>%
 states <- read.csv("data/states.csv") %>%
   mutate(state_FIPS = str_pad(state_FIPS, 2, pad = "0"))
 
-names_fixed <- read.csv("data/new_names_fixed.csv")
+names_v3 <- read.csv("data/org_names_v3_terminations.csv")
 
 terminations_raw <- terminations_raw %>%
   mutate(org_name = if_else(org_name == "UNIVERSITY OF COLORADO", str_to_upper(paste(org_name, org_city, sep = " - ")), org_name))
@@ -45,41 +47,26 @@ terminations_clean <- terminations_raw %>%
   group_by(grant_id) %>%
   filter(is.na(subgrant_id) | !any(is.na(subgrant_id))) %>% # filter out subgrants unless no parent award is present
   ungroup() %>%
-  mutate(org_state = str_sub(org_state, 1, 2)) %>%
+  left_join(states %>% 
+              rename(org_state = state_name) %>% 
+              mutate(org_state = str_to_upper(org_state)) %>%
+              select(state, org_state)) %>%
+  mutate(org_state = ifelse(!is.na(state), state, org_state)) %>%
+  select(-state) %>%
   left_join(states %>% rename(org_state = state)) %>%
-  left_join(names_fixed) %>%
+  left_join(names_v3) %>%
   mutate(org_name = if_else(!is.na(org_name_fixed), org_name_fixed, org_name)) %>%
   select(-org_name_fixed) %>%
   left_join(NIH_tracts) %>%
   mutate(org_name = str_to_title(org_name),
          org_city = str_to_title(org_city),
-         org_name = str_replace_all(org_name, replacements),
-         org_name = if_else(org_name == "University of Colorado", 
-                            paste(org_name, org_city, sep = "-"),
-                            org_name)) %>%
+         org_name = str_replace_all(org_name, replacements)) %>%
   left_join(org_names_corrected) %>%
-  mutate(org_name = if_else(!is.na(corrected_name), corrected_name, org_name),
-         org_name = if_else(str_detect(org_name, "Boston University"), "Boston University", org_name),
-         org_name = if_else(str_detect(org_name, "New York University"), "New York University", org_name),
-         org_name = if_else(str_detect(org_name, "Columbia University"), "Columbia University", org_name),
-         org_name = if_else(str_detect(org_name, "University of New Mexico"), "University of New Mexico", org_name),
-         org_name = if_else(str_detect(org_name, "University of Maryland Baltimore"), "University of Maryland Baltimore", org_name),
-         org_name = if_else(str_detect(org_name, "Tufts University"), "Tufts University", org_name),
-         org_name = if_else(str_detect(org_name, "Northwestern University"), "Northwestern University", org_name),
-         org_name = if_else(str_detect(org_name, "Texas A&M University"), "Texas A&M University", org_name),
-         org_name = if_else(str_detect(org_name, "University of Miami"), "University of Miami", org_name),
-         org_name = if_else(str_detect(org_name, "Michigan State University"), "Michigan State University", org_name),
-         org_name = if_else(str_detect(org_name, "St. Jude Children's Research Hospital"), "St. Jude Children's Research Hospital", org_name),
-         org_name = if_else(str_detect(org_name, "Vanderbilt University"), "Vanderbilt University", org_name)) %>%
+  mutate(org_name = if_else(!is.na(corrected_name), corrected_name, org_name)) %>%
   select(-corrected_name)
 
 # terminated grants in the US since 2/28/25
 start_date <- as_date("2025-02-28")
-
-terminations_clean %>% 
-  filter(as.numeric(state_FIPS) > 56) %>% 
-  distinct(org_name, org_city, org_state, lat, lon) %>% 
-  write_csv("data/NIH_term_org_territories.csv")
 ```
 
 ```{r}
@@ -105,10 +92,7 @@ terminations <- terminations %>%
          week = floor_date(date, unit = "week", week = if_else(wday(start_date) == 1, 7, wday(start_date) - 1)))
 
 org_dict <- read.csv("data/org_dict.csv") %>%
-  mutate(org_name.nih = str_replace_all(org_name.nih, replacements)) %>%
-  left_join(org_names_corrected %>% rename(org_name.nih = org_name)) %>%
-  mutate(org_name.nih = if_else(!is.na(corrected_name), corrected_name, org_name.nih),
-         across(c(starts_with("lat"), starts_with("lon")), ~ round(.x, 5)))
+  mutate(across(c(starts_with("lat"), starts_with("lon")), ~ round(.x, 5)))
 
 terminations <- terminations %>%
   rename_with(~ paste0(.x, ".nih", recycle0 = TRUE), c("org_name", "org_state", "org_city", "lat", "lon")) %>%
@@ -153,8 +137,7 @@ terminations_sum <- terminations %>%
 county_commute <- fread("data/county_commute_NIH.csv") %>%
   select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
   mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
-         ORIGIN = str_pad(ORIGIN, 5, pad = "0")) %>%
-  add_row(DESTINATION = "30005940100", DESTINATION_total_workers = 0, Commuters = 0, ORIGIN = "30005", proportion = 1)
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
 
 county_commute_territory <- terminations %>%
   filter(as.numeric(str_sub(FIPS, 1, 2)) > 56) %>%

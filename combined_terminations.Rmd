@@ -29,9 +29,14 @@ terminations_org_combined <- full_join(terminations_org_nih, terminations_org_ns
          overall_loss.combined = overall_loss.nih + overall_loss.nsf,
          overall_grant_loss.combined = overall_grant_loss.nih + overall_grant_loss.nsf,
          overall_econ_loss.combined = overall_econ_loss.nih + overall_econ_loss.nsf,
-         overall_job_loss.combined = overall_job_loss.nih + overall_job_loss.nsf)
+         overall_job_loss.combined = overall_job_loss.nih + overall_job_loss.nsf) %>%
+  arrange(week)
 
 write_csv(terminations_org_combined, "output/terminations_org_combined.csv")
 
+terminations_org_combined %>%
+  filter(week == as_date("2026-05-08")) %>%
+  ungroup() %>%
+  summarise(across(current_loss.nih:overall_job_loss.combined, ~ sum(.x)))
 ```
 

@@ -29,17 +29,7 @@ write.csv(nsf_terminations, "data/nsf_terminations.csv")
 nsf_grants <- read.csv("nsf_data/nsf_grants.csv")
 
 states <- read.csv("data/states.csv") %>%
-  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
-  select(-FIPS)
-
-state_dict_territories <- read.csv("data/state_dict_territories.csv") %>%
-  mutate(FIPS = as.character(FIPS),
-         state_FIPS = as.character(state_FIPS)) %>%
-  select(names(states)) %>%
-  distinct()
-
-states <- rbind(states, state_dict_territories) %>%
-  arrange(state)
+  mutate(state_FIPS = str_pad(state_FIPS, 2, pad = "0"))
 
 orgs <- nsf_grants %>% 
   distinct(inst_name, inst_city_name, inst_state_name, inst_street_address) %>% 
@@ -79,43 +69,20 @@ nsf_terminations %<>% mutate(account_name = ifelse(dir == "O/D", div, dir)) %>%
 
 # get tracts
 geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
-  distinct() %>%
-  mutate(FIPS = str_pad(CountyFIPS_str, 5, pad = "0"),
-         GEOID = str_pad(CongFIPS, 4, pad="0"),
-         tractid = str_pad(TractFIPS_Str, 11, pad="0"),
-         inst_street_address = inst_stree) %>%
-  rename(lat = Lat, lon = Lon) %>%
-  select(tractid, inst_street_address, inst_name, lat, lon) %>%
-  distinct() %>%
-  rename(org_name = inst_name) %>% 
-  mutate(org_name = if_else(org_name == "Carnegie-Mellon University", "Carnegie Mellon University", org_name),
-         org_name = if_else(org_name == "Manhattan College", "MANHATTAN UNIVERSITY", org_name))
-
-missing_tractid_orgs <- read.csv("data/missing_tractid_org_fixed.csv") %>%
-  mutate(GEOID = str_pad(GEOID, 11, pad = "0")) %>%
-  rename(tractid = GEOID,
-         org_name = inst_name) %>%
-  select(tractid, inst_street_address, org_name, lat, lon) %>%
-  distinct()
-
-geo_dict <- rbind(geo_dict, missing_tractid_orgs)
+  mutate(tractid = str_pad(tractid, 11, pad="0"),
+         lat = round(lat, 5),
+         lon = round(lon, 5))
 
 nsf_terminations %<>% left_join(geo_dict)
 
 nsf_terminations %>% filter(is.na(tractid))
-
-nsf_terminations %>% 
-  filter(as.numeric(state_FIPS) > 56) %>% 
-  distinct(org_name, org_city, org_state, lat, lon) %>% 
-  write_csv("data/NSF_term_org_territories.csv")
 ```
 
 ```{r}
 county_commute <- read.csv("data/county_commute_NIH.csv") %>%
   select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
   mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
-         ORIGIN = str_pad(ORIGIN, 5, pad = "0")) %>%
-  add_row(DESTINATION = "30005940100", DESTINATION_total_workers = 0, Commuters = 0, ORIGIN = "30005", proportion = 1)
+         ORIGIN = str_pad(ORIGIN, 5, pad = "0"))
 
 county_commute_territory <- nsf_terminations %>%
   filter(as.numeric(str_sub(tractid, 1, 2)) > 56) %>%
@@ -214,23 +181,17 @@ nsf_terminations_clean <- nsf_terminations %>%
          lon = round(lon, 5))
 
 org_dict <- read.csv("data/org_dict.csv") %>%
-  mutate(org_name.nsf = str_replace_all(org_name.nsf, replacements),
-         org_city.nsf = str_to_title(org_city.nsf)) %>%
-  left_join(names_corrected %>% rename(org_name.nsf = org_name)) %>%
-  mutate(org_name.nsf = if_else(!is.na(corrected_name), corrected_name, org_name.nsf),
-         across(c(starts_with("lat"), starts_with("lon")), ~ round(.x, 5)))
+  mutate(across(c(starts_with("lat"), starts_with("lon")), ~ round(.x, 5)))
 
 nsf_terminations_clean <- nsf_terminations_clean %>%
   rename_with(~ paste0(.x, ".nsf", recycle0 = TRUE), c("org_name", "org_state", "org_city", "lat", "lon")) %>%
-  left_join(org_dict %>% select(-ends_with(".nih"), -c(lat.nsf, lon.nsf, corrected_name)) %>% distinct()) %>% 
+  left_join(org_dict %>% select(-ends_with(".nih"), -c(lat.nsf, lon.nsf)) %>% distinct()) %>% 
   mutate(org_name = if_else(is.na(org_name), org_name.nsf, org_name),
          org_city = if_else(is.na(org_city), org_city.nsf, org_city),
          org_state = if_else(is.na(org_state), org_state.nsf, org_state),
          lat = if_else(is.na(lat), lat.nsf, lat),
          lon = if_else(is.na(lon), lon.nsf, lon)) %>%
-  select(-ends_with(".nih"), ends_with(".nsf")) %>%
-  mutate(lat = if_else(org_name == "Rutgers University Newark", 40.74054, lat),
-         lon = if_else(org_name == "Rutgers University Newark", -74.17268, lon))
+  select(-ends_with(".nih"), -ends_with(".nsf"))
 
 # organization level
 terminations_org_nsf <- nsf_terminations_clean %>%
