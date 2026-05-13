@@ -9,7 +9,7 @@ library(data.table)
 ```
 
 ```{r}
-terminations_raw_new <- read.csv("data/nih_v3_terminations.csv") %>%
+terminations_raw <- read.csv("data/nih_v3_terminations.csv") %>%
   mutate(across(latest_disruption_date:project_end, ~ as_date(.x)))
 ```
 
@@ -31,22 +31,14 @@ NIH_tracts <- read.csv("data/tract_dictionary.csv") %>%
          FIPS = str_pad(FIPS, 5, pad = "0"))
 
 states <- read.csv("data/states.csv") %>%
-  mutate(state_FIPS = str_pad(FIPS, 2, pad = "0")) %>%
-  select(-FIPS)
-
-territories <- tibble(
-  state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "Virgin Islands"),
-  state = c("AS", "GU", "MP", "PR", "VI"),
-  econ_mult = rep(2.57, 5),
-  job_val = rep(8.9 * 10^(-6), 5),
-  state_FIPS = c("60", "66", "69", "72", "78"))
-
-states <- states %>%
-  rbind(territories)
+  mutate(state_FIPS = str_pad(state_FIPS, 2, pad = "0"))
 
 names_fixed <- read.csv("data/new_names_fixed.csv")
 
-terminations_clean <- terminations_raw_new %>%
+terminations_raw <- terminations_raw %>%
+  mutate(org_name = if_else(org_name == "UNIVERSITY OF COLORADO", str_to_upper(paste(org_name, org_city, sep = " - ")), org_name))
+
+terminations_clean <- terminations_raw %>%
   filter(!is.na(org_state)) %>%
   filter(!org_state %in% c("ON", "BC")) %>%
   filter(org_country == "UNITED STATES") %>%
@@ -318,7 +310,6 @@ terminations_sum_cong %>%
 ```
 
 ```{r check values}
-
 # check to see if values line up
 terminations_sum_comm %>% 
     filter(week == max(week)) %>%
