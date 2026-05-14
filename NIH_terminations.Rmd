@@ -51,7 +51,7 @@ terminations_clean <- terminations_raw %>%
               rename(org_state = state_name) %>% 
               mutate(org_state = str_to_upper(org_state)) %>%
               select(state, org_state)) %>%
-  mutate(org_state = ifelse(!is.na(state), state, org_state)) %>%
+  mutate(org_state = if_else(!is.na(state), state, org_state)) %>%
   select(-state) %>%
   left_join(states %>% rename(org_state = state)) %>%
   left_join(names_v3) %>%
@@ -71,24 +71,33 @@ start_date <- as_date("2025-02-28")
 
 ```{r}
 terminations <- terminations_clean %>%
-  mutate(total_loss = ifelse(award_value >= award_outlaid, award_value - award_outlaid, 0),
-         across(ends_with("loss"), ~ ifelse(is.na(.x), 0, .x)),
-         date_impacted = pmin(latest_disruption_date, first_termination_date, frozen_date, na.rm = T),
+  mutate(current_loss = if_else(award_value >= award_outlaid, award_value - award_outlaid, 0),
+         across(ends_with("loss"), ~ if_else(is.na(.x), 0, .x)),
+         earliest_date_impacted = pmin(latest_disruption_date, first_termination_date, frozen_date, na.rm = T),
+         latest_date_impacted = pmax(latest_disruption_date, first_termination_date, frozen_date, na.rm = T),
          date_reinstated = pmax(latest_restoration_date, latest_reinstatement_date, unfrozen_date, na.rm = T),
-         tractid = ifelse(tractid == "00NOT_FOUND", NA, tractid)) %>%
+         date_reinstated = if_else(date_reinstated < latest_date_impacted, NA, date_reinstated),
+         tractid = if_else(tractid == "00NOT_FOUND", NA, tractid)) %>%
   filter(!is.na(tractid)) %>%
-  filter(date_impacted >= start_date)
+  filter(earliest_date_impacted >= start_date)
 
 nrow(terminations)
 
 terminations <- terminations %>%
   # reinstated grants are counted as negative loss
-  pivot_longer(c(date_impacted, date_reinstated), names_to = "date_status", values_to = "date") %>% 
+  pivot_longer(c(earliest_date_impacted, latest_date_impacted, date_reinstated), names_to = "date_status", values_to = "date") %>% 
   filter(!is.na(date)) %>%
-  mutate(total_loss = if_else(date_status == "date_reinstated", -total_loss, total_loss), # total amount lost at the moment
-         total_impacted = if_else(total_loss < 0, 0, total_loss), # total amount ever impacted
-         grant_loss = if_else(date_status == "date_impacted", 1, -1),
-         grants_impacted = if_else(grant_loss < 0, 0, grant_loss),
+  mutate(overall_loss = if_else(date_status == "earliest_date_impacted", current_loss, 0), # total amount ever impacted
+         current_loss = 
+           case_when(
+             date_status == "date_reinstated" ~ -current_loss,
+             date_status == "latest_date_impacted" ~ current_loss,
+             date_status == "earliest_date_impacted" ~  0), # total amount lost at the moment
+         overall_grant_loss = if_else(date_status == "earliest_date_impacted", 1, 0),
+         current_grant_loss = case_when(
+             date_status == "date_reinstated" ~ -1,
+             date_status == "latest_date_impacted" ~ 1,
+             date_status == "earliest_date_impacted" ~  0),
          week = floor_date(date, unit = "week", week = if_else(wday(start_date) == 1, 7, wday(start_date) - 1)))
 
 org_dict <- read.csv("data/org_dict.csv") %>%
@@ -108,16 +117,12 @@ terminations <- terminations %>%
 terminations_org <- terminations %>%
   complete(nesting(org_name, org_city, org_state, lat, lon), 
            week = seq(start_date, today(), by = "weeks"),
-           fill = list(total_loss = 0, total_impacted = 0, grant_loss = 0, grants_impacted = 0)) %>%
+           fill = list(current_loss = 0, overall_loss = 0, current_grant_loss = 0, overall_grant_loss = 0)) %>%
   group_by(org_name, org_city, org_state, lat, lon, week) %>%
-  summarize(across(c(total_loss, total_impacted, grant_loss, grants_impacted), ~ sum(.x))) %>%
+  summarize(across(c(current_loss, overall_loss, current_grant_loss, overall_grant_loss), ~ sum(.x))) %>%
   group_by(org_name, org_city, org_state, lat, lon) %>%
   arrange(week) %>%
-  mutate(across(c(total_loss, total_impacted, grant_loss, grants_impacted), ~ cumsum(.x))) %>%
-  rename(current_loss = total_loss,
-         overall_loss = total_impacted,
-         current_grant_loss = grant_loss,
-         overall_grant_loss = grants_impacted) %>%
+  mutate(across(c(current_loss, overall_loss, current_grant_loss, overall_grant_loss), ~ cumsum(.x))) %>%
   left_join(states %>% rename(org_state = state)) %>%
   mutate(current_econ_loss = current_loss * econ_mult,
          current_job_loss = current_loss * job_val,
@@ -129,8 +134,8 @@ write_csv(terminations_org, "output/terminations_org.csv")
 
 terminations_sum <- terminations %>%
   group_by(tractid, week) %>%
-  summarise(week_loss = sum(total_loss),
-            week_impacted = sum(total_impacted))
+  summarise(week_loss = sum(current_loss),
+            week_impacted = sum(overall_loss))
 ```
 
 ```{r commutes}
@@ -251,8 +256,8 @@ fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
 terminations_sum_comm %>%
   left_join(msa) %>%
   left_join(fips_names) %>%
-  mutate(CBSA_FIPS = ifelse(is.na(CBSA_FIPS), FIPS, CBSA_FIPS)) %>%
-  mutate(CBSA_NAME = ifelse(is.na(CBSA_NAME), name, CBSA_NAME)) %>%
+  mutate(CBSA_FIPS = if_else(is.na(CBSA_FIPS), FIPS, CBSA_FIPS)) %>%
+  mutate(CBSA_NAME = if_else(is.na(CBSA_NAME), name, CBSA_NAME)) %>%
   group_by(CBSA_FIPS, CBSA_NAME, week) %>%
   summarise(across(ends_with("loss"), ~ sum(.x))) %>%
   write_csv("output/terminations_city.csv")
@@ -308,7 +313,7 @@ terminations_sum_cong %>%
 # pre-commuter flows
 terminations %>%
   ungroup() %>%
-  summarize(overall_loss = sum(total_impacted), current_loss = sum(total_loss))
+  summarize(overall_loss = sum(overall_loss), current_loss = sum(current_loss))
 ```
 
 ```{r eval=FALSE}
