@@ -131,21 +131,9 @@ nsf_grants %<>%
 
 ```{r Get FIPS Codes}
 geo_dict <- read.csv("nsf_data/NSF_addresses_US_tract_county_cong119.csv") %>%
-  distinct() %>%
-  mutate(FIPS = str_pad(CountyFIPS_str, 5, pad = "0"),
-         GEOID = str_pad(CongFIPS, 4, pad="0"),
-         tractid = str_pad(TractFIPS_Str, 11, pad="0"),
-         inst_street_address = inst_stree) %>%
+  mutate(tractid = str_pad(tractid, 11, pad="0"),
+         inst_name = org_name) %>%
   select(tractid, inst_street_address, inst_name) %>%
-  distinct()
-
-PR_tracts <- read.csv("data/PR_tracts.csv") %>%
-  rename(inst_name = org_name,
-         tractid = GEOID) %>%
-  mutate(tractid = str_pad(tractid, 11, pad = "0")) %>%
-  select(tractid, inst_street_address, inst_name)
-
-geo_dict <- rbind(geo_dict, PR_tracts) %>%
   distinct()
 
 nsf_grants %<>% left_join(geo_dict) %>%
