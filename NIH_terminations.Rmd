@@ -16,16 +16,6 @@ terminations_raw <- read_csv("https://files.grant-witness.us/nih_v3_terminations
 write.csv(terminations_raw, "data/nih_v3_terminations.csv")
 ```
 
-```{r}
-# terminations_raw %>%
-#   left_join(NIH_grants, by = c("full_award_number" = "Project Number")) %>% 
-#   filter(Type == 5) %>%
-#   mutate(fisc_year = get_fisc(`Award Notice Date`)) %>%
-#   filter(fisc_year >= 2025) %>%
-#   mutate(budg_length = time_length(difftime(`Budget End Date` + days(1), `Budget Start Date`, units = "days"), "years")) %>%
-#   filter(budg_length > 1.01)
-```
-
 ```{r fix org names}
 # some blanket fixes on org name
 org_names_corrected <- read.csv("data/org_names_corrected.csv") %>%
