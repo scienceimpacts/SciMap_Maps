@@ -10,9 +10,20 @@ library(data.table)
 
 ```{r}
 terminations_raw <- read_csv("https://files.grant-witness.us/nih_v3_terminations.csv") %>%
-  mutate(across(ends_with("date"), ~ as_date(.x)))
+  mutate(across(ends_with("date"), ~ as_date(.x))) %>%
+  mutate(Type = as.numeric(str_sub(full_award_number, 1, 1)))
 
 write.csv(terminations_raw, "data/nih_v3_terminations.csv")
+```
+
+```{r}
+# terminations_raw %>%
+#   left_join(NIH_grants, by = c("full_award_number" = "Project Number")) %>% 
+#   filter(Type == 5) %>%
+#   mutate(fisc_year = get_fisc(`Award Notice Date`)) %>%
+#   filter(fisc_year >= 2025) %>%
+#   mutate(budg_length = time_length(difftime(`Budget End Date` + days(1), `Budget Start Date`, units = "days"), "years")) %>%
+#   filter(budg_length > 1.01)
 ```
 
 ```{r fix org names}
@@ -71,11 +82,11 @@ start_date <- as_date("2025-02-28")
 
 ```{r}
 terminations <- terminations_clean %>%
-  mutate(current_loss = if_else(award_value >= award_outlaid, award_value - award_outlaid, 0),
+  mutate(current_loss = if_else(obligated_at_disruption >= spent_at_disruption, obligated_at_disruption - spent_at_disruption, 0),
          across(ends_with("loss"), ~ if_else(is.na(.x), 0, .x)),
-         earliest_date_impacted = pmin(latest_disruption_date, first_termination_date, frozen_date, na.rm = T),
-         latest_date_impacted = pmax(latest_disruption_date, first_termination_date, frozen_date, na.rm = T),
-         date_reinstated = pmax(latest_restoration_date, latest_reinstatement_date, unfrozen_date, na.rm = T),
+         earliest_date_impacted = pmin(first_termination_date, frozen_date, na.rm = T),
+         latest_date_impacted = pmax(latest_termination_date, frozen_date, na.rm = T),
+         date_reinstated = pmax(latest_reinstatement_date, unfrozen_date, na.rm = T),
          date_reinstated = if_else(date_reinstated < latest_date_impacted, NA, date_reinstated),
          tractid = if_else(tractid == "00NOT_FOUND", NA, tractid)) %>%
   filter(!is.na(tractid)) %>%
