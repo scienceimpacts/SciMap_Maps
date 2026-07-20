@@ -34,9 +34,21 @@ terminations_org_combined <- full_join(terminations_org_nih, terminations_org_ns
 
 write_csv(terminations_org_combined, "output/terminations_org_combined.csv")
 
+start_date <- as_date("2025-02-28")
+current_week <- floor_date(today(), 
+                           unit = "week", 
+                           week_start = if_else(wday(start_date) == 1, 7, wday(start_date) - 1))
+
 terminations_org_combined %>%
-  filter(week == as_date("2026-05-08")) %>%
+  filter(week == current_week) %>%
   ungroup() %>%
   summarise(across(current_loss.nih:overall_job_loss.combined, ~ sum(.x)))
+
+terminations_org_combined %>%
+  filter(week == current_week) %>%
+  ungroup() %>%
+  summarise(across(starts_with("current"), ~ sum(.x))) %>%
+  select(-starts_with("current_loss")) %>%
+  write_csv("output/topline.csv")
 ```
 
