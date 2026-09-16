@@ -11,7 +11,8 @@ library(data.table)
 ```{r}
 terminations_raw <- read_csv("https://files.grant-witness.us/nih_v3_terminations.csv") %>%
   mutate(across(ends_with("date"), ~ as_date(.x))) %>%
-  mutate(Type = as.numeric(str_sub(full_award_number, 1, 1)))
+  mutate(Type = as.numeric(str_sub(full_award_number, 1, 1))) %>%
+  distinct()
 
 write.csv(terminations_raw, "data/nih_v3_terminations.csv")
 ```
@@ -82,7 +83,7 @@ terminations <- terminations_clean %>%
   filter(!is.na(tractid)) %>%
   filter(earliest_date_impacted >= start_date)
 
-nrow(terminations)
+write_csv(terminations, "data/nih_terminations_clean.csv")
 
 terminations <- terminations %>%
   # reinstated grants are counted as negative loss
@@ -317,27 +318,4 @@ terminations %>%
   summarize(overall_loss = sum(overall_loss), current_loss = sum(current_loss))
 ```
 
-```{r eval=FALSE}
-library(gganimate)
-library(gifski)
-library(usmap)
-library(scales)
-
-# weekly version
-gif_map_week <- plot_usmap(
-  data = terminations_sum_comm %>% rename(fips = FIPS) %>% mutate(current_loss = current_loss + 1),
-  values = "current_loss",
-  regions = "counties",
-  color = "white",
-  linewidth = 0.0
-) +
-  scale_fill_viridis_c(trans = "log10",
-                       labels = label_dollar(scale_cut = cut_short_scale())) +
-  labs(fill = "Current funding \nimpacted", title = "{frame_time}") +
-  theme(legend.position = "right")+
-  transition_time(week) +
-  ease_aes("linear")
-
-anim_save("output/current_terminations_weekly.gif", animate(gif_map_week, fps = 5, renderer = gifski_renderer()))
-```
 
