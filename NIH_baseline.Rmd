@@ -183,15 +183,20 @@ county_commute_NIH <- merge(county_commute, NIH_sum_budget_tract, by.x = "DESTIN
 county_commute_NIH <- mutate_all(county_commute_NIH , funs(replace(., is.na(.), 0)))
 
 county_commute_NIH_sum <- county_commute_NIH %>%
-  mutate(raw_funding = raw_funding * proportion) %>%
+  mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%
+  left_join(NIH_state_dict %>%
+              distinct(state_FIPS, econ_mult, job_val)) %>%
+  mutate(econ_impact = raw_funding * econ_mult,
+         jobs = raw_funding*job_val,
+         across(c(raw_funding, econ_impact, jobs), ~.x*proportion)) %>%
   rename(FIPS = ORIGIN) %>%
   group_by(FIPS) %>% 
-  summarise(raw_funding = sum(raw_funding, na.rm=TRUE)) %>%
-  right_join(NIH_state_dict) %>%
-  mutate(econ_impact = raw_funding * econ_mult,
-         jobs = raw_funding*job_val) %>%
-  select(FIPS, state_name, state, name, raw_funding, econ_impact, jobs) %>%
-  filter(!is.na(raw_funding))
+  summarise(raw_funding = sum(raw_funding, na.rm=TRUE),
+            econ_impact = sum(econ_impact, na.rm=TRUE),
+            jobs = sum(jobs, na.rm=TRUE)) %>%
+  left_join(NIH_state_dict %>%
+              distinct(FIPS, state_name, state, name)) %>%
+  select(FIPS, state_name, state, name, raw_funding, econ_impact, jobs)
 
 write.csv(county_commute_NIH_sum, "output/NIH_baseline_county.csv", row.names=FALSE)
 
