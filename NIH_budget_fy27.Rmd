@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 ---
   title: "NIH-award-diff"
 output: html_document
@@ -74,7 +73,6 @@ NIH_budget_cuts <- NIH_prior  %>%
 
 
 ```{r geolocate grants}
-
 NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
   mutate(tractid = str_pad(tractid, 11, pad = "0"),
          FIPS = substr(tractid, 0, 5),
@@ -143,7 +141,6 @@ NIH_state_dict <- tibble(
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
   bind_rows(state_dict_territories) %>%
   arrange(state)
-
 ```
 
 ```{r Commuter Weighting}
@@ -196,13 +193,16 @@ county_commute_NIH <- mutate_all(county_commute_NIH , funs(replace(., is.na(.), 
 
 
 county_commute_NIH_sum <- county_commute_NIH %>%
-  mutate(across(starts_with("budg"), ~ .x * proportion)) %>%
+  mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%
+  left_join(NIH_state_dict %>%
+              distinct(state_FIPS, econ_mult, job_val)) %>%
+  mutate(budg_NIH_cuts = proportion * budg_NIH_cuts,
+         econ_budg_NIH_cuts = budg_NIH_cuts * econ_mult,
+         jobs_budg_NIH_cuts = budg_NIH_cuts * job_val) %>%
   rename(FIPS = ORIGIN) %>%
   group_by(FIPS) %>% 
-  summarise(across(starts_with("budg"), ~ sum(.x, na.rm = TRUE))) %>%
+  summarise(across(ends_with("cuts"), ~ sum(.x, na.rm = TRUE))) %>%
   right_join(NIH_state_dict) %>%
-  mutate(across(starts_with("budg"), ~ .x * econ_mult, .names = "econ_{.col}"),
-         across(starts_with("budg"), ~ .x * job_val, .names = "jobs_{.col}")) %>%
   select(FIPS, state_name, state, name, budg_NIH_cuts, econ_budg_NIH_cuts, jobs_budg_NIH_cuts)
 
 county_commute_NIH_sum <- county_commute_NIH_sum %>%
@@ -286,18 +286,19 @@ cong_commute_NIH <- mutate_all(cong_commute_NIH, funs(replace(., is.na(.), 0)))
 
 #use commuter flows (e.g., proportion of people who work in district X but live in district Y) to weight the impact of NIH funding
 cong_commute_NIH_sum <- cong_commute_NIH %>%
-  mutate(across(starts_with("budg"), ~ .x * proportion)) %>%
+  mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%
+  left_join(NIH_state_dict %>%
+              distinct(state_FIPS, econ_mult, job_val)) %>%
+  mutate(budg_NIH_cuts = proportion * budg_NIH_cuts,
+         econ_budg_NIH_cuts = budg_NIH_cuts * econ_mult,
+         jobs_budg_NIH_cuts = budg_NIH_cuts * job_val) %>%
   rename(GEOID = ORIGIN) %>%
   group_by(GEOID) %>% 
-  summarise(across(starts_with("budg"), ~ sum(.x, na.rm = TRUE)))  %>%
+  summarise(across(ends_with("cuts"), ~ sum(.x, na.rm = TRUE)))  %>%
   left_join(cong_info %>% rename(state_name=state)) %>%
-                    left_join(NIH_state_dict %>% 
-                                select(state, state_name, state_FIPS, econ_mult, job_val) %>% 
-                                distinct()) %>%
-  mutate(across(starts_with("budg"), ~ .x * econ_mult, .names = "econ_{.col}"),
-         across(starts_with("budg"), ~ .x * job_val, .names = "jobs_{.col}")) %>%
-  select(GEOID, rep_name, pol_party, state_name, state, budg_NIH_cuts, econ_budg_NIH_cuts, jobs_budg_NIH_cuts) %>%
-  filter(!is.na(state_name))
+  left_join(NIH_state_dict %>% 
+              distinct(state, state_name, state_FIPS)) %>%
+  select(GEOID, rep_name, pol_party, state_name, state, budg_NIH_cuts, econ_budg_NIH_cuts, jobs_budg_NIH_cuts)
 
 print(nrow(cong_commute_NIH_sum))
 
@@ -326,19 +327,20 @@ cong_commute_NIH_inst_merge <- merge(cong_commute, budg_inst, by.x = "DESTINATIO
 
 #replace all NA values with zeros
 cong_commute_NIH_inst <- mutate_all(cong_commute_NIH_inst_merge , funs(replace(., is.na(.), 0))) %>%
-  mutate(across(starts_with(c("budg")), ~ . * proportion)) %>%
+  mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%
+  left_join(NIH_state_dict %>%
+              distinct(state_FIPS, econ_mult, job_val)) %>%
+  mutate(budg_NIH_cuts = proportion * budg_NIH_cuts,
+         econ_budg_NIH_cuts = budg_NIH_cuts * econ_mult,
+         jobs_budg_NIH_cuts = budg_NIH_cuts * job_val) %>%
   rename(GEOID = ORIGIN) %>%
   group_by(GEOID, org_name) %>% 
-  summarize(across(starts_with(c("budg")), ~ sum(., na.rm=TRUE))) %>%
-  slice_max(budg_NIH_cuts, n=5) %>%
+  summarize(across(ends_with(c("cuts")), ~ sum(., na.rm=TRUE))) %>%
+  slice_max(econ_budg_NIH_cuts, n=5) %>%
   left_join(cong_info %>% rename(state_name=state)) %>%
   left_join(NIH_state_dict %>% 
-              select(state, state_name, state_FIPS, econ_mult, job_val) %>% 
-              distinct()) %>%
-  mutate(across(starts_with("budg"), ~ .x * econ_mult, .names = "econ_{.col}"),
-         across(starts_with("budg"), ~ .x * job_val, .names = "jobs_{.col}")) %>%
-  slice_max(econ_budg_NIH_cuts, n=5) %>%
-  mutate(org_name = str_to_title(org_name) ) %>%
+              distinct(state, state_name, state_FIPS)) %>%
+  mutate(org_name = str_to_title(org_name)) %>%
   mutate(org_name = str_replace_all(org_name, replacements)) %>%
   left_join(corrected_df) %>%
   mutate(org_name = ifelse(is.na(corrected_name) | corrected_name == "", org_name, corrected_name)) %>%
@@ -367,14 +369,16 @@ write.csv(state_cong, file="output/NIH_budget27_state.csv", row.names=FALSE)
 #replace all NA values with zeros
 state_commute_NIH_inst <- cong_commute_NIH_inst_merge %>%
   mutate_all(funs(replace(., is.na(.), 0))) %>%
-  mutate(across(starts_with(c("budg")), ~ . * proportion)) %>%
+  mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%
+  left_join(NIH_state_dict %>%
+              distinct(state_FIPS, econ_mult, job_val)) %>%
+  mutate(budg_NIH_cuts = proportion * budg_NIH_cuts,
+         econ_budg_NIH_cuts = budg_NIH_cuts * econ_mult,
+         jobs_budg_NIH_cuts = budg_NIH_cuts * job_val) %>%
   rename(GEOID = ORIGIN) %>%
   left_join(cong_info %>% rename(state_name=state)) %>%
                     left_join(NIH_state_dict %>% 
-                                select(state, state_name, state_FIPS, econ_mult, job_val) %>% 
-                                distinct()) %>%
-  mutate(across(starts_with("budg"), ~ .x * econ_mult, .names = "econ_{.col}"),
-         across(starts_with("budg"), ~ .x * job_val, .names = "jobs_{.col}")) %>%
+                                distinct(state, state_name, state_FIPS)) %>%
   group_by(state_name, org_name) %>% 
   summarize(across(ends_with(c("cuts")), ~ sum(., na.rm=TRUE))) %>%
   slice_max(econ_budg_NIH_cuts, n=5) %>%
@@ -401,11 +405,10 @@ filter(state_cong, econ_budg_NIH_cuts > 100000000) %>%
 filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 5000000) %>%
   nrow()
 
-
-filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 50000000) %>%
+filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 10000000) %>%
   nrow()
 
-filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 10000000) %>%
+filter(cong_commute_NIH_sum, econ_budg_NIH_cuts > 50000000) %>%
   nrow()
 
 # check values

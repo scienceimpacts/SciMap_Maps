@@ -32,7 +32,7 @@ inf_adj <- c(1.26, 1.21, 1.12, 1.07, 1.04, 1.02, 1, .98)
 NIH_budg <- c(29211207+907010, 29964055+926485, 31316880+967125, 32602214+985017, 32495409+1001239, NA, NA, 29088661+932827)
 inf_adj_budget <- NIH_budg *  inf_adj * 1000
 
-# establish baseine by comparison to FY2020-FY2024
+# establish baseline by comparison to FY2020-FY2024
 NIH_prior <- read.csv("data/NIH_grants.csv") %>%
                 filter(Fiscal.Year >= 2020 & Fiscal.Year <=2024) %>%
                 mutate(Latitude = round(Latitude, 5), Longitude = round(Longitude, 5))
@@ -133,6 +133,9 @@ NIH_state_dict <- tibble(
   bind_rows(state_dict_territories) %>%
   arrange(state)
 
+
+state_mult_2026 <- NIH_state_dict %>%
+  distinct(state, state_FIPS, econ_mult, job_val)
 ```
 
 ```{r Commuter Weighting}
@@ -184,18 +187,16 @@ county_commute_NIH <- mutate_all(county_commute_NIH , funs(replace(., is.na(.), 
 
 county_commute_NIH_sum <- county_commute_NIH %>%
   mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%
-  left_join(NIH_state_dict %>%
-              distinct(state_FIPS, econ_mult, job_val)) %>%
-  mutate(econ_impact = raw_funding * econ_mult,
-         jobs = raw_funding*job_val,
-         across(c(raw_funding, econ_impact, jobs), ~.x*proportion)) %>%
+  left_join(state_mult_2026) %>%
+  mutate(raw_funding = raw_funding * proportion,
+         econ_impact = raw_funding * econ_mult,
+         jobs = raw_funding * job_val) %>%
   rename(FIPS = ORIGIN) %>%
   group_by(FIPS) %>% 
   summarise(raw_funding = sum(raw_funding, na.rm=TRUE),
             econ_impact = sum(econ_impact, na.rm=TRUE),
             jobs = sum(jobs, na.rm=TRUE)) %>%
-  left_join(NIH_state_dict %>%
-              distinct(FIPS, state_name, state, name)) %>%
+  left_join(NIH_state_dict) %>%
   select(FIPS, state_name, state, name, raw_funding, econ_impact, jobs)
 
 write.csv(county_commute_NIH_sum, "output/NIH_baseline_county.csv", row.names=FALSE)
@@ -278,18 +279,20 @@ cong_commute_NIH <- mutate_all(cong_commute_NIH, funs(replace(., is.na(.), 0)))
 
 #use commuter flows (e.g., proportion of people who work in district X but live in district Y) to weight the impact of NIH funding
 cong_commute_NIH_sum <- cong_commute_NIH %>%
-  mutate(raw_funding = raw_funding * proportion) %>%
+  mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%
+  left_join(state_mult_2026) %>%
+  mutate(raw_funding = raw_funding * proportion,
+         econ_impact = raw_funding * econ_mult,
+         jobs = raw_funding * job_val) %>%
   rename(GEOID = ORIGIN) %>%
   group_by(GEOID) %>% 
-  summarise(raw_funding=sum(raw_funding,na.rm=TRUE))  %>%
+  summarise(raw_funding = sum(raw_funding, na.rm=TRUE),
+            econ_impact = sum(econ_impact, na.rm=TRUE),
+            jobs = sum(jobs, na.rm=TRUE))  %>%
   left_join(cong_info %>% rename(state_name=state)) %>%
-  left_join(NIH_state_dict %>% 
-              select(state, state_name, state_FIPS, econ_mult, job_val) %>% 
-              distinct()) %>%
-  mutate(econ_impact = raw_funding * econ_mult,
-         jobs = raw_funding*job_val) %>%
-  select(GEOID, rep_name, pol_party, state_name, state, raw_funding, econ_impact, jobs) %>%
-  filter(!is.na(state_name))
+  mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
+  left_join(state_mult_2026) %>%
+  select(GEOID, rep_name, pol_party, state_name, state, raw_funding, econ_impact, jobs)
 
 print(nrow(cong_commute_NIH_sum))
 

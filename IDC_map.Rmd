@@ -47,11 +47,18 @@ NIH_idc <- NIH_clean %>%
   mutate(IDC_loss = indirect - 0.15 * direct,
          IDC_loss = ifelse(IDC_loss < 0, 0, IDC_loss))
 
+NIH_idc <- NIH_idc %>%
+  mutate(lat = round(lat, 5),
+        lon = round(lon, 5)) %>%
+  left_join(NIH_tract_fips) %>%
+  left_join(NIH_geoid) %>%
+  filter(!is.na(tractid))
+
 sum(NIH_idc$IDC_loss)
 ```
 
 ```{r geo data}
-# old state multipliers since we're trying to match with the paper
+# old state multipliers to match 2025
 state_mult <- read.csv("data/state_mult_2025.csv") %>% 
                 rename(tot_fund = 2, 
                        econ_act = 9,
@@ -114,7 +121,7 @@ NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
 
 geoid_fips <- NIH_tract_fips %>%
   left_join(NIH_geoid) %>%
-  left_join(NIH_state_fips) %>%
+  left_join(NIH_state_dict) %>%
   select(tractid, GEOID, name_geoid, state, FIPS)
 
 cong_info <- read.csv("./data/us_representatives_119th_congress.csv") %>%
@@ -198,13 +205,6 @@ cong_commute <- cong_commute %>%
 ```
 
 ```{r}
-NIH_idc <- NIH_idc %>%
-  mutate(lat = round(lat, 5),
-        lon = round(lon, 5)) %>%
-  left_join(NIH_tract_fips) %>%
-  left_join(NIH_geoid) %>%
-  filter(!is.na(tractid))
-
 NIH_idc_comm <- NIH_idc %>%
   filter(str_sub(FIPS, 1, 2) %in% states$FIPS) %>%
   group_by(tractid) %>%

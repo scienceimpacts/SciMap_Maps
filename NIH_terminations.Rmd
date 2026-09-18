@@ -218,30 +218,29 @@ cong_commute <- cong_commute %>%
 terminations_sum_comm <- county_commute %>%
   rename(tractid = DESTINATION) %>%
   right_join(terminations_sum) %>%
-  mutate(week_loss = week_loss * proportion,
-         week_impacted = week_impacted * proportion) %>%
+  mutate(state_FIPS = str_sub(tractid, 1, 2)) %>%
+  left_join(states) %>%
+  mutate(current_loss = week_loss * proportion,
+         current_econ_loss = current_loss * econ_mult,
+         current_job_loss = current_loss * job_val,
+         overall_loss = week_impacted * proportion,
+         overall_econ_loss = overall_loss * econ_mult,
+         overall_job_loss = overall_loss * job_val) %>%
   group_by(ORIGIN, week) %>%
-  summarize(week_loss = sum(week_loss),
-            week_impacted = sum(week_impacted)) %>%
+  summarize(across(current_loss:overall_job_loss, ~sum(.x))) %>%
   rename(FIPS = ORIGIN) %>%
   filter(!endsWith(FIPS, "000")) %>%
   ungroup() %>%
   complete(FIPS, week = seq(start_date, today(), by = "weeks"),
-           fill = list(week_loss = 0, week_impacted = 0)) %>%
+           fill = list(current_loss = 0, 
+                       current_econ_loss = 0, 
+                       current_job_loss = 0, 
+                       overall_loss = 0, 
+                       overall_econ_loss = 0, 
+                       overall_job_loss = 0)) %>%
   group_by(FIPS) %>%
   arrange(week) %>%
-  mutate(current_loss = cumsum(week_loss),
-         overall_loss = cumsum(week_impacted))
-
-# add in state multipliers
-terminations_sum_comm <- terminations_sum_comm %>%
-  mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
-  left_join(states) %>%
-  mutate(current_econ_loss = current_loss * econ_mult,
-         current_job_loss = current_loss * job_val,
-         overall_econ_loss = overall_loss * econ_mult,
-         overall_job_loss = overall_loss * job_val) %>%
-  select(FIPS, week, starts_with(c("current", "overall")))
+  mutate(across(current_loss:overall_job_loss, ~cumsum(.x)))
 
 write_csv(terminations_sum_comm, "output/terminations_county.csv")
 
@@ -268,32 +267,34 @@ terminations_sum_comm %>%
 terminations_sum_cong <- cong_commute %>%
   rename(tractid = DESTINATION) %>%
   right_join(terminations_sum) %>%
-  mutate(week_loss = week_loss * proportion,
-         week_impacted = week_impacted * proportion) %>%
+  mutate(state_FIPS = str_sub(tractid, 1, 2)) %>%
+  left_join(states) %>%
+  mutate(current_loss = week_loss * proportion,
+         current_econ_loss = current_loss * econ_mult,
+         current_job_loss = current_loss * job_val,
+         overall_loss = week_impacted * proportion,
+         overall_econ_loss = overall_loss * econ_mult,
+         overall_job_loss = overall_loss * job_val) %>%
   group_by(ORIGIN, week) %>%
-  summarize(week_loss = sum(week_loss),
-            week_impacted = sum(week_impacted)) %>%
+  summarize(across(current_loss:overall_job_loss, ~sum(.x))) %>%
   rename(GEOID = ORIGIN) %>%
   ungroup() %>%
   complete(GEOID, week = seq(start_date, today(), by = "weeks"),
-           fill = list(week_loss = 0, week_impacted = 0)) %>%
+           fill = list(current_loss = 0, 
+                       current_econ_loss = 0, 
+                       current_job_loss = 0, 
+                       overall_loss = 0, 
+                       overall_econ_loss = 0, 
+                       overall_job_loss = 0)) %>%
   group_by(GEOID) %>%
   arrange(week) %>%
-  mutate(current_loss = cumsum(week_loss),
-         overall_loss = cumsum(week_impacted))
+  mutate(across(current_loss:overall_job_loss, ~cumsum(.x)))
 
-terminations_sum_cong <- terminations_sum_cong %>%
-  mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
-  left_join(states) %>%
-  mutate(current_econ_loss = current_loss * econ_mult,
-         current_job_loss = current_loss * job_val,
-         overall_econ_loss = overall_loss * econ_mult,
-         overall_job_loss = overall_loss * job_val) %>%
-  select(GEOID, state, week, starts_with(c("current", "overall")))
-
-write_csv(terminations_sum_cong %>% select(-state), "output/terminations_district.csv")
+write_csv(terminations_sum_cong, "output/terminations_district.csv")
 
 terminations_sum_cong %>%
+  mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
+  left_join(states) %>%
   group_by(state, week) %>%
   summarise(across(ends_with("loss"), ~ sum(.x))) %>%
   write_csv("output/terminations_state.csv")
@@ -304,18 +305,17 @@ terminations_sum_cong %>%
 terminations_sum_comm %>% 
     filter(week == max(week)) %>%
   ungroup() %>%
-  summarize(overall_loss = sum(overall_loss), current_loss = sum(current_loss))
+  summarize(across(current_loss:overall_job_loss, ~sum(.x)))
 
 terminations_sum_cong %>% 
     filter(week == max(week)) %>%
   ungroup() %>%
-  summarize(overall_loss = sum(overall_loss),
-            current_loss = sum(current_loss))
+  summarize(across(current_loss:overall_job_loss, ~sum(.x)))
 
 # pre-commuter flows
 terminations %>%
   ungroup() %>%
-  summarize(overall_loss = sum(overall_loss), current_loss = sum(current_loss))
+  summarize(current_loss = sum(current_loss), overall_loss = sum(overall_loss))
 ```
 
 

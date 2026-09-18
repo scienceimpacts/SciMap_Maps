@@ -225,14 +225,18 @@ cong_commute <- cong_commute %>%
 
 ```{r}
 # summarize NSF data by FIPS code
-NSF_grants_tract <- expand.grid(tractid = unique(nsf_grants$tractid),
-                                account_name = unique(nsf_grants$account_name),
-                                fisc_year = unique(nsf_grants$fisc_year)) %>%
-  left_join(nsf_grants) %>%
+NSF_grants_tract <- nsf_grants %>%
+  ungroup() %>%
+  complete(tractid = unique(nsf_grants$tractid),
+           account_name = unique(nsf_grants$account_name),
+           fisc_year = unique(nsf_grants$fisc_year), 
+           fill = list(raw_funding = 0)) %>%
   filter(! (account_name=="TIP" & fisc_year < 2022)) %>%
   mutate(raw_funding = ifelse(is.na(raw_funding), 0, raw_funding)) %>%
   group_by(tractid, account_name) %>%
   summarise(raw_funding = mean(raw_funding, na.rm=TRUE))
+
+sum(NSF_grants_tract$raw_funding, na.rm = TRUE)
 
 fips_names <- read.csv("data/state_and_county_fips_master.csv") %>%
   mutate(FIPS = str_pad(FIPS, 5, pad ="0")) %>%
@@ -246,16 +250,18 @@ states <- read.csv("data/states.csv") %>%
 county_commute_NSF <- merge(county_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
   filter(!is.na(account_name)) %>%
   mutate_all(funs(replace(., is.na(.), 0))) %>%
-  mutate(raw_funding = raw_funding * proportion) %>%
+  mutate(raw_funding = raw_funding * proportion,
+         econ_impact = raw_funding * 2.64,
+         jobs = raw_funding/72000) %>%
   rename(FIPS = ORIGIN) %>%
   group_by(FIPS, account_name) %>%
-  summarize(raw_funding = sum(raw_funding, na.rm=TRUE)) %>%
+  summarize(raw_funding = sum(raw_funding, na.rm=TRUE),
+            econ_impact = sum(econ_impact, na.rm=TRUE),
+            jobs = sum(jobs, na.rm=TRUE)) %>%
   mutate_all(funs(replace(., is.na(.), 0))) %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
   left_join(fips_names) %>%
   left_join(states) %>%
-  mutate(econ_impact = raw_funding * 2.64,
-         jobs = raw_funding/72000) %>%
   select(FIPS, name, state, account_name, raw_funding, econ_impact, jobs) %>%
   filter(!endsWith(FIPS, "000"))
 
@@ -282,15 +288,17 @@ county_commute_NSF %>%
 cong_commute_NSF <- merge(cong_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
   filter(!is.na(account_name)) %>%
   mutate_all(funs(replace(., is.na(.), 0))) %>%
-  mutate(raw_funding = raw_funding * proportion) %>%
+  mutate(raw_funding = raw_funding * proportion,
+         econ_impact = raw_funding * 2.64,
+         jobs = raw_funding/72000) %>%
   rename(GEOID = ORIGIN) %>%
   group_by(GEOID, account_name) %>%
-  summarize(raw_funding = sum(raw_funding, na.rm=TRUE)) %>%
+  summarize(raw_funding = sum(raw_funding, na.rm=TRUE),
+            econ_impact = sum(econ_impact, na.rm=TRUE),
+            jobs = sum(jobs, na.rm=TRUE)) %>%
   mutate_all(funs(replace(., is.na(.), 0)))  %>%
   mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
   left_join(states) %>%
-  mutate(econ_impact = raw_funding * 2.64,
-         jobs = raw_funding/72000) %>%
   select(GEOID, state, account_name, raw_funding, econ_impact, jobs)
 
 write_csv(cong_commute_NSF, "output/baseline_district_nsf.csv")
@@ -305,32 +313,7 @@ cong_commute_NSF %>%
   summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
   # rbind(territory_baseline) %>%
   write_csv("output/baseline_state_nsf.csv")
-```
 
-
-```{r}
-cong_commute_NSF <- merge(cong_commute, NSF_grants_tract, by.x = "DESTINATION", by.y = "tractid", all.x = TRUE, allow.cartesian=TRUE) %>%
-  filter(!is.na(account_name)) %>%
-  mutate_all(funs(replace(., is.na(.), 0))) %>%
-  mutate(raw_funding = raw_funding * proportion) %>%
-  rename(GEOID = ORIGIN) %>%
-  group_by(GEOID, account_name) %>%
-  summarize(raw_funding = sum(raw_funding, na.rm=TRUE)) %>%
-  mutate_all(funs(replace(., is.na(.), 0)))  %>%
-  mutate(state_FIPS = str_sub(GEOID, 1, 2)) %>%
-  left_join(states) %>%
-  mutate(econ_impact = raw_funding * 2.64,
-         jobs = raw_funding/72000) %>%
-  select(GEOID, state, account_name, raw_funding, econ_impact, jobs)
-
-write_csv(cong_commute_NSF, "output/baseline_district_nsf.csv")
-
-cong_commute_NSF %>%
-  group_by(state, account_name) %>%
-  summarize(across(c(raw_funding, econ_impact, jobs), ~ sum(.x))) %>%
-  write_csv("output/baseline_state_nsf.csv")
-
-# doesn't include territories
 cong_commute_NSF %>%
     ungroup() %>%
     summarize(raw_funding = sum(raw_funding), econ_impact = sum(econ_impact), jobs = sum(jobs))
@@ -341,3 +324,4 @@ county_commute_NSF %>%
 
 sum(NSF_grants_tract$raw_funding)
 ```
+

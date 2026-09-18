@@ -16,12 +16,18 @@ All output files are stored in the output folder.
 ```
 ├── data/                               # Raw data
 │   ├── CD_pop2024.csv
+│   ├── NIH_impact_cong.csv
+│   ├── NIH_impact_county.csv    
+│   ├── NIH_impact_state.csv
 │   ├── cbsa2fipsxw_2023.csv
 │   ├── city_pop_2024.csv
 │   ├── county_pop.csv
 │   ├── geoid_dictionary.csv
 │   ├── geoid_pop.csv
 │   ├── nsf_budg_table.csv   
+│   ├── nsf_budg_table.csv
+│   ├── missing_orgs_fixed.csv
+│   ├── missing_tractid_org_fixed.csv
 │   ├── nsf_terminations.csv
 │   ├── nih_terminations.csv
 │   ├── org_names_corrected.csv
@@ -61,18 +67,19 @@ county\_pop.csv: population size for counties
 
 geoid\_dictionary\_july4.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each 
 
-nsf\_budg\_table: annual budget for NSF by office/directorate and year
+nsf\_budg\_table.csv: annual budget for NSF by office/directorate and year
 
-nsf\_terminations: the latest pull of Grant Witness' NSF terminations data, used to generate the corresponding output file
+nsf\_terminations.csv: the latest pull of Grant Witness' NSF terminations data, used to generate the corresponding output file
 
-nih\_terminations: the latest pull of Grant Witness' NIH terminations data, used to generate the corresponding output file
+nih\_terminations.csv: the latest pull of Grant Witness' NIH terminations data, used to generate the corresponding output file
+
 geoid\_dictionary.csv: dictionary mapping congressional districts by GEOID code to name with additional information about each district
 
 org\_names\_corrected.csv: helper file to clean organization names from Grant Witness
 
 orgs.csv: dictionary of organization name, city, and state
 
-state\_and\_county\_fips\_master: dictionary that maps county FIPS codes to county names and states
+state\_and\_county\_fips\_master.csv: dictionary that maps county FIPS codes to county names and states
 
 state\_mult\_2025.csv: contains economic and job loss multipliers for FY2025 (used for IDC calculation), calculated by United for Medical Research
 
@@ -98,4 +105,3 @@ The following two files are too large to post to Github and are therefore stored
 home\_119\_workTR: commuter flows with Congressional District Cong\_ORIGIN and census tract Cong\_DESTINATION
 
 NIH\_raw: large file of active NIH grants for fiscal year 2024 downloaded from RePORTER
-

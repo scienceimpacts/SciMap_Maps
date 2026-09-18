@@ -224,6 +224,9 @@ terminations_sum_nsf <- nsf_terminations %>%
   summarise(week_loss = sum(total_loss),
             week_impacted = sum(total_impacted))
 
+sum(terminations_sum_nsf$week_loss)
+sum(terminations_sum_nsf$week_impacted)
+
 # tract to county commutes
 terminations_sum_comm_nsf <- county_commute %>%
   rename(tractid = DESTINATION) %>%
@@ -243,6 +246,15 @@ terminations_sum_comm_nsf <- county_commute %>%
   mutate(current_loss = cumsum(week_loss),
          overall_loss = cumsum(week_impacted))
 
+terminations_sum_comm_nsf %>%
+  filter(week == max(week)) %>%
+  pull(current_loss) %>%
+  sum()
+terminations_sum_comm_nsf %>%
+  filter(week == max(week)) %>%
+  pull(overall_loss) %>%
+  sum()
+
 # add in state multipliers
 terminations_sum_comm_nsf <- terminations_sum_comm_nsf %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
@@ -252,6 +264,15 @@ terminations_sum_comm_nsf <- terminations_sum_comm_nsf %>%
          overall_econ_loss = overall_loss * nsf_econ_mult,
          overall_job_loss = overall_loss * nsf_job_val) %>%
   select(FIPS, week, starts_with(c("current", "overall")))
+
+terminations_sum_comm_nsf %>%
+  filter(week == max(week)) %>%
+  pull(current_loss) %>%
+  sum()
+terminations_sum_comm_nsf %>%
+  filter(week == max(week)) %>%
+  pull(overall_loss) %>%
+  sum()
 
 # county level
 write_csv(terminations_sum_comm_nsf, "output/terminations_county_nsf.csv")
