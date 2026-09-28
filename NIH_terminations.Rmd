@@ -44,7 +44,7 @@ terminations_raw <- terminations_raw %>%
 
 terminations_clean <- terminations_raw %>%
   filter(!is.na(org_state)) %>%
-  filter(!org_state %in% c("ON", "BC")) %>%
+  filter(org_state %in% states$state) %>%
   filter(org_country == "UNITED STATES") %>%
   group_by(grant_id) %>%
   filter(is.na(subgrant_id) | !any(is.na(subgrant_id))) %>% # filter out subgrants unless no parent award is present
