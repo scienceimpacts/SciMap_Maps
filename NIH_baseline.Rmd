@@ -82,12 +82,12 @@ NIH_budget_loc <- left_join(NIH_budget_cuts, NIH_tract_fips) %>%
 
 nrow(left_join(NIH_budget_cuts, NIH_tract_fips))
 
-# # handle duplicates
-# NIH_budget_loc$org_name[NIH_budget_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_loc$GEOID == "0805"] <- "UNIVERSITY OF COLORADO - COLORADO SPRINGS"
-# NIH_budget_loc$org_name[NIH_budget_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_loc$GEOID == "0802"] <- "UNIVERSITY OF COLORADO BOULDER"
-# NIH_budget_loc$org_name[NIH_budget_loc$org_name=="ALPHA GENESIS INC"] <- "ALPHA GENESIS, INC."
-# NIH_budget_loc$org_name[NIH_budget_loc$org_name=="FRED HUTCHINSON CANCER RESEARCH CENTER"] <- "FRED HUTCHINSON CANCER CENTER"
-# NIH_budget_loc$org_name[NIH_budget_loc$org_name %in% c("BATTELLE MEMORIAL INSTITU", "BATTELLE CENTERS/PUB HLTH RES & EVALUATN")] <- "BATTELLE MEMORIAL INSTITUTE"
+# handle duplicates
+NIH_budget_loc$org_name[NIH_budget_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_loc$GEOID == "0805"] <- "UNIVERSITY OF COLORADO - COLORADO SPRINGS"
+NIH_budget_loc$org_name[NIH_budget_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_loc$GEOID == "0802"] <- "UNIVERSITY OF COLORADO BOULDER"
+NIH_budget_loc$org_name[NIH_budget_loc$org_name=="ALPHA GENESIS INC"] <- "ALPHA GENESIS, INC."
+NIH_budget_loc$org_name[NIH_budget_loc$org_name=="FRED HUTCHINSON CANCER RESEARCH CENTER"] <- "FRED HUTCHINSON CANCER CENTER"
+NIH_budget_loc$org_name[NIH_budget_loc$org_name %in% c("BATTELLE MEMORIAL INSTITU", "BATTELLE CENTERS/PUB HLTH RES & EVALUATN")] <- "BATTELLE MEMORIAL INSTITUTE"
 
 NIH_budget_loc <- distinct(NIH_budget_loc)
 ```

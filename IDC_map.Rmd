@@ -5,6 +5,7 @@ output: html_document
 
 ```{r}
 library(tidyverse)
+library(data.table)
 options(datatable.use.logical64 = TRUE)
 ```
 
