@@ -59,7 +59,8 @@ NIH_budget_cuts <- NIH_prior  %>%
   summarize(raw_funding = sum(NIH_funding, na.rm=TRUE)/5) %>%
   rename(lat = Latitude, 
          lon = Longitude,
-         org_name = Organization.Name) 
+         org_name = Organization.Name) %>%
+  filter(!is.na(lat) & !is.na(lon))
 
 ```
 
@@ -69,31 +70,26 @@ NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
          FIPS = substr(tractid, 0, 5),
          lat = round(lat, 5),
          lon = round(lon, 5)) %>%
-  filter(lat!=0 & !is.na(FIPS)) %>%
+  filter(lat!=0 & lon!=0 & !is.na(FIPS)) %>%
   filter(tractid != "00NOT_FOUND") %>%
   select(org_name, tractid, FIPS, lat, lon) %>%
-  distinct() 
-
-NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
-  mutate(GEOID = str_pad(GEOID, 4, pad = "0"),
-         lat = round(lat, 5),
-         lon = round(lon, 5)) %>%
-  filter(lat!=0 & !is.na(GEOID)) %>%
-  filter(!(GEOID=="0104" & name_geoid == "Congressional District 4")) %>%
   distinct()
 
+nrow(NIH_budget_cuts)
 
-NIH_budget_loc <- left_join(NIH_budget_cuts, NIH_tract_fips)%>%
-  left_join(NIH_geoid) %>%
+NIH_budget_loc <- left_join(NIH_budget_cuts, NIH_tract_fips) %>%
   filter(!is.na(FIPS))
 
-# handle duplicates
-NIH_budget_loc$org_name[NIH_budget_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_loc$GEOID == "0805"] <- "UNIVERSITY OF COLORADO - COLORADO SPRINGS"
-NIH_budget_loc$org_name[NIH_budget_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_loc$GEOID == "0802"] <- "UNIVERSITY OF COLORADO BOULDER"
-NIH_budget_loc$org_name[NIH_budget_loc$org_name=="ALPHA GENESIS INC"] <- "ALPHA GENESIS, INC."
-NIH_budget_loc$org_name[NIH_budget_loc$org_name=="FRED HUTCHINSON CANCER RESEARCH CENTER"] <- "FRED HUTCHINSON CANCER CENTER"
-NIH_budget_loc$org_name[NIH_budget_loc$org_name %in% c("BATTELLE MEMORIAL INSTITU", "BATTELLE CENTERS/PUB HLTH RES & EVALUATN")] <- "BATTELLE MEMORIAL INSTITUTE"
+nrow(left_join(NIH_budget_cuts, NIH_tract_fips))
 
+# # handle duplicates
+# NIH_budget_loc$org_name[NIH_budget_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_loc$GEOID == "0805"] <- "UNIVERSITY OF COLORADO - COLORADO SPRINGS"
+# NIH_budget_loc$org_name[NIH_budget_loc$org_name=="UNIVERSITY OF COLORADO" & NIH_budget_loc$GEOID == "0802"] <- "UNIVERSITY OF COLORADO BOULDER"
+# NIH_budget_loc$org_name[NIH_budget_loc$org_name=="ALPHA GENESIS INC"] <- "ALPHA GENESIS, INC."
+# NIH_budget_loc$org_name[NIH_budget_loc$org_name=="FRED HUTCHINSON CANCER RESEARCH CENTER"] <- "FRED HUTCHINSON CANCER CENTER"
+# NIH_budget_loc$org_name[NIH_budget_loc$org_name %in% c("BATTELLE MEMORIAL INSTITU", "BATTELLE CENTERS/PUB HLTH RES & EVALUATN")] <- "BATTELLE MEMORIAL INSTITUTE"
+
+NIH_budget_loc <- distinct(NIH_budget_loc)
 ```
 
 ```{r State-level info}
@@ -148,7 +144,7 @@ county_commute <- fread("data/county_commute_NIH.csv") %>%
   select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>% 
   mutate(DESTINATION = str_pad(DESTINATION, 11, pad = "0"),
          ORIGIN = str_pad(ORIGIN, 5, pad = "0")) %>%
-  add_row(DESTINATION = "30005940100", DESTINATION_total_workers = 0, Commuters = 0, ORIGIN = "30005", proportion = 1)
+  filter(as.numeric(str_sub(DESTINATION, 1, 2)) <= 56)
 
 county_commute_territory <- NIH_budget_loc %>%
   filter(as.numeric(str_sub(FIPS, 1, 2)) > 56) %>%
@@ -158,8 +154,7 @@ county_commute_territory <- NIH_budget_loc %>%
          Commuters = 0,
          proportion = 1) %>%
   ungroup() %>%
-  select(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion) %>%
-  distinct()
+  distinct(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion)
 
 county_commute <- county_commute %>%
   filter(ORIGIN != "00000") %>%
@@ -170,7 +165,8 @@ county_commute %>%
   group_by(DESTINATION) %>% 
   summarize(sum = round(sum(proportion), digits=5)) %>% 
   filter(sum < 1) %>%
-  nrow() 
+  nrow()
+
 ```
 
 ```{r County Calculations}
@@ -184,6 +180,13 @@ county_commute_NIH <- merge(county_commute, NIH_sum_budget_tract, by.x = "DESTIN
 
 #replace all NA values with zeros
 county_commute_NIH <- mutate_all(county_commute_NIH , funs(replace(., is.na(.), 0)))
+
+county_commute_NIH %>%
+  mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%
+  left_join(state_mult_2026) %>%
+  group_by(DESTINATION) %>%
+  summarize(sum = round(sum(proportion), digits=5)) %>% 
+  filter(sum > 1)
 
 county_commute_NIH_sum <- county_commute_NIH %>%
   mutate(state_FIPS = str_sub(DESTINATION, 1, 2)) %>%

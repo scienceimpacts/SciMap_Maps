@@ -47,6 +47,22 @@ NIH_idc <- NIH_clean %>%
   mutate(IDC_loss = indirect - 0.15 * direct,
          IDC_loss = ifelse(IDC_loss < 0, 0, IDC_loss))
 
+NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
+  mutate(tractid = str_pad(tractid, 11, pad = "0"),
+         FIPS = substr(tractid, 0, 5),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(FIPS)) %>%
+  select(org_name, tractid, FIPS, lat, lon) %>%
+  distinct()
+
+NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
+  mutate(GEOID = str_pad(GEOID, 4, pad = "0"),
+         lat = round(lat, 5),
+         lon = round(lon, 5)) %>%
+  filter(lat!=0 & !is.na(GEOID)) %>%
+  distinct()
+
 NIH_idc <- NIH_idc %>%
   mutate(lat = round(lat, 5),
         lon = round(lon, 5)) %>%
@@ -102,22 +118,6 @@ states <- tibble(
       mutate(FIPS = str_sub(FIPS, 1, 2)) %>%
       distinct()) %>%
   mutate(FIPS = if_else(state == "MP", "69", FIPS))
-
-NIH_tract_fips <- read.csv("data/tract_dictionary.csv") %>%
-  mutate(tractid = str_pad(tractid, 11, pad = "0"),
-         FIPS = substr(tractid, 0, 5),
-         lat = round(lat, 5),
-         lon = round(lon, 5)) %>%
-  filter(lat!=0 & !is.na(FIPS)) %>%
-  select(org_name, tractid, FIPS, lat, lon) %>%
-  distinct()
-
-NIH_geoid <- read.csv("data/geoid_dictionary.csv") %>%
-  mutate(GEOID = str_pad(GEOID, 4, pad = "0"),
-         lat = round(lat, 5),
-         lon = round(lon, 5)) %>%
-  filter(lat!=0 & !is.na(GEOID)) %>%
-  distinct()
 
 geoid_fips <- NIH_tract_fips %>%
   left_join(NIH_geoid) %>%

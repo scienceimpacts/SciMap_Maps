@@ -37,8 +37,8 @@
 "0200","Nicholas J. Begich III","Republican","Alaska","AK","University of Alaska Fairbanks",1890290.58370652,7514774.83583941,14.7442665529108
 "0200","Nicholas J. Begich III","Republican","Alaska","AK","Alaska Native Tribal Health Consortium",485755.794836485,1931102.79174259,3.78889519972458
 "0200","Nicholas J. Begich III","Republican","Alaska","AK","Southcentral Foundation",295956.924352469,1176564.9508,2.30846400994926
+"0200","Nicholas J. Begich III","Republican","Alaska","AK","Shee atika Enterprises, LLC",133376.743217995,530233.923958656,1.04033859710036
 "0200","Nicholas J. Begich III","Republican","Alaska","AK","University of Alaska Anchorage",100854.480365115,400942.964887082,0.786664946847895
-"0200","Nicholas J. Begich III","Republican","Alaska","AK","Columbia University",100791.827799349,237594.721995501,0.71562197737538
 "0401","David Schweikert","Republican","Arizona","AZ","Mayo Clinic Arizona",1981536.54915986,5820358.17411247,20.2116728014306
 "0401","David Schweikert","Republican","Arizona","AZ","Arizona State University-Tempe Campus",1844428.54047018,5417631.45203831,18.8131711127958
 "0401","David Schweikert","Republican","Arizona","AZ","University of Arizona",535352.758259495,1572489.18971009,5.46059813424685
@@ -366,49 +366,49 @@
 "0652","Juan Vargas","Democrat","California","CA","La Jolla Institute for Immunology",1675218.11585704,4495094.60256923,14.7419194195419
 "0801","Diana DeGette","Democrat","Colorado","CO","University of Colorado Denver",19255986.9659799,53933377.8161899,184.857474873407
 "0801","Diana DeGette","Democrat","Colorado","CO","National Jewish Health",2774292.65466695,7770413.12819659,26.6332094848027
+"0801","Diana DeGette","Democrat","Colorado","CO","Palantir Technologies, Inc.",849328.549313757,2378852.74959648,8.15355407341207
+"0801","Diana DeGette","Democrat","Colorado","CO","University of Colorado Boulder",782745.879960106,2192363.8270289,7.51436044761702
 "0801","Diana DeGette","Democrat","Colorado","CO","University of Denver (Colorado Seminary)",557783.577957593,1562275.28107501,5.35472234839289
-"0801","Diana DeGette","Democrat","Colorado","CO","Denver Health and Hospital Authority",132249.301352527,370412.150173058,1.26959329298426
-"0801","Diana DeGette","Democrat","Colorado","CO","Colorado State University",113845.219469242,318864.841622996,1.09291410690472
 "0802","Joe Neguse","Democrat","Colorado","CO","Colorado State University",7324042.4525212,20513638.1444127,70.3108075442036
+"0802","Joe Neguse","Democrat","Colorado","CO","University of Colorado Boulder",5469312.98402504,15318795.3483538,52.5054046466404
 "0802","Joe Neguse","Democrat","Colorado","CO","University of Colorado Denver",3711273.1052797,10394766.82861,35.6282218106851
 "0802","Joe Neguse","Democrat","Colorado","CO","Crestone, Inc.",872504.679569967,2443765.910975,8.37604492387168
 "0802","Joe Neguse","Democrat","Colorado","CO","Point Designs, LLC",246391.916533536,690109.95638582,2.36536239872195
-"0802","Joe Neguse","Democrat","Colorado","CO","National Jewish Health",236963.235943958,663701.515548986,2.27484706506199
 "0803","Jeff Hurd","Republican","Colorado","CO","University of Colorado Denver",379872.578522738,1063970.97877525,3.64677675381829
+"0803","Jeff Hurd","Republican","Colorado","CO","University of Colorado Boulder",99081.7569569754,277514.408484671,0.951184866786964
 "0803","Jeff Hurd","Republican","Colorado","CO","Fort Lewis College",68071.8663353,190659.959014367,0.65348991681888
 "0803","Jeff Hurd","Republican","Colorado","CO","National Jewish Health",54683.8236793748,153161.888203612,0.524964707321999
 "0803","Jeff Hurd","Republican","Colorado","CO","University of Wyoming",31977.03041927,124875.817068356,0.249420837270306
-"0803","Jeff Hurd","Republican","Colorado","CO","Colorado State University",37948.4064897472,106288.280540999,0.364304702301573
 "0804","Lauren Boebert","Republican","Colorado","CO","University of Colorado Denver",6974351.22582754,19534200.9916146,66.9537717679443
 "0804","Lauren Boebert","Republican","Colorado","CO","Colorado State University",1024606.97522317,2869783.57460696,9.83622696214247
+"0804","Lauren Boebert","Republican","Colorado","CO","University of Colorado Boulder",673755.947307433,1887097.97769576,6.46805709415136
 "0804","Lauren Boebert","Republican","Colorado","CO","National Jewish Health",627041.178190165,1756256.31806809,6.01959531062558
-"0804","Lauren Boebert","Republican","Colorado","CO","University of Denver (Colorado Seminary)",112136.346807622,314078.523733306,1.07650892935317
-"0804","Lauren Boebert","Republican","Colorado","CO","Crestone, Inc.",91203.349193216,255448.069155322,0.875552152254873
+"0804","Lauren Boebert","Republican","Colorado","CO","Palantir Technologies, Inc.",202062.734095143,565949.997773644,1.93980224731337
 "0805","Jeff Crank","Republican","Colorado","CO","University of Colorado Denver",3451647.96168502,9667592.41865567,33.1358204321762
+"0805","Jeff Crank","Republican","Colorado","CO","University of Colorado Boulder",208071.689609648,582780.257817809,1.99748822025262
+"0805","Jeff Crank","Republican","Colorado","CO","University of Colorado - Colorado Springs",125062.225543859,350282.136808004,1.20059736522105
 "0805","Jeff Crank","Republican","Colorado","CO","Colorado State University",75896.8129794943,212576.561081997,0.728609404603146
 "0805","Jeff Crank","Republican","Colorado","CO","Ablelink Technologies, Inc.",52578.3061780521,147264.622532522,0.5047517393093
-"0805","Jeff Crank","Republican","Colorado","CO","National Jewish Health",36455.8824529166,102107.925469075,0.349976471547999
-"0805","Jeff Crank","Republican","Colorado","CO","University of Denver (Colorado Seminary)",31879.7168856658,89290.7135066853,0.306045282102391
 "0806","Jason A. Crow","Democrat","Colorado","CO","University of Colorado Denver",16812777.7199416,47090283.8951462,161.40266611144
 "0806","Jason A. Crow","Democrat","Colorado","CO","National Jewish Health",1644160.29862654,4605067.43865527,15.7839388668148
+"0806","Jason A. Crow","Democrat","Colorado","CO","Palantir Technologies, Inc.",356984.01715744,999863.25840939,3.42704656471143
 "0806","Jason A. Crow","Democrat","Colorado","CO","University of Denver (Colorado Seminary)",300962.362207334,842954.288349826,2.88923867719041
-"0806","Jason A. Crow","Democrat","Colorado","CO","Colorado State University",113845.219469242,318864.841622996,1.09291410690472
-"0806","Jason A. Crow","Democrat","Colorado","CO","Biomimetix Jv, LLC",96578.0763361046,270501.942538622,0.927149532826604
+"0806","Jason A. Crow","Democrat","Colorado","CO","University of Colorado Boulder",247704.392392439,693786.021211677,2.37796216696741
 "0807","Brittany Pettersen","Democrat","Colorado","CO","University of Colorado Denver",5911254.58521354,16556613.1445386,56.74804401805
+"0807","Brittany Pettersen","Democrat","Colorado","CO","University of Colorado Boulder",1684389.86826858,4717744.94423941,16.1701427353784
 "0807","Brittany Pettersen","Democrat","Colorado","CO","National Jewish Health",1031701.47341754,2889654.29077482,9.90433414480837
+"0807","Brittany Pettersen","Democrat","Colorado","CO","Palantir Technologies, Inc.",413319.029180094,1157649.89864057,3.9678626801289
 "0807","Brittany Pettersen","Democrat","Colorado","CO","Klein Buendel, Inc.",305058.150756057,854426.030184912,2.92855824725815
-"0807","Brittany Pettersen","Democrat","Colorado","CO","Crestone, Inc.",200294.038058709,560996.122818103,1.92282276536361
-"0807","Brittany Pettersen","Democrat","Colorado","CO","Colorado School of Mines",171554.940641686,480501.8535902,1.64692743016019
 "0808","Gabe Evans","Republican","Colorado","CO","University of Colorado Denver",5717218.95157963,16013145.9539411,54.8853019351644
+"0808","Gabe Evans","Republican","Colorado","CO","University of Colorado Boulder",1456501.82726754,4079461.80472466,13.9824175417684
 "0808","Gabe Evans","Republican","Colorado","CO","National Jewish Health",820257.355190623,2297428.32305418,7.87447060982998
 "0808","Gabe Evans","Republican","Colorado","CO","Colorado State University",683071.316815449,1913189.04973797,6.55748464142831
 "0808","Gabe Evans","Republican","Colorado","CO","Crestone, Inc.",297901.496517308,834381.22346375,2.85985436656616
-"0808","Gabe Evans","Republican","Colorado","CO","Klein Buendel, Inc.",89120.283585895,249613.688159217,0.855554722424592
 "0901","John B. Larson","Democrat","Connecticut","CT","Yale University",8076549.14832853,18370554.6269539,61.3817735272968
 "0901","John B. Larson","Democrat","Connecticut","CT","University of Connecticut School of Medicine",5442347.50458079,12378918.309741,41.361841034814
 "0901","John B. Larson","Democrat","Connecticut","CT","University of Connecticut Storrs",1123100.91626043,2554554.71821328,8.53556696357924
+"0901","John B. Larson","Democrat","Connecticut","CT","Connecticut State Dept of Public Health",335305.910986027,762671.710576307,2.5483249234938
 "0901","John B. Larson","Democrat","Connecticut","CT","Hartford Hospital",285756.950889852,649969.879455289,2.17175282676288
-"0901","John B. Larson","Democrat","Connecticut","CT","Connecticut Children's Medical Center",252429.581128533,574164.946490853,1.91846481657685
 "0902","Joe Courtney","Democrat","Connecticut","CT","Yale University",9205529.13680456,20938481.6178184,69.9620214397146
 "0902","Joe Courtney","Democrat","Connecticut","CT","University of Connecticut Storrs",4691616.93810589,10671340.4038473,35.6562887296048
 "0902","Joe Courtney","Democrat","Connecticut","CT","University of Connecticut School of Medicine",1667091.5889013,3791891.38078665,12.6698960756499
@@ -452,8 +452,8 @@
 "1203","Kat Cammack","Republican","Florida","FL","University of Florida",39777112.720899,127768388.140878,445.503662474069
 "1203","Kat Cammack","Republican","Florida","FL","Nanotherapeutics, Inc.",387925.326453745,1246058.10451339,4.34476365628195
 "1203","Kat Cammack","Republican","Florida","FL","Foundation for Applied Molecular Evolutn",259080.451204864,832194.430036263,2.90170105349447
+"1203","Kat Cammack","Republican","Florida","FL","Alchem Laboratories Corporation",165175.478981229,530561.502990659,1.84996536458977
 "1203","Kat Cammack","Republican","Florida","FL","Mayo Clinic Jacksonville",122801.942001825,394453.119315998,1.37538175042044
-"1203","Kat Cammack","Republican","Florida","FL","University of South Florida",117757.831743385,378250.891621702,1.31888771552591
 "1204","Aaron Bean","Republican","Florida","FL","Mayo Clinic Jacksonville",2013146.59019385,6466444.57895078,22.5472418101711
 "1204","Aaron Bean","Republican","Florida","FL","University of Florida",1236594.17785178,3972074.24272158,13.84985479194
 "1204","Aaron Bean","Republican","Florida","FL","Nemours Children's Clinic",148432.417604809,476780.979008962,1.66244307717386
@@ -778,17 +778,17 @@
 "1805","Victoria Spartz","Republican","Indiana","IN","Ball State University",381811.032784228,1027213.50437966,3.35993708850121
 "1805","Victoria Spartz","Republican","Indiana","IN","Purdue University",279003.849295582,750623.992398597,2.45523387380112
 "1805","Victoria Spartz","Republican","Indiana","IN","Indiana University",248269.293888754,667936.621803834,2.18476978622103
-"1805","Victoria Spartz","Republican","Indiana","IN","University of Georgia",43152.7649015269,126744.14667121,0.509202625838017
+"1805","Victoria Spartz","Republican","Indiana","IN","Regenstrief Institute, Inc.",50352.4614821225,135466.825136043,0.443101661042678
 "1806","Jefferson Shreve","Republican","Indiana","IN","Indiana University Indianapolis",8933704.31272396,24034983.0837678,78.6165979519708
 "1806","Jefferson Shreve","Republican","Indiana","IN","Indiana University",331025.725185005,890582.162405112,2.91302638162804
 "1806","Jefferson Shreve","Republican","Indiana","IN","Purdue University",130890.69473126,352144.589026502,1.15183811363509
+"1806","Jefferson Shreve","Republican","Indiana","IN","Regenstrief Institute, Inc.",70402.2561054101,189408.220299233,0.619539853727609
 "1806","Jefferson Shreve","Republican","Indiana","IN","University of Georgia",43152.7649015269,126744.14667121,0.509202625838017
-"1806","Jefferson Shreve","Republican","Indiana","IN","Northwestern University at Chicago",41784.0593674124,119529.42735427,0.413662187737383
 "1807","André Carson","Democrat","Indiana","IN","Indiana University Indianapolis",18384322.5775859,49460656.7098347,161.782038682756
 "1807","André Carson","Democrat","Indiana","IN","Indiana University",307381.030528933,826969.150804747,2.70495306865461
+"1807","André Carson","Democrat","Indiana","IN","Regenstrief Institute, Inc.",144878.064140567,389775.808436827,1.27492696443699
 "1807","André Carson","Democrat","Indiana","IN","Purdue University",127446.202764648,342877.626157384,1.12152658432891
 "1807","André Carson","Democrat","Indiana","IN","Northwestern University at Chicago",73122.1038929717,209176.497869972,0.72390882854042
-"1807","André Carson","Democrat","Indiana","IN","Kovinatherapeutics Inc.",53750.1685430929,144607.919230428,0.473001483179218
 "1808","Mark B. Messmer","Republican","Indiana","IN","Indiana University",1241346.46944377,3339683.10901917,10.9238489311052
 "1808","Mark B. Messmer","Republican","Indiana","IN","Indiana University Indianapolis",1101582.45764905,2963666.00104065,9.69392562731161
 "1808","Mark B. Messmer","Republican","Indiana","IN","Purdue University",159307.75345581,428597.03269673,1.40190823041113
@@ -823,17 +823,17 @@
 "2001","Tracey Mann","Republican","Kansas","KS","Kansas State University",1725573.75731045,4767018.00553083,13.9771474342147
 "2001","Tracey Mann","Republican","Kansas","KS","University of Kansas Medical Center",609717.946750763,1684388.40596789,4.93871536868118
 "2001","Tracey Mann","Republican","Kansas","KS","Washington University",194464.432579263,457226.202436675,1.67239412018166
-"2001","Tracey Mann","Republican","Kansas","KS","Design-Zyme, LLC",68535.5883309056,189334.348768898,0.555138265480335
+"2001","Tracey Mann","Republican","Kansas","KS","Virovax LLC",140277.401988938,387526.118902402,1.1362469561104
 "2002","Derek Schmidt","Republican","Kansas","KS","University of Kansas Medical Center",1332346.6243813,3680700.59081872,10.7920076574885
 "2002","Derek Schmidt","Republican","Kansas","KS","University of Kansas Lawrence",710476.474105247,1962740.87399466,5.7548594402525
 "2002","Derek Schmidt","Republican","Kansas","KS","Kansas State University",317923.892255986,878286.953746287,2.57518352727349
-"2002","Derek Schmidt","Republican","Kansas","KS","Children's Mercy Hospital (Kansas City, Mo)",56682.8117334308,133273.043345579,0.487472180907505
-"2002","Derek Schmidt","Republican","Kansas","KS","Northwestern University at Chicago",36561.0519464858,104588.248934986,0.36195441427021
+"2002","Derek Schmidt","Republican","Kansas","KS","Midwest Research Institute",66721.8250117512,156876.845113221,0.57380769510106
+"2002","Derek Schmidt","Republican","Kansas","KS","Virovax LLC",55469.1687603318,153237.452245721,0.449300266958687
 "2003","Sharice Davids","Democrat","Kansas","KS","University of Kansas Medical Center",9168351.3474374,25328210.8452949,74.2636459142429
 "2003","Sharice Davids","Democrat","Kansas","KS","University of Kansas Lawrence",767958.38948593,2121538.67933404,6.22046295483603
+"2003","Sharice Davids","Democrat","Kansas","KS","Midwest Research Institute",628025.010250469,1476617.01763913,5.40101508815404
 "2003","Sharice Davids","Democrat","Kansas","KS","Children's Mercy Hospital (Kansas City, Mo)",427176.618536119,1004380.80358679,3.67371891941062
 "2003","Sharice Davids","Democrat","Kansas","KS","University of Missouri Kansas City",414113.406511707,973666.483511258,3.56137529600068
-"2003","Sharice Davids","Democrat","Kansas","KS","Kansas State University",223801.68731178,618267.789808241,1.81279366722542
 "2004","Ron Estes","Republican","Kansas","KS","University of Kansas Medical Center",383896.484991221,1060540.848202,3.10956152842889
 "2004","Ron Estes","Republican","Kansas","KS","Wichita State University",367583.383986587,1015474.76749367,2.97742541029135
 "2004","Ron Estes","Republican","Kansas","KS","University of Kansas Lawrence",225329.108292279,622487.396930346,1.82516577716746
@@ -911,34 +911,34 @@
 "2302","Jared F. Golden","Democrat","Maine","ME","Wabanaki Health and Wellness",214602.205738988,500203.31246228,1.99580051337259
 "2401","Andy Harris","Republican","Maryland","MD","Johns Hopkins University",12999347.2180901,28467402.3644378,109.194516631957
 "2401","Andy Harris","Republican","Maryland","MD","University of Maryland Baltimore",3058238.92477608,6697268.45029819,25.6892069681191
+"2401","Andy Harris","Republican","Maryland","MD","Leidos Biomedical Research, Inc.",1475446.28280872,3231094.78461958,12.3937487755932
 "2401","Andy Harris","Republican","Maryland","MD","University of Delaware",686862.524845317,1616018.71576425,3.77774388664925
 "2401","Andy Harris","Republican","Maryland","MD","Westat, Inc.",528134.844886528,1156567.85527987,4.43633269704684
-"2401","Andy Harris","Republican","Maryland","MD","University of Maryland, College Park",318020.903364837,696437.202922791,2.67137558826463
 "2402","Johnny Olszewski, Jr.","Democrat","Maryland","MD","Johns Hopkins University",46901644.762869,102710387.730892,393.9738160081
 "2402","Johnny Olszewski, Jr.","Democrat","Maryland","MD","University of Maryland Baltimore",11210932.1915927,24550934.1526296,94.1718304093788
+"2402","Johnny Olszewski, Jr.","Democrat","Maryland","MD","Leidos Biomedical Research, Inc.",4637116.8888274,10154869.3230901,38.9517818661501
 "2402","Johnny Olszewski, Jr.","Democrat","Maryland","MD","Hugo W. Moser Research Inst Kennedy Krieger",1082822.07781233,2371283.05452781,9.09570545362358
 "2402","Johnny Olszewski, Jr.","Democrat","Maryland","MD","Westat, Inc.",757402.684527192,1658643.82346337,6.36218255002841
-"2402","Johnny Olszewski, Jr.","Democrat","Maryland","MD","Lieber Institute, Inc.",479954.052388872,1051056.24894631,4.03161404006652
 "2403","Sarah Elfreth","Democrat","Maryland","MD","Johns Hopkins University",15911200.9949423,34844100.4940719,133.654088357515
 "2403","Sarah Elfreth","Democrat","Maryland","MD","University of Maryland Baltimore",8375893.80293986,18342454.8209831,70.3575079446948
+"2403","Sarah Elfreth","Democrat","Maryland","MD","Leidos Biomedical Research, Inc.",2107780.40401245,4615849.69231368,17.7053553937046
 "2403","Sarah Elfreth","Democrat","Maryland","MD","Westat, Inc.",1426782.89490663,3124526.33771344,11.9849763172157
 "2403","Sarah Elfreth","Democrat","Maryland","MD","University of Maryland, College Park",1317140.94078946,2884420.30996358,11.0639839026314
-"2403","Sarah Elfreth","Democrat","Maryland","MD","The Emmes Company, LLC",708321.392776989,1551160.20468019,5.9498996993267
 "2404","Glenn Ivey","Democrat","Maryland","MD","Johns Hopkins University",3223838.11008634,7059915.78638058,27.0802401247253
 "2404","Glenn Ivey","Democrat","Maryland","MD","University of Maryland, College Park",2952302.78494375,6465277.82284996,24.7993433935275
+"2404","Glenn Ivey","Democrat","Maryland","MD","Leidos Biomedical Research, Inc.",2318558.4444137,5077434.66154505,19.4758909330751
 "2404","Glenn Ivey","Democrat","Maryland","MD","George Washington University",2180936.32052667,4298350.22395063,3.48949811284268
 "2404","Glenn Ivey","Democrat","Maryland","MD","Westat, Inc.",1940588.49981562,4249714.44498184,16.3009433984512
-"2404","Glenn Ivey","Democrat","Maryland","MD","Children's Research Institute",1707223.48065718,3364722.00556706,2.73155756905149
 "2405","Steny H. Hoyer","Democrat","Maryland","MD","Johns Hopkins University",3223838.11008634,7059915.78638058,27.0802401247253
+"2405","Steny H. Hoyer","Democrat","Maryland","MD","Leidos Biomedical Research, Inc.",1897002.36361121,4154264.72308231,15.9348198543342
 "2405","Steny H. Hoyer","Democrat","Maryland","MD","George Washington University",1582597.16664957,3119099.27019285,2.53215546663932
 "2405","Steny H. Hoyer","Democrat","Maryland","MD","University of Maryland Baltimore",1225645.04923804,2684052.52873666,10.2954184135996
 "2405","Steny H. Hoyer","Democrat","Maryland","MD","University of Maryland, College Park",1180921.1139775,2586111.12913998,9.91973735741101
-"2405","Steny H. Hoyer","Democrat","Maryland","MD","Westat, Inc.",955965.009930266,2093477.47447945,8.03010608341424
+"2406","April McClain Delaney","Democrat","Maryland","MD","Leidos Biomedical Research, Inc.",89159111.0897268,195250441.984869,748.936533153705
 "2406","April McClain Delaney","Democrat","Maryland","MD","Westat, Inc.",7195325.50300832,15757116.3229021,60.4407342252699
 "2406","April McClain Delaney","Democrat","Maryland","MD","The Emmes Company, LLC",4670649.40833242,10228302.5277755,39.2334550299923
 "2406","April McClain Delaney","Democrat","Maryland","MD","Johns Hopkins University",2703864.22136274,5921219.69180307,22.712459459447
-"2406","April McClain Delaney","Democrat","Maryland","MD","Ctis, Inc.",1124383.54489873,2462298.93298349,9.44482177714934
-"2406","April McClain Delaney","Democrat","Maryland","MD","University of Maryland Baltimore",841896.759061276,1843678.25456352,7.07193277611472
+"2406","April McClain Delaney","Democrat","Maryland","MD","Technical Resources International, Inc.",2313375.78331138,5066085.09941372,19.4323565798156
 "2407","Kweisi Mfume","Democrat","Maryland","MD","Johns Hopkins University",64580756.9794716,141426054.946527,542.478358627561
 "2407","Kweisi Mfume","Democrat","Maryland","MD","University of Maryland Baltimore",13760117.2620527,30133420.402494,115.584985001242
 "2407","Kweisi Mfume","Democrat","Maryland","MD","Hugo W. Moser Research Inst Kennedy Krieger",1153559.19847344,2526190.99276329,9.68989726717687
@@ -946,19 +946,19 @@
 "2407","Kweisi Mfume","Democrat","Maryland","MD","University of Maryland Baltimore County",596963.5624535,1307296.56221682,5.0144939246094
 "2408","Jamie Raskin","Democrat","Maryland","MD","Westat, Inc.",7625202.70233456,16698508.7632461,64.0517026996103
 "2408","Jamie Raskin","Democrat","Maryland","MD","The Emmes Company, LLC",6096233.13713323,13350202.7994671,51.2083583519191
+"2408","Jamie Raskin","Democrat","Maryland","MD","Technical Resources International, Inc.",4199353.69463267,9196207.26257213,35.2745710349144
 "2408","Jamie Raskin","Democrat","Maryland","MD","Johns Hopkins University",3223838.11008634,7059915.78638058,27.0802401247253
-"2408","Jamie Raskin","Democrat","Maryland","MD","University of Maryland, College Park",2328835.11607364,5099939.6490804,19.5622149750186
-"2408","Jamie Raskin","Democrat","Maryland","MD","University of Maryland Baltimore",1683793.51812255,3687356.50912705,14.1438655522294
+"2408","Jamie Raskin","Democrat","Maryland","MD","Leidos Biomedical Research, Inc.",3161670.60601868,6923774.53847052,26.5580330905569
 "2501","Richard E. Neal","Democrat","Massachusetts","MA","University of Massachusetts Medical School Worcester",4602776.86358417,10310160.7942075,36.3619372223149
 "2501","Richard E. Neal","Democrat","Massachusetts","MA","University of Massachusetts Amherst",2393390.42372489,5361163.67211959,18.9077843474267
+"2501","Richard E. Neal","Democrat","Massachusetts","MA","Venturewell",1130465.91470321,2532229.06484433,8.93068072615532
 "2501","Richard E. Neal","Democrat","Massachusetts","MA","Baystate Medical Center, Inc.",780434.511376037,1748163.23713115,6.16543263987069
 "2501","Richard E. Neal","Democrat","Massachusetts","MA","Massachusetts General Hospital",715760.630974512,1603294.57938661,5.65450898469865
-"2501","Richard E. Neal","Democrat","Massachusetts","MA","Boston University (Charles River Campus)",458852.664578048,1027824.04901686,3.62493605016658
 "2502","James P. McGovern","Democrat","Massachusetts","MA","University of Massachusetts Medical School Worcester",18441015.0362963,41307635.774583,145.684018786741
 "2502","James P. McGovern","Democrat","Massachusetts","MA","University of Massachusetts Amherst",2989187.92362541,6695742.38553952,23.6145845966408
 "2502","James P. McGovern","Democrat","Massachusetts","MA","Massachusetts General Hospital",1793611.93408907,4017667.59305116,14.1695342793037
 "2502","James P. McGovern","Democrat","Massachusetts","MA","Brigham and Women's Hospital",1431699.30851519,3206987.98078446,11.31042453727
-"2502","James P. McGovern","Democrat","Massachusetts","MA","Broad Institute, Inc.",907286.344704624,2032309.70727729,7.16756212316653
+"2502","James P. McGovern","Democrat","Massachusetts","MA","Venturewell",1126309.7900168,2522919.39916476,8.8978473411327
 "2503","Lori Trahan","Democrat","Massachusetts","MA","Massachusetts General Hospital",5359784.01900326,12005847.0562303,42.3422937501258
 "2503","Lori Trahan","Democrat","Massachusetts","MA","University of Massachusetts Medical School Worcester",3720503.19577564,8333879.16048998,29.3919752466275
 "2503","Lori Trahan","Democrat","Massachusetts","MA","Broad Institute, Inc.",2458369.58064458,5506716.14532644,19.4211196870921
@@ -1137,18 +1137,18 @@
 "2904","Mark Alford","Republican","Missouri","MO","University of Missouri-Columbia",4651675.34707752,10937053.2477483,40.0044079848667
 "2904","Mark Alford","Republican","Missouri","MO","Washington University",972322.162896315,2286131.01218338,8.3619706009083
 "2904","Mark Alford","Republican","Missouri","MO","University of Kansas Medical Center",632300.092926717,1746773.16174448,5.12163075270641
+"2904","Mark Alford","Republican","Missouri","MO","Midwest Research Institute",204831.336924187,481600.944088838,1.76154949754801
 "2904","Mark Alford","Republican","Missouri","MO","University of Missouri Kansas City",135063.733624546,317562.842690522,1.1615481091711
-"2904","Mark Alford","Republican","Missouri","MO","Children's Mercy Hospital (Kansas City, Mo)",130308.178182788,306381.545801046,1.12065033237198
 "2905","Emanuel Cleaver","Democrat","Missouri","MO","University of Kansas Medical Center",3500232.6572729,9669637.14537122,28.3518845239105
+"2905","Emanuel Cleaver","Democrat","Missouri","MO","Midwest Research Institute",1242519.02102303,2921419.84990564,10.6856635807981
 "2905","Emanuel Cleaver","Democrat","Missouri","MO","University of Missouri Kansas City",819304.607385346,1926355.01158282,7.04601962351397
 "2905","Emanuel Cleaver","Democrat","Missouri","MO","Children's Mercy Hospital (Kansas City, Mo)",752075.020735652,1768284.3135764,6.46784517832661
 "2905","Emanuel Cleaver","Democrat","Missouri","MO","Stowers Institute for Medical Research",485067.420100412,1140494.08149672,4.17157981286354
-"2905","Emanuel Cleaver","Democrat","Missouri","MO","University of Missouri-Columbia",333737.062623165,784685.033307386,2.87013873855922
 "2906","Sam Graves","Republican","Missouri","MO","Washington University",1166786.59547558,2743357.21462005,10.03436472109
 "2906","Sam Graves","Republican","Missouri","MO","University of Kansas Medical Center",790375.116158396,2183466.4521806,6.40203844088301
 "2906","Sam Graves","Republican","Missouri","MO","University of Missouri-Columbia",636508.83077614,1496564.23878213,5.4739759446748
 "2906","Sam Graves","Republican","Missouri","MO","Children's Mercy Hospital (Kansas City, Mo)",227603.290191161,535142.527895326,1.95738829564398
-"2906","Sam Graves","Republican","Missouri","MO","University of Missouri Kansas City",145524.250579523,342157.686999127,1.25150855498389
+"2906","Sam Graves","Republican","Missouri","MO","Midwest Research Institute",220695.267346562,518900.333836038,1.89797929918043
 "2907","Eric Burlison","Republican","Missouri","MO","Washington University",1750179.89321337,4115035.82193008,15.0515470816349
 "2907","Eric Burlison","Republican","Missouri","MO","University of Missouri-Columbia",227078.826114731,533909.404106056,1.95287790458669
 "2907","Eric Burlison","Republican","Missouri","MO","Johns Hopkins University",207989.555489441,455478.437831005,1.74711226611131
@@ -1173,7 +1173,7 @@
 "3101","Mike Flood","Republican","Nebraska","NE","University of Nebraska Medical Center",2808386.23605212,7267122.9358737,25.8371533716795
 "3101","Mike Flood","Republican","Nebraska","NE","Father Flanagan's Boys' Home",472598.834544144,1222920.75993467,4.34790927780612
 "3101","Mike Flood","Republican","Nebraska","NE","Creighton University",261902.641724075,677712.584617444,2.40950430386149
-"3101","Mike Flood","Republican","Nebraska","NE","University of Nebraska Omaha",139771.177200452,361679.000761426,1.28589483024416
+"3101","Mike Flood","Republican","Nebraska","NE","Materials and Machines Corporation of America, Inc.",162126.496383697,419526.76069195,1.49156376673001
 "3102","Don Bacon","Republican","Nebraska","NE","University of Nebraska Medical Center",13396325.1489843,34665011.7056044,123.246191370655
 "3102","Don Bacon","Republican","Nebraska","NE","Father Flanagan's Boys' Home",1752709.0635456,4535399.03881283,16.1249233846196
 "3102","Don Bacon","Republican","Nebraska","NE","Creighton University",1028554.65152685,2661540.28351092,9.462702794047
@@ -1387,8 +1387,8 @@
 "3620","Paul Tonko","Democrat","New York","NY","Albany Medical College",1700630.94586142,4008866.0521493,12.0744797156161
 "3620","Paul Tonko","Democrat","New York","NY","State University of New York at Albany",1160925.27327727,2736627.79596547,8.24256944026864
 "3620","Paul Tonko","Democrat","New York","NY","Rensselaer Polytechnic Institute",1159800.5644396,2733976.54050708,8.23458400752112
+"3620","Paul Tonko","Democrat","New York","NY","Albany Molecular Research, Inc.",1072819.0399682,2528936.59255946,7.61701518377425
 "3620","Paul Tonko","Democrat","New York","NY","Wadsworth Center",986968.326670884,2326562.28499556,7.00747511936328
-"3620","Paul Tonko","Democrat","New York","NY","General Electric Global Research Center",690574.132828236,1627877.70287531,4.90307634308048
 "3621","Elise M. Stefanik","Republican","New York","NY","SUNY Upstate Medical University",304535.897629302,717876.870721373,2.16220487316804
 "3621","Elise M. Stefanik","Republican","New York","NY","State University of New York at Buffalo",190267.701268246,448514.552961047,1.35090067900455
 "3621","Elise M. Stefanik","Republican","New York","NY","State University of New York at Albany",179092.726905178,422171.991415425,1.27155836102676
@@ -1418,7 +1418,7 @@
 "3626","Timothy M. Kennedy","Democrat","New York","NY","Roswell Park Cancer Institute Corp",5109611.52638599,12044793.2796048,36.2782418373405
 "3626","Timothy M. Kennedy","Democrat","New York","NY","University of Rochester",226056.664317983,532879.217358614,1.60500231665768
 "3626","Timothy M. Kennedy","Democrat","New York","NY","Pop Biotechnologies, Inc",167069.964843414,393830.955519444,1.18619675038824
-"3626","Timothy M. Kennedy","Democrat","New York","NY","Hauptman-Woodward Medical Research Inst",155165.143438891,365767.938965717,1.10167251841613
+"3626","Timothy M. Kennedy","Democrat","New York","NY","Starks Associates, Inc.",162130.383050692,382186.970203965,1.15112571965991
 "3701","Donald G. Davis","Democrat","North Carolina","NC","Duke University",2358045.96399364,5899106.46572516,22.8730458507383
 "3701","Donald G. Davis","Democrat","North Carolina","NC","Research Triangle Institute",1236119.50152181,3092391.18116527,11.9903591647616
 "3701","Donald G. Davis","Democrat","North Carolina","NC","University of North Carolina Chapel Hill",843633.852357166,2110512.68259256,8.18324836786451
@@ -1506,19 +1506,19 @@
 "3902","David J. Taylor","Republican","Ohio","OH","Ohio University athens",239670.352673942,625055.332231624,2.37273649147203
 "3903","Joyce Beatty","Democrat","Ohio","OH","Ohio State University",19975868.3344476,52096652.252145,197.761096511031
 "3903","Joyce Beatty","Democrat","Ohio","OH","The Research Institute at Nationwide Children's Hospital",4691629.03459459,12235671.6723974,46.4471274424865
-"3903","Joyce Beatty","Democrat","Ohio","OH","Battelle Memorial Institute",1634316.16457956,4262262.81985129,16.1797300293376
+"3903","Joyce Beatty","Democrat","Ohio","OH","Battelle Memorial Institute",3067476.54838035,7999915.51591293,30.3680178289654
 "3903","Joyce Beatty","Democrat","Ohio","OH","Triad National Security, LLC",455420.417764223,1187727.04823425,4.50866213586581
 "3903","Joyce Beatty","Democrat","Ohio","OH","Cleveland Clinic Lerner College of Medicine - Case Western Reserve University",84799.4981047532,221155.34053163,0.839515031237057
 "3904","Jim Jordan","Republican","Ohio","OH","Ohio State University",4356374.46267427,11361334.669527,43.1281071804753
 "3904","Jim Jordan","Republican","Ohio","OH","The Research Institute at Nationwide Children's Hospital",919893.797616037,2399064.03471161,9.10694859639876
-"3904","Jim Jordan","Republican","Ohio","OH","Battelle Memorial Institute",373708.366135744,974623.704378233,3.69971282474387
+"3904","Jim Jordan","Republican","Ohio","OH","Battelle Memorial Institute",701419.758244781,1829288.25001552,6.94405560662333
 "3904","Jim Jordan","Republican","Ohio","OH","Cleveland Clinic Lerner College of Medicine - Case Western Reserve University",116296.454543662,303298.752729093,1.15133489998225
 "3904","Jim Jordan","Republican","Ohio","OH","Triad National Security, LLC",104138.002129661,271589.759821679,1.03096622108365
 "3905","Robert E. Latta","Republican","Ohio","OH","Cleveland Clinic Lerner College of Medicine - Case Western Reserve University",1903143.02175096,4963357.7139313,18.8411159153345
 "3905","Robert E. Latta","Republican","Ohio","OH","Case Western Reserve University",1204021.72873555,3140063.81378651,11.919815114482
 "3905","Robert E. Latta","Republican","Ohio","OH","Ohio State University",463703.72431827,1209329.74073397,4.59066687075087
 "3905","Robert E. Latta","Republican","Ohio","OH","Bowling Green State University",175623.180220877,458021.628607007,1.73866948418668
-"3905","Robert E. Latta","Republican","Ohio","OH","University of Toledo Health Science Campus",97858.9144888326,255214.028874309,0.968803253439442
+"3905","Robert E. Latta","Republican","Ohio","OH","Battelle Memorial Institute",98791.5152457438,257646.232396552,0.978036000932864
 "3906","Michael A. Rulli","Republican","Ohio","OH","University of Pittsburgh at Pittsburgh",498680.818187084,1199129.07374505,4.23878695459021
 "3906","Michael A. Rulli","Republican","Ohio","OH","Ohio State University",329473.698857718,859260.605258348,3.26178961869141
 "3906","Michael A. Rulli","Republican","Ohio","OH","Case Western Reserve University",194906.911701317,508313.202231759,1.92957842584304
@@ -1527,8 +1527,8 @@
 "3907","Max L. Miller","Republican","Ohio","OH","Case Western Reserve University",7269713.4404725,18959262.583241,71.9701630606777
 "3907","Max L. Miller","Republican","Ohio","OH","Cleveland Clinic Lerner College of Medicine - Case Western Reserve University",6384190.78588642,16649837.7800242,63.2034887802756
 "3907","Max L. Miller","Republican","Ohio","OH","Ohio State University",549122.83142953,1432101.00876391,5.43631603115235
+"3907","Max L. Miller","Republican","Ohio","OH","Icon Government and Public Health Solutions, Inc.",271663.61714836,708493.105540354,2.68946980976877
 "3907","Max L. Miller","Republican","Ohio","OH","Cleveland State University",194180.24318133,506418.065732332,1.92238440749516
-"3907","Max L. Miller","Republican","Ohio","OH","Cleveland Clinic Foundation",129711.174833578,338284.066323618,1.28414063085243
 "3908","Warren Davidson","Republican","Ohio","OH","Cincinnati Children's Hospital Medical Center",8079199.46088577,21070385.4141679,79.9840746627691
 "3908","Warren Davidson","Republican","Ohio","OH","University of Cincinnati",3683544.5081558,9606608.0374472,36.4670906307424
 "3908","Warren Davidson","Republican","Ohio","OH","Ohio State University",597933.749778822,1559398.87620959,5.91954412281033
@@ -1552,7 +1552,7 @@
 "3912","Troy Balderson","Republican","Ohio","OH","Ohio State University",3453372.47321238,9006324.12178194,34.1883874848025
 "3912","Troy Balderson","Republican","Ohio","OH","The Research Institute at Nationwide Children's Hospital",1608534.14518203,4195023.84548367,15.9244880373021
 "3912","Troy Balderson","Republican","Ohio","OH","Ohio University athens",837499.771703325,2184182.1160004,8.29124773986292
-"3912","Troy Balderson","Republican","Ohio","OH","Battelle Memorial Institute",339495.628390922,885397.590597128,3.36100672107013
+"3912","Troy Balderson","Republican","Ohio","OH","Battelle Memorial Institute",637205.273335048,1661818.19895776,6.30833220601697
 "3912","Troy Balderson","Republican","Ohio","OH","Triad National Security, LLC",94604.241371312,246725.908570399,0.936581989575989
 "3913","Emilia Strong Sykes","Democrat","Ohio","OH","Case Western Reserve University",2194274.58657289,5722622.82512528,21.7233184070716
 "3913","Emilia Strong Sykes","Democrat","Ohio","OH","Cleveland Clinic Lerner College of Medicine - Case Western Reserve University",1445831.44268604,3770698.5560643,14.3137312825918
@@ -1566,7 +1566,7 @@
 "3914","David P. Joyce","Republican","Ohio","OH","Ohio State University",353879.158032364,922909.538981189,3.5034036645204
 "3915","Mike Carey","Republican","Ohio","OH","Ohio State University",12727446.9595778,33192918.9364614,126.00172489982
 "3915","Mike Carey","Republican","Ohio","OH","The Research Institute at Nationwide Children's Hospital",2962774.82868542,7726855.59231792,29.3314708039856
-"3915","Mike Carey","Republican","Ohio","OH","Battelle Memorial Institute",1089544.1097197,2841508.54656753,10.7864866862251
+"3915","Mike Carey","Republican","Ohio","OH","Battelle Memorial Institute",2044984.3655869,5333277.01060862,20.2453452193103
 "3915","Mike Carey","Republican","Ohio","OH","Triad National Security, LLC",303613.611842815,791818.032156163,3.00577475724387
 "3915","Mike Carey","Republican","Ohio","OH","Cincinnati Children's Hospital Medical Center",107851.712810045,281275.040613572,1.06773195681944
 "4001","Kevin Hern","Republican","Oklahoma","OK","Laureate Institute for Brain Research",1201678.64186786,3384037.55468535,12.6176257396125
@@ -1672,8 +1672,8 @@
 "4210","Scott Perry","Republican","Pennsylvania","PA","Pennsylvania State University Hershey Medical Center",7608664.51902812,18295812.6809605,64.673648411739
 "4210","Scott Perry","Republican","Pennsylvania","PA","University of Pittsburgh at Pittsburgh",997361.636374167,2398258.1474901,8.47757390918042
 "4210","Scott Perry","Republican","Pennsylvania","PA","Johns Hopkins University",519973.888723604,1138696.09457751,4.36778066527827
+"4210","Scott Perry","Republican","Pennsylvania","PA","Leidos Biomedical Research, Inc.",421556.080802491,923169.938462736,3.54107107874092
 "4210","Scott Perry","Republican","Pennsylvania","PA","Pennsylvania State University,the",298750.424904363,718375.9776421,2.53937861168709
-"4210","Scott Perry","Republican","Pennsylvania","PA","University of Pennsylvania",158807.097442601,381867.921755605,1.34986032826211
 "4211","Lloyd Smucker","Republican","Pennsylvania","PA","Johns Hopkins University",1871905.99940497,4099305.94047905,15.7240103950018
 "4211","Lloyd Smucker","Republican","Pennsylvania","PA","Pennsylvania State University Hershey Medical Center",1609115.32545273,3869282.51376056,13.6774802663482
 "4211","Lloyd Smucker","Republican","Pennsylvania","PA","University of Pittsburgh at Pittsburgh",847757.390918042,2038519.42536658,7.20593782280336
@@ -1684,11 +1684,11 @@
 "4212","Summer L. Lee","Democrat","Pennsylvania","PA","Cognitiontherapeutics, Inc.",1998000.8189261,4804397.49026376,16.9830069608719
 "4212","Summer L. Lee","Democrat","Pennsylvania","PA","Magee-Womens Research Institute",1979698.71808695,4760388.21533991,16.827439103739
 "4212","Summer L. Lee","Democrat","Pennsylvania","PA","Steelworker Charitable and Educational Organization",335657.159541399,807121.998957201,2.85308585610189
+"4213","John Joyce","Republican","Pennsylvania","PA","Leidos Biomedical Research, Inc.",8220343.57564857,18001813.8000234,69.050886035448
 "4213","John Joyce","Republican","Pennsylvania","PA","Pennsylvania State University,the",1597967.38902334,3842476.159481,13.5827228066984
 "4213","John Joyce","Republican","Pennsylvania","PA","University of Pittsburgh at Pittsburgh",1545910.53637996,3717300.12860965,13.1402395592297
 "4213","John Joyce","Republican","Pennsylvania","PA","Pennsylvania State University Hershey Medical Center",479537.67977068,1153097.43787566,4.07607027805078
 "4213","John Joyce","Republican","Pennsylvania","PA","Johns Hopkins University",207989.555489441,455478.437831005,1.74711226611131
-"4213","John Joyce","Republican","Pennsylvania","PA","University of Pennsylvania",175095.004872612,421033.862448487,1.4883075414172
 "4214","Guy Reschenthaler","Republican","Pennsylvania","PA","University of Pittsburgh at Pittsburgh",10771505.672841,25901187.992893,91.5577982191485
 "4214","Guy Reschenthaler","Republican","Pennsylvania","PA","West Virginia University",634183.731358056,1771427.71880332,4.88321473145703
 "4214","Guy Reschenthaler","Republican","Pennsylvania","PA","Cognitiontherapeutics, Inc.",350955.486222216,843908.391442294,2.98312163288884
@@ -1720,10 +1720,10 @@
 "4402","Seth Magaziner","Democrat","Rhode Island","RI","Miriam Hospital",1119217.05031204,2329156.4090861,8.28220617230909
 "4402","Seth Magaziner","Democrat","Rhode Island","RI","Women and Infants Hospital-Rhode Island",892046.5243775,1856401.20375003,6.6011442803935
 "4501","Nancy Mace","Republican","South Carolina","SC","Medical University of South Carolina",14363041.1341119,41532019.0201269,147.939323681353
+"4501","Nancy Mace","Republican","South Carolina","SC","Alpha Genesis, Inc.",559055.150842019,1616558.00754666,5.7582680536728
 "4501","Nancy Mace","Republican","South Carolina","SC","University of South Carolina at Columbia",352038.051189301,1017949.53459252,3.6259919272498
 "4501","Nancy Mace","Republican","South Carolina","SC","Xequel Bio, Inc.",223461.228515696,646158.143412477,2.30165065371167
 "4501","Nancy Mace","Republican","South Carolina","SC","Tissue Testing Technologies, LLC",92324.0244894295,266963.180381279,0.950937452241124
-"4501","Nancy Mace","Republican","South Carolina","SC","Lipo-Immuno Tech, LLC",75827.0512618246,219260.705712722,0.781018627996794
 "4502","Joe Wilson","Republican","South Carolina","SC","University of South Carolina at Columbia",4885426.01650458,14126646.6025084,50.3198879699972
 "4502","Joe Wilson","Republican","South Carolina","SC","Augusta University",1565500.29257485,4598036.74570362,18.4729034523833
 "4502","Joe Wilson","Republican","South Carolina","SC","Medical University of South Carolina",150322.172571732,434670.016753523,1.54831837748884
@@ -1733,27 +1733,27 @@
 "4503","Sheri Biggs","Republican","South Carolina","SC","University of South Carolina at Columbia",596309.35201453,1724281.86471794,6.14198632574966
 "4503","Sheri Biggs","Republican","South Carolina","SC","Augusta University",309301.617597111,908450.934159814,3.64975908764591
 "4503","Sheri Biggs","Republican","South Carolina","SC","Nubad, LLC",173928.151633193,502928.818090579,1.79145996182189
-"4503","Sheri Biggs","Republican","South Carolina","SC","Prisma Health - Upstate",106217.81962933,307138.33260873,1.0940435421821
+"4503","Sheri Biggs","Republican","South Carolina","SC","Leidos Biomedical Research, Inc.",210778.040401245,461584.969231368,1.77053553937046
 "4504","William R. Timmons IV","Republican","South Carolina","SC","Spartanburg Regional Medical Center",336585.607025323,973267.409203241,3.46683175236083
 "4504","William R. Timmons IV","Republican","South Carolina","SC","Clemson University",291092.868206742,841721.083028368,2.99825654252944
 "4504","William R. Timmons IV","Republican","South Carolina","SC","University of South Carolina at Columbia",276601.325934451,799817.491465551,2.84899365712484
 "4504","William R. Timmons IV","Republican","South Carolina","SC","Nubad, LLC",270329.977105884,781683.325003319,2.78439876419061
 "4504","William R. Timmons IV","Republican","South Carolina","SC","Prisma Health - Upstate",165090.357593117,477373.545586579,1.70043068320911
 "4505","Ralph Norman","Republican","South Carolina","SC","University of South Carolina at Columbia",657377.177220837,1900864.9472493,6.77098492537462
+"4505","Ralph Norman","Republican","South Carolina","SC","Leidos Biomedical Research, Inc.",210778.040401245,461584.969231368,1.77053553937046
 "4505","Ralph Norman","Republican","South Carolina","SC","Research Triangle Institute",165256.61785051,413421.280904448,1.60298919314995
 "4505","Ralph Norman","Republican","South Carolina","SC","Ppd Development Lp",128945.269850351,322581.445278789,1.25076911754841
 "4505","Ralph Norman","Republican","South Carolina","SC","Spartanburg Regional Medical Center",107356.84129693,310431.915710065,1.10577546535838
-"4505","Ralph Norman","Republican","South Carolina","SC","Wake Forest University Health Sciences",119298.686203296,298448.657015354,1.15719725617197
 "4506","James E. Clyburn","Democrat","South Carolina","SC","Medical University of South Carolina",9876409.19307985,28558521.1813786,101.727014688722
 "4506","James E. Clyburn","Democrat","South Carolina","SC","University of South Carolina at Columbia",3617370.58722067,10459950.8299456,37.2589170483729
+"4506","James E. Clyburn","Democrat","South Carolina","SC","Alpha Genesis, Inc.",440231.582196155,1272969.02336427,4.53438529662039
 "4506","James E. Clyburn","Democrat","South Carolina","SC","Xequel Bio, Inc.",105635.074559866,305453.273081095,1.08804126796662
 "4506","James E. Clyburn","Democrat","South Carolina","SC","South Carolina State University",68088.6447949309,196884.410778552,0.701313041387788
-"4506","James E. Clyburn","Democrat","South Carolina","SC","Tissue Testing Technologies, LLC",65005.3899803667,187968.903511901,0.669555516797777
 "4507","Russell Fry","Republican","South Carolina","SC","University of South Carolina at Columbia",362814.726225708,1049111.25503923,3.73699168012479
 "4507","Russell Fry","Republican","South Carolina","SC","Medical University of South Carolina",305493.447484488,883361.646950708,3.14658250909022
 "4507","Russell Fry","Republican","South Carolina","SC","Duke University",224575.806094633,561819.663402396,2.17838531911794
+"4507","Russell Fry","Republican","South Carolina","SC","Leidos Biomedical Research, Inc.",210778.040401245,461584.969231368,1.77053553937046
 "4507","Russell Fry","Republican","South Carolina","SC","Ppd Development Lp",64472.6349251757,161290.722639394,0.625384558774204
-"4507","Russell Fry","Republican","South Carolina","SC","Research Triangle Institute",39661.5882841224,99221.1074170675,0.384717406355987
 "4600","Dusty Johnson","Republican","South Dakota","SD","University of South Dakota",1379940.49164591,4307522.57635303,11.453506080661
 "4600","Dusty Johnson","Republican","South Dakota","SD","Sanford Research/Usd",1321566.14280083,4125305.42492343,10.9689989852469
 "4600","Dusty Johnson","Republican","South Dakota","SD","Avera Mckennan",1193380.14736242,3725169.27944033,9.90505522310809
@@ -1896,9 +1896,9 @@
 "4818","Christian D. Menefee","Democrat","Texas","TX","Methodist Hospital Research Institute",632410.241741478,2060072.51080579,7.46244085254944
 "4819","Jodey C. Arrington","Republican","Texas","TX","Texas Tech University Health Sciences Center",1851503.10072821,6031260.074123,21.8477365885928
 "4819","Jodey C. Arrington","Republican","Texas","TX","Texas Tech University",854050.394511737,2782063.95856519,10.0777946552385
+"4819","Jodey C. Arrington","Republican","Texas","TX","Leidos Biomedical Research, Inc.",421556.080802491,923169.938462736,3.54107107874092
 "4819","Jodey C. Arrington","Republican","Texas","TX","University of Texas Southwestern Medical Center",167431.023554531,545405.539497515,1.97568607794346
 "4819","Jodey C. Arrington","Republican","Texas","TX","University of Texas at Austin",115543.905675107,376383.569021527,1.36341808696626
-"4819","Jodey C. Arrington","Republican","Texas","TX","University of Texas Medical Branch Galveston",72386.2007536022,235797.608089851,0.854157168892506
 "4820","Joaquin Castro","Democrat","Texas","TX","University of Texas Health Science Center",8817123.81031717,28721727.111799,104.042060961743
 "4820","Joaquin Castro","Democrat","Texas","TX","Texas Biomedical Research Institute",3115860.4003914,10149896.2772627,36.7671527246185
 "4820","Joaquin Castro","Democrat","Texas","TX","University of Texas San Antonio",1004312.97860014,3271543.41106543,11.8508931474816
@@ -1927,8 +1927,8 @@
 "4825","Roger Williams","Republican","Texas","TX","University of North Texas Health Science Center",1867841.43752495,6084482.10673046,22.0405289627944
 "4825","Roger Williams","Republican","Texas","TX","University of Texas Southwestern Medical Center",1822696.97206046,5937424.28543029,21.5078242703134
 "4825","Roger Williams","Republican","Texas","TX","University of Texas Arlington",556237.25042119,1811939.45550824,6.56359955497004
+"4825","Roger Williams","Republican","Texas","TX","Leidos Biomedical Research, Inc.",210778.040401245,461584.969231368,1.77053553937046
 "4825","Roger Williams","Republican","Texas","TX","University of Texas at Austin",136551.888525126,444816.94520726,1.61131228459649
-"4825","Roger Williams","Republican","Texas","TX","Nanoscope Technologies, LLC",83797.3048883034,272969.210309806,0.98880819768198
 "4826","Brandon Gill","Republican","Texas","TX","University of Texas Southwestern Medical Center",3351001.00697054,10915865.3710806,39.5418118822523
 "4826","Brandon Gill","Republican","Texas","TX","University of Texas Dallas",479661.426168207,1562494.17438588,5.66000482878485
 "4826","Brandon Gill","Republican","Texas","TX","University of North Texas Health Science Center",306409.943683868,998128.525373761,3.61563733546964
@@ -2047,8 +2047,8 @@
 "5106","Ben Cline","Republican","Virginia","VA","University of Virginia",3336114.21542905,9218967.53331176,28.356970831147
 "5106","Ben Cline","Republican","Virginia","VA","Virginia Polytechnic Institute and State University",919581.865922582,2541158.61110356,7.81644586034195
 "5106","Ben Cline","Republican","Virginia","VA","Duke University",393007.660665607,983184.410954194,3.81217430845639
+"5106","Ben Cline","Republican","Virginia","VA","Leidos Biomedical Research, Inc.",421556.080802491,923169.938462736,3.54107107874092
 "5106","Ben Cline","Republican","Virginia","VA","American Type Culture Collection",328275.989202563,907152.900349671,2.79034590822179
-"5106","Ben Cline","Republican","Virginia","VA","Virginia Commonwealth University",228485.691181023,631393.901048811,1.94212837503869
 "5107","Eugene Simon Vindman","Democrat","Virginia","VA","University of Virginia",3093976.89334146,8549848.922023,26.2988035934024
 "5107","Eugene Simon Vindman","Democrat","Virginia","VA","American Type Culture Collection",974452.620287761,2692787.62328828,8.28284727244597
 "5107","Eugene Simon Vindman","Democrat","Virginia","VA","Vignet, Inc.",768013.110284101,2122315.80565245,6.52811143741486
@@ -2057,23 +2057,23 @@
 "5108","Donald S. Beyer, Jr.","Democrat","Virginia","VA","George Washington University",2657892.44869993,5238370.55423384,4.25262791791989
 "5108","Donald S. Beyer, Jr.","Democrat","Virginia","VA","Georgetown University",1751652.75021762,3452286.48829299,2.8026444003482
 "5108","Donald S. Beyer, Jr.","Democrat","Virginia","VA","Vignet, Inc.",1135323.72824606,3137336.4083558,9.65025169009153
-"5108","Donald S. Beyer, Jr.","Democrat","Virginia","VA","Westat, Inc.",642768.76470686,1407605.83937162,5.39925762353762
-"5108","Donald S. Beyer, Jr.","Democrat","Virginia","VA","Four Points Technology, LLC",471189.932202405,1302079.12753931,4.00511442372044
+"5108","Donald S. Beyer, Jr.","Democrat","Virginia","VA","Icf, Inc., LLC",832920.112458386,2301678.83314172,7.07982095589628
+"5108","Donald S. Beyer, Jr.","Democrat","Virginia","VA","Leidos Biomedical Research, Inc.",843112.161604982,1846339.87692547,7.08214215748185
 "5109","H. Morgan Griffith","Republican","Virginia","VA","Virginia Polytechnic Institute and State University",7007554.40420634,19364569.7864651,59.5642124357539
 "5109","H. Morgan Griffith","Republican","Virginia","VA","University of Virginia",538082.937972428,1486930.24730835,4.57370497276564
 "5109","H. Morgan Griffith","Republican","Virginia","VA","Biotherapeutics, Inc.",203905.778393733,563470.142051096,1.73319911634673
 "5109","H. Morgan Griffith","Republican","Virginia","VA","Duke University",168431.854570974,421364.747551797,1.63378898933845
 "5109","H. Morgan Griffith","Republican","Virginia","VA","Wake Forest University Health Sciences",105742.017316558,264534.036899973,1.02569756797061
+"5110","Suhas Subramanyam","Democrat","Virginia","VA","Leidos Biomedical Research, Inc.",2740114.52521619,6000604.60000779,23.016962011816
 "5110","Suhas Subramanyam","Democrat","Virginia","VA","American Type Culture Collection",1981691.3381065,5476175.85230048,16.8443763739052
 "5110","Suhas Subramanyam","Democrat","Virginia","VA","Four Points Technology, LLC",1731623.00084384,4785140.79370695,14.7187955071726
 "5110","Suhas Subramanyam","Democrat","Virginia","VA","Vignet, Inc.",1485938.40902793,4106219.71093627,12.6304764767374
 "5110","Suhas Subramanyam","Democrat","Virginia","VA","University of Virginia",869900.749722092,2403870.56648183,7.39415637263778
-"5110","Suhas Subramanyam","Democrat","Virginia","VA","Carahsoft Technology Corporation",762258.666182694,2106414.06191185,6.4791986625529
 "5111","James R. Walkinshaw","Democrat","Virginia","VA","Vignet, Inc.",2855005.25779524,7889478.32101238,24.2675446912596
+"5111","James R. Walkinshaw","Democrat","Virginia","VA","Icf, Inc., LLC",1501047.42847339,4147971.74660808,12.7589031420238
 "5111","James R. Walkinshaw","Democrat","Virginia","VA","Four Points Technology, LLC",1420798.27852168,3926212.46014267,12.0767853674343
 "5111","James R. Walkinshaw","Democrat","Virginia","VA","George Mason University",1113199.82193838,3076199.540494,9.46219848647623
 "5111","James R. Walkinshaw","Democrat","Virginia","VA","George Washington University",1554230.48129487,3063192.11361999,2.48676877007179
-"5111","James R. Walkinshaw","Democrat","Virginia","VA","Carahsoft Technology Corporation",953475.632320456,2634820.13221052,8.10454287472387
 "5301","Suzan K. DelBene","Democrat","Washington","WA","University of Washington",13866535.3132316,33517465.7258845,108.158975443207
 "5301","Suzan K. DelBene","Democrat","Washington","WA","Fred Hutchinson Cancer Center",13079251.5775507,31614484.5535038,102.018162304895
 "5301","Suzan K. DelBene","Democrat","Washington","WA","Seattle Children's Hospital",3480846.29528825,8413720.06517511,27.1506011032484
@@ -2130,20 +2130,20 @@
 "5401","Carol D. Miller","Republican","West Virginia","WV","University of Pittsburgh at Pittsburgh",99736.1636374167,239825.81474901,0.847757390918042
 "5401","Carol D. Miller","Republican","West Virginia","WV","Duke University",56143.9515236581,140454.915850599,0.544596329779484
 "5402","Riley M. Moore","Republican","West Virginia","WV","West Virginia University",6085259.16272577,16997592.6911127,46.8564955529885
+"5402","Riley M. Moore","Republican","West Virginia","WV","Leidos Biomedical Research, Inc.",5901785.13123487,12924379.1384783,49.5749951023729
 "5402","Riley M. Moore","Republican","West Virginia","WV","University of Pittsburgh at Pittsburgh",748021.227280625,1798693.61061757,6.35818043188532
 "5402","Riley M. Moore","Republican","West Virginia","WV","Johns Hopkins University",311984.333234162,683217.656746508,2.62066839916696
 "5402","Riley M. Moore","Republican","West Virginia","WV","Westat, Inc.",190374.188273051,416902.366438092,1.59914318149363
-"5402","Riley M. Moore","Republican","West Virginia","WV","Istovisr",133343.07668959,372459.289759193,1.02674169050984
 "5501","Bryan Steil","Republican","Wisconsin","WI","Medical College of Wisconsin",2631330.56004891,6230129.1720062,24.7345072644598
 "5501","Bryan Steil","Republican","Wisconsin","WI","University of Wisconsin-Madison",2276352.06204116,5389656.32171105,21.3977093831869
 "5501","Bryan Steil","Republican","Wisconsin","WI","Versiti Blood Health, Inc.",413966.889109173,980138.045459318,3.89128875762622
 "5501","Bryan Steil","Republican","Wisconsin","WI","Marquette University",203602.221642392,482063.394010048,1.91386088343849
 "5501","Bryan Steil","Republican","Wisconsin","WI","Northwestern University at Chicago",167136.23746965,478117.70941708,1.65464875094953
 "5502","Mark Pocan","Democrat","Wisconsin","WI","University of Wisconsin-Madison",57302245.1173077,135672953.579862,538.641104102693
+"5502","Mark Pocan","Democrat","Wisconsin","WI","Flambeau Diagnostics LLC",740408.279041048,1753044.36792723,6.95983782298585
 "5502","Mark Pocan","Democrat","Wisconsin","WI","Morgridge Institute for Research, Inc.",410068.303535545,970907.471360954,3.85464205323412
 "5502","Mark Pocan","Democrat","Wisconsin","WI","Medical College of Wisconsin",326963.466537036,774142.42892189,3.07345658544814
 "5502","Mark Pocan","Democrat","Wisconsin","WI","University of Minnesota",282615.379754251,698469.293025748,2.57179995576369
-"5502","Mark Pocan","Democrat","Wisconsin","WI","Dnastar, Inc.",281599.353201303,666735.062418347,2.64703392009225
 "5503","Derrick Van Orden","Republican","Wisconsin","WI","University of Wisconsin-Madison",1686186.71262308,3992338.01608226,15.850155098657
 "5503","Derrick Van Orden","Republican","Wisconsin","WI","University of Minnesota",460187.874998073,1137330.53023662,4.18770966248246
 "5503","Derrick Van Orden","Republican","Wisconsin","WI","Mayo Clinic Rochester",409775.624257963,1012739.26006265,3.72895818074746
