@@ -188,6 +188,10 @@ county_commute_territory <- nsf_grants %>%
   ungroup() %>%
   distinct(DESTINATION, DESTINATION_total_workers, Commuters, ORIGIN, proportion)
 
+territory_fips <- read.csv("data/state_dict_territories.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
+  select(FIPS, name, state)
+
 county_commute <- county_commute %>%
   filter(! str_sub(DESTINATION, 1, 5) %in% territory_fips$FIPS) %>%
   rbind(county_commute_territory)

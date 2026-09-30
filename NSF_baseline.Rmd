@@ -139,15 +139,9 @@ nsf_grants <- nsf_grants %>%
   filter(inst_state_name %in% c(state.name, "District of Columbia", "American Samoa", "Guam", "Northern Mariana Isl", "Puerto Rico")) %>%
   mutate(inst_state_name = if_else(inst_state_name == "Northern Mariana Isl", "Northern Mariana Islands", inst_state_name))
 
-territory_fips <- nsf_grants %>%
-  filter(inst_state_name %in% c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico")) %>%
-  mutate(FIPS = str_sub(tractid, 1, 5)) %>%
-  mutate(name = NA) %>%
-  left_join(tibble(
-    inst_state_name = c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico"),
-    state = c("AS", "GU", "MP", "PR"))) %>%
-  distinct(FIPS, name, state) %>%
-  filter(FIPS != "08051" & !is.na(FIPS))
+territory_fips <- read.csv("data/state_dict_territories.csv") %>%
+  mutate(FIPS = str_pad(FIPS, 5, pad = "0")) %>%
+  select(FIPS, name, state)
 
 nsf_grants <- nsf_grants  %>%
   filter(!is.na(tractid)) %>%
@@ -167,6 +161,7 @@ NSF_state_dict <- tibble(
   right_join(NSF_state_dict) %>%
   mutate(state_FIPS = str_sub(FIPS, 1, 2)) %>%
   arrange(state) 
+
 ```
 
 ```{r Commuter Weighting}
