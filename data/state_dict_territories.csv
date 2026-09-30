@@ -1,23 +1,23 @@
 state_name,state,econ_mult,job_val,state_FIPS,FIPS,name
 American Samoa,AS,2.57,8.9e-6,60,60010,Eastern District
-Guam,GU,2.57,8.9e-6,66,66010,Guam
-Puerto Rico,PR,2.57,8.9e-6,72,72127,San Juan Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72139,Trujillo Alto Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72113,Ponce Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72025,Caguas Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72117,Rincón Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72031,Carolina Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72041,Cidra Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72063,Gurabo Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72035,Cayey Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72005,Aguadilla Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72069,Humacao Municipio
-Puerto Rico,PR,2.57,8.9e-6,72,72097,Mayagüez Municipio
-Virgin Islands,VI,2.57,8.9e-6,78,78030,St. Thomas Island
 American Samoa, AS,2.57,8.9e-6,60,60050,Western District
+Guam,GU,2.57,8.9e-6,66,66010,Guam
 Northern Mariana Islands,MP,2.57,8.9e-6,69,69110,Saipan Municipality
+Puerto Rico,PR,2.57,8.9e-6,72,72005,Aguadilla Municipio
 Puerto Rico,PR,2.57,8.9e-6,72,72013,Arecibo Municipio
 Puerto Rico,PR,2.57,8.9e-6,72,72021,Bayamon Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72025,Caguas Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72031,Carolina Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72035,Cayey Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72041,Cidra Municipio
 Puerto Rico,PR,2.57,8.9e-6,72,72055,Guanica Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72063,Gurabo Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72069,Humacao Municipio
 Puerto Rico,PR,2.57,8.9e-6,72,72085,Las Piedras Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72097,Mayagüez Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72113,Ponce Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72117,Rincón Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72127,San Juan Municipio
 Puerto Rico,PR,2.57,8.9e-6,72,72133,Santa Isabel Municipio
+Puerto Rico,PR,2.57,8.9e-6,72,72139,Trujillo Alto Municipio
+Virgin Islands,VI,2.57,8.9e-6,78,78030,St. Thomas Island
