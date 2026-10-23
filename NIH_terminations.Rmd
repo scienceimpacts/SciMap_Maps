@@ -10,8 +10,11 @@ library(data.table)
 
 ```{r}
 terminations_raw <- read_csv("https://files.grant-witness.us/nih_v3_terminations.csv") %>%
-  mutate(across(ends_with("date"), ~ as_date(.x))) %>%
-  mutate(Type = as.numeric(str_sub(full_award_number, 1, 1))) %>%
+  mutate(across(ends_with("date"), ~ as_date(.x)),
+         Type = as.numeric(str_sub(full_award_number, 1, 1)),
+         org_city = if_else(org_name == "COLLIGA APPS CORP.", "MIAMI", org_city),
+         org_state = if_else(org_name == "COLLIGA APPS CORP.", "FL", org_state),
+         org_state = if_else(org_name == "WHITMAN-WALKER INSTITUTE, INC.", "DC", org_state)) %>%
   distinct()
 
 write.csv(terminations_raw, "data/nih_v3_terminations.csv")
@@ -66,6 +69,10 @@ terminations_clean <- terminations_raw %>%
   left_join(org_names_corrected) %>%
   mutate(org_name = if_else(!is.na(corrected_name), corrected_name, org_name)) %>%
   select(-corrected_name)
+
+# check for missing tracts
+terminations_clean %>% 
+  filter(is.na(tractid))
 
 # terminated grants in the US since 2/28/25
 start_date <- as_date("2025-02-28")
