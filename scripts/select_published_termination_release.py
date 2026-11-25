@@ -103,8 +103,8 @@ def selector_transport(operation, *args):
 
 
 def run(args, webhook):
-    context = {'pointer': args.pointer, 'old release': 'unknown', 'new release': args.release_id,
-               'approver': args.approved_by or '(not supplied)', 'reason': args.reason or '(not supplied)'}
+    context = {'Was showing': 'unknown', 'Now showing': args.release_id,
+               'Approver': args.approved_by or '(not supplied)', 'Reason': args.reason or '(not supplied)'}
     title = 'Termination selection failed'
     lines = []
     record = Path(args.output) / 'selection-record.json'
@@ -141,10 +141,13 @@ def run(args, webhook):
         raise
     finally:
         if audit:
-            context.update({'old release': (audit['previous'] or {}).get('release_id', '(unset)'),
-                            'selection status': audit['status']})
-        sent = alerts.send(webhook, alerts.message('error' if lines else 'info', title, context, lines,
-                                                   run_label='Open run and selection record', context_separator='\n'))
+            context.update({'Was showing': (audit['previous'] or {}).get('release_id', '(unset)'),
+                            'Selection status': audit['status']})
+        target = 'Public website' if args.pointer == 'website-release' else 'Latest checked dataset'
+        details = [f'*Applies to:* {target} ({alerts.inline_code(args.pointer)})',
+                   *(f'*{key}:* {alerts.inline_code(value)}' for key, value in context.items() if value)]
+        sent = alerts.send(webhook, alerts.message('error' if lines else 'info', title, {}, [*details, *lines],
+                                                   run_label='Open run and selection record'))
         if not sent and not lines:
             raise RuntimeError('Slack notification failed; check the run record before retrying any selection')
 
